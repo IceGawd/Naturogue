@@ -18,6 +18,6 @@ public:
 
 	Input input;
 
-	Player(RenderWindow* window);
+	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

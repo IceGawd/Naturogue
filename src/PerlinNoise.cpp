@@ -1,7 +1,7 @@
 #include "PerlinNoise.hpp"
 
 float random() {
-	return (float) rand() / RAND_MAX;
+	return (float) rand() / (RAND_MAX + 1);
 }
 
 // THIS IS A DIRECT TRANSLATION TO C++11 FROM THE REFERENCE

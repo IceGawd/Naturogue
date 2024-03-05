@@ -28,6 +28,7 @@ struct EnemyData {
 	string startSheetName;
 
 	EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, float t, float k, AI ai, map<string, SpriteSheet> sh, string st) {
+		name = n;
 		damage = da;
 		movementspeed = mo;
 		attackFrames = af;

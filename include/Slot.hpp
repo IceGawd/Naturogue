@@ -5,10 +5,8 @@
 
 class Slot : public Entity {
 public:
-	static SDL_Texture* mainTexture;
-
 	Item* holding = nullptr;
 
-	Slot(int x, int y, Item* h, SDL_Texture* texture = nullptr);
+	Slot(int x, int y, Item* h);
 	void draw(RenderWindow* window);
 };

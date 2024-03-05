@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "GameObject.hpp"
+#include "World.hpp"
 
 using namespace std;
 
@@ -16,6 +17,8 @@ bool GameObject::draw(RenderWindow* window, World* world, vector<GameObject*>& e
 	x += xvel;
 	y += yvel;
 	
+	bool collided = world->collides(this);
+
 	return false;
 }
 

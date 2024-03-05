@@ -1,14 +1,139 @@
 #include "World.hpp"
 
+int index(int x, int y) {
+	while (x < 0) {
+		x += World::WORLDSIZE;
+	} 
+	while (y < 0) {
+		y += World::WORLDSIZE;
+	} 
+	return (y % World::WORLDSIZE) * World::WORLDSIZE + (x % World::WORLDSIZE);
+}
+
 World::World(RenderWindow* window) {
-	BLOCKTYPES.push_back({"Void", window->loadTexture("res/gfx/void.png")});
+	// LOAD BLOCKS
+	BLOCKTYPES.push_back(new BlockData("Void", window->loadTexture("res/gfx/void.png")));
 
-	blocks.push_back(new Block(2, 2, BLOCKTYPES[0]));
+	SDL_Texture* grasstiles = window->loadTexture("res/gfx/grasstiles.png");
 
+	BLOCKTYPES.push_back(new BlockData("DirtPath", grasstiles, 0, 400, 80, 80, true));
+	for (int x = 0; x < 3; x++) {
+		for (int y = 0; y < 3; y++) {
+			BLOCKTYPES.push_back(new BlockData("Grass" + to_string(x) + to_string(y), grasstiles, 80 * x, 80 * y, 80, 80, true));
+		}
+		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(x), grasstiles, 80 * x, 240, 80, 80, true));
+	}
+
+	for (int x = 0; x < 2; x++) {
+		for (int y = 0; y < 2; y++) {
+			BLOCKTYPES.push_back(new BlockData("GrassEdge" + to_string(x) + to_string(y), grasstiles, 80 * x + 480, 80 * y + 240, 80, 80, true));
+		}
+		BLOCKTYPES.push_back(new BlockData("DirtRandom" + to_string(x), grasstiles, 240, 80 * x + 480, 80, 80, true));		
+	}
+
+	sort(BLOCKTYPES.begin(), BLOCKTYPES.end(), dataCompare);
+	// GENERATE WORLD
+	auto seed = (unsigned) time(NULL);
+	// auto seed = 1709637698;
+	cout << "SEED: " << seed << endl;
+
+	PerlinNoise pn = PerlinNoise(seed);
+	int z = random();
+
+	// PLACE DIRT AND GRASS
+	for (int x = 0; x < WORLDSIZE; x++) {
+		for (int y = 0; y < WORLDSIZE; y++) {
+			if (pn.noise(1.0 * x / WORLDSIZE, 1.0 * y / WORLDSIZE, z) > 0.6) {
+				blocks.push_back(new Block(x, y, getBlockData("DirtPath")));
+			}
+			else {
+				blocks.push_back(new Block(x, y, getBlockData("Grass11")));
+			}
+		}
+	}
+
+	// /*
+	// DIRT EDGE CLEANUP
+	for (int x = 0; x < WORLDSIZE; x++) {
+		for (int y = 0; y < WORLDSIZE; y++) {
+			Block* b = blocks[index(x, y)];
+			if (b->type->name == "Grass11") {
+				int xdelta = 1;
+				int ydelta = 1;
+
+				// cout << ">???\n";
+
+				if (blocks[index(x + 1, y)]->type->name == "DirtPath") {
+					xdelta = 2;
+				}
+				if (blocks[index(x - 1, y)]->type->name == "DirtPath") {
+					xdelta = 0;
+				}
+				if (blocks[index(x, y + 1)]->type->name == "DirtPath") {
+					ydelta = 2;
+				}
+				if (blocks[index(x, y - 1)]->type->name == "DirtPath") {
+					ydelta = 0;
+				}
+				if (xdelta == 1 && ydelta == 1) {
+					if (blocks[index(x + 1, y + 1)]->type->name == "DirtPath") {
+						b->switchBlockType(getBlockData("GrassEdge11"));
+					}
+					if (blocks[index(x + 1, y - 1)]->type->name == "DirtPath") {
+						b->switchBlockType(getBlockData("GrassEdge01"));
+					}
+					if (blocks[index(x - 1, y + 1)]->type->name == "DirtPath") {
+						b->switchBlockType(getBlockData("GrassEdge10"));
+					}
+					if (blocks[index(x - 1, y - 1)]->type->name == "DirtPath") {
+						b->switchBlockType(getBlockData("GrassEdge00"));
+					}
+				}
+				else {
+					b->switchBlockType(getBlockData("Grass" + to_string(ydelta) + to_string(xdelta)));
+				}
+			}
+		}
+	}
+
+	for (int x = 0; x < WORLDSIZE; x++) {
+		for (int y = 0; y < WORLDSIZE; y++) {
+			if (blocks[index(x, y)]->type->name == "Grass11" && random() > 0.6) {
+				blocks[index(x, y)]->switchBlockType(getBlockData("GrassRandom" + to_string(int(3 * random()))));
+			}
+			else if (blocks[index(x, y)]->type->name == "DirtPath" && random() > 0.6) {
+				blocks[index(x, y)]->switchBlockType(getBlockData("DirtRandom" + to_string(int(2 * random()))));
+			}
+		}
+	}
+
+	// */
+
+	blocks.push_back(new Block(2, 2, getBlockData("Void")));
 	// SORT BY LOW TO HIGH (Unecessary?)
 	// sort(blocks.begin(), blocks.end(), blockCompare);
 }
 
+BlockData* World::getBlockData(string s) {
+    int bottom = 0;
+    int top = BLOCKTYPES.size() - 1;
+    while (top >= bottom) {
+        int index = bottom + (top - bottom) / 2;
+        if (BLOCKTYPES[index]->name == s) {
+        	return BLOCKTYPES[index];
+        }
+        if (BLOCKTYPES[index]->name > s) {
+            top = index - 1;
+        }
+        else {
+            bottom = index + 1;
+        }
+    }
+    cout << "ERROR: COULDN'T FIND " << s << endl;
+    return nullptr;
+}
+
+/*
 Block* World::blockAt(int x, int y) {
 	x = x / Block::BLOCKSIZE * Block::BLOCKSIZE;
 	y = y / Block::BLOCKSIZE * Block::BLOCKSIZE;
@@ -38,6 +163,7 @@ Block* World::blockAt(int x, int y) {
 		return nullptr;
 	}
 }
+*/
 
 bool World::blockInRect(Block* b, int x, int y, int w, int h) {
 	int bs = Block::BLOCKSIZE;
@@ -47,8 +173,10 @@ bool World::blockInRect(Block* b, int x, int y, int w, int h) {
 void World::draw(RenderWindow* window) {
 	int x = window->x;
 	int y = window->y;
-	int w = RenderWindow::WIDTH * window->zoom;
-	int h = RenderWindow::HEIGHT * window->zoom;
+	int w = RenderWindow::WIDTH / window->zoom;
+	int h = RenderWindow::HEIGHT / window->zoom;
+
+	// cout << x << " "<< y << " "<< w << " "<< h << endl;
 
 	for (Block* b : blocks) {
 		if (blockInRect(b, x, y, w, h)) {
@@ -56,7 +184,6 @@ void World::draw(RenderWindow* window) {
 		}
 	}
 }
-
 
 bool World::collides(GameObject* object) {
 	SDL_Rect gobj = object->getRect();
@@ -66,7 +193,7 @@ bool World::collides(GameObject* object) {
 	bool xStop = false;
 	bool yStop = false;
 	for (Block* b : blocks) {
-		if (blockInRect(b, object->x - Block::BLOCKSIZE, object->y - Block::BLOCKSIZE, Block::BLOCKSIZE * 3, Block::BLOCKSIZE * 3)) {
+		if (!b->type->permissable && blockInRect(b, object->x - Block::BLOCKSIZE, object->y - Block::BLOCKSIZE, object->show_width + Block::BLOCKSIZE * 2, object->show_height + Block::BLOCKSIZE * 2)) {
 			SDL_Rect bobj = b->getRect();
 			const SDL_Rect* bstar = &bobj;
 

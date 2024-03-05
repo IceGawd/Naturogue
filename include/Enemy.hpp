@@ -2,7 +2,6 @@
 
 #include "GameObject.hpp"
 #include "EnemyData.hpp"
-#include "World.hpp"
 #include "Player.hpp"
 
 class Enemy : public GameObject {

@@ -8,6 +8,7 @@
 #include "World.hpp"
 #include "Enemy.hpp"
 #include "EnemyData.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -19,13 +20,11 @@ Decreased Player movement acceleration (- speed + traction) [max speed = speed *
 2 - Enemies can change their home location
 4 - Some enemies can Block, Spotdodge, Roll and/or Reflect
 8 - Increased projectile speed
-16 - You gain 1 extra slot for items instead of 2 per level up
+16 - You gain 1 extra slot for items instead of 2 per level up [prolly no level ups change this one]
 32 - Increased enemy hp, defence, movement speed, attack speed, damage, knockback resistance
 64 - Enemies and Bosses get new moves
 128 - Enemies respawn
 */
-
-SDL_Texture* Slot::mainTexture;
 
 void runGame() {
 	const int FPS = 60;
@@ -49,9 +48,11 @@ void runGame() {
 	map<string, Mix_Chunk*> soundBoard = {
 	};
 	map<string, Mix_Music*> OST = {
+		{"Oppression", Mix_LoadMUS("res/aud/gamers_are_oppressed.wav")}, 
+		{"Chill_1", Mix_LoadMUS("res/aud/very_lazy_non_battle_version.wav")}, 
 	};
 
-	// Mix_Music* backgroundMusic = OST["Void"];
+	Mix_Music* backgroundMusic = OST["Chill_1"];
 
 	bool gameRunning = true;
 	bool playingMusic = true;
@@ -59,7 +60,10 @@ void runGame() {
 
 	RenderWindow window("Naturogue");
 	World* world = new World(&window);
-	Player* player = new Player(&window);
+	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
+	Player* player = new Player(&window, slotTexture);
+
+	window.zoom = 0.75;
 
 	vector<Button*> buttons;
 	vector<GameObject*> entities;
@@ -72,8 +76,10 @@ void runGame() {
 	};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(window.loadTexture("knife.png"), )
-	}
+		new ItemData(window.loadTexture("res/gfx/knife.png"), "Knife", 10, 100),
+	};
+
+	player->items[0].holding = new Item(itemDatas[0]);
 
 	entities.push_back(player);
 	// cout << "a1\n";
@@ -109,35 +115,21 @@ void runGame() {
 					}
 				}
 			}
-			SDL_Keycode kc = event.key.keysym.sym;
-			if (event.type == SDL_KEYDOWN) {
-				if (kc == SDLK_w) {
-					player->input.up = true;
-				}
-				if (kc == SDLK_s) {
-					player->input.down = true;
-				}
-				if (kc == SDLK_a) {
-					player->input.left = true;
-				}
-				if (kc == SDLK_d) {
-					player->input.right = true;
-				}
-			}
 			if (event.type == SDL_KEYUP) {
-				if (kc == SDLK_w) {
-					player->input.up = false;
-				}
-				if (kc == SDLK_s) {
-					player->input.down = false;
-				}
-				if (kc == SDLK_a) {
-					player->input.left = false;
-				}
-				if (kc == SDLK_d) {
-					player->input.right = false;
+				SDL_Keycode kc = event.key.keysym.sym;
+				if (kc == SDLK_RALT) {
+					auto flag = SDL_GetWindowFlags(window.window);
+					auto is_fullscreen  = flag&SDL_WINDOW_FULLSCREEN;
+					SDL_SetWindowFullscreen(window.window, is_fullscreen != SDL_WINDOW_FULLSCREEN);
 				}
 			}
+
+			arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
+			arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
+			arrowChange(&window, window.cc.right, &player->input.right, nullptr, {});
+			arrowChange(&window, window.cc.down, &player->input.down, nullptr, {});
+
+
 		}
 
 		world->draw(&window);
@@ -152,8 +144,8 @@ void runGame() {
 		}
 
 		// CAMERA
-		window.x = (window.x + player->x - RenderWindow::WIDTH / 2) / 2;
-		window.y = (window.y + player->y - RenderWindow::HEIGHT / 2) / 2;
+		window.x = (window.x + player->x - (RenderWindow::WIDTH / 2) / window.zoom) / 2;
+		window.y = (window.y + player->y - (RenderWindow::HEIGHT / 2) / window.zoom) / 2;
 
 		auto end = chrono::steady_clock().now();
 		chrono::duration<double> frameDone = end - start;
@@ -174,10 +166,10 @@ int main(int argc, char *args[]) {
 		for (float y = 0; y < 1; y += 0.25) {
 			for (float z = 0; z < 1; z += 0.25) {	
 				cout << "1x: " << pn.noise(x, y, z) << endl;
-				cout << "-1x: " << pn.noise(-x, -y, -z) << endl;
+				// cout << "-1x: " << pn.noise(-x, -y, -z) << endl;
 			}
 		}		
 	}
-*/
+// */
 	return 0;
 }

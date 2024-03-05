@@ -6,6 +6,7 @@
 
 #include "Entity.hpp"
 #include "Button.hpp"
+#include "ControlsConfig.hpp"
 
 using namespace std;
 
@@ -13,7 +14,14 @@ class RenderWindow {
 public:
 	const static int WIDTH = 1280;
 	const static int HEIGHT = 720;
+	const Uint8* keyboard;
+	ControlsConfig cc;
 
+	int actualWidth = WIDTH;
+	int actualHeight = HEIGHT;
+	double scaleMultiplier = 1;
+	int xOrigin = 0;
+	int yOrigin = 0;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -23,6 +31,7 @@ public:
 	float zoom = 1.0;
 
 	RenderWindow(const char* title); 
+	void resizeWindow();
 	SDL_Texture* loadTexture(const char* filePath);
 	void cleanUp();
 	void clear();

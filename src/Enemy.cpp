@@ -19,7 +19,6 @@ Enemy::Enemy(int x, int y, EnemyData* e) {
 bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	// cout << "start\n";
 	GameObject::draw(window, world, entities);
-	bool collided = world->collides(this);
 
 	// cout << "a2\n";
 	Player* p = static_cast<Player*>(entities[0]);

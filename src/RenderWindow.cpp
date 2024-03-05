@@ -10,9 +10,23 @@ RenderWindow::RenderWindow(const char* title) : window(NULL), renderer(NULL) {
 	}
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	keyboard = SDL_GetKeyboardState(NULL);
+	resizeWindow();
+
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	sans = TTF_OpenFont("res/gfx/zephyrea.ttf", 24);
 };
+
+void RenderWindow::resizeWindow() {
+	SDL_GetWindowSize(window, &actualWidth, &actualHeight);
+	double wScale = 1.0 * actualWidth / WIDTH;
+	double hScale = 1.0 * actualHeight / HEIGHT;
+
+	cout << "actualWidth: " << actualWidth << " actualHeight: " << actualHeight << endl;
+	scaleMultiplier = min(wScale, hScale);
+	xOrigin = (actualWidth - (WIDTH * scaleMultiplier)) / 2;
+	yOrigin = (actualHeight - (HEIGHT * scaleMultiplier)) / 2;
+}
 
 void RenderWindow::cleanUp() {
 	SDL_DestroyWindow(window);
@@ -105,6 +119,27 @@ void RenderWindow::render(Button* button) {
 }
 
 void RenderWindow::display() {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	int w;
+	int h;
+	int r1x;
+	int r1y;
+	if (xOrigin == 0) { // TOP AND BOTTOM
+		w = actualWidth;
+		h = yOrigin;
+		r1x = 0;
+		r1y = actualHeight - h;
+	}
+	else { // LEFT AND RIGHT
+		w = xOrigin;
+		h = actualHeight;
+		r1x = actualWidth - w;
+		r1y = 0;
+	}
+	SDL_Rect r1 = {0, 0, w, h};
+	SDL_RenderFillRect(renderer, &r1);
+	r1 = {r1x, r1y, w + 1, h};
+	SDL_RenderFillRect(renderer, &r1);
 	SDL_RenderPresent(renderer);
 }
 
