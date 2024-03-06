@@ -14,13 +14,13 @@ using namespace std;
 
 /*
 REMOVED
-Decreased Player movement acceleration (- speed + traction) [max speed = speed * traction / (1 - traction)], attack speed, and smaller pickup range
+Decreased Player movement acceleration (- speed + traction) [max speed = speed * traction / (1 - traction)], attack speed, less slots, and smaller pickup range
 
 1 - Enemies inflict more statuses and for longer
-2 - Enemies can change their home location
-4 - Some enemies can Block, Spotdodge, Roll and/or Reflect
-8 - Increased projectile speed
-16 - You gain 1 extra slot for items instead of 2 per level up [prolly no level ups change this one]
+2 - Weapons take double disrepair upon use
+4 - Enemies can change their home location
+8 - Some enemies can Block, Spotdodge, Roll and/or Reflect
+16 - Increased projectile speed
 32 - Increased enemy hp, defence, movement speed, attack speed, damage, knockback resistance
 64 - Enemies and Bosses get new moves
 128 - Enemies respawn
@@ -60,6 +60,8 @@ void runGame() {
 
 	RenderWindow window("Naturogue");
 	World* world = new World(&window);
+	window.world = world;
+
 	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
 	Player* player = new Player(&window, slotTexture);
 
@@ -128,14 +130,16 @@ void runGame() {
 			arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
 			arrowChange(&window, window.cc.right, &player->input.right, nullptr, {});
 			arrowChange(&window, window.cc.down, &player->input.down, nullptr, {});
-
-
 		}
+
+		// cout << "BEFORE: " << player->x << " " << player->y << endl;
 
 		world->draw(&window);
 		for (GameObject* go : entities) {
 			go->draw(&window, world, entities);
 		}
+
+		// cout << "AFTER: " << player->x << " " << player->y << endl;
 
 		for (Button* b : buttons) {
 			if (b->show) {
@@ -144,8 +148,8 @@ void runGame() {
 		}
 
 		// CAMERA
-		window.x = (window.x + player->x - (RenderWindow::WIDTH / 2) / window.zoom) / 2;
-		window.y = (window.y + player->y - (RenderWindow::HEIGHT / 2) / window.zoom) / 2;
+		window.x = player->x - (RenderWindow::WIDTH / 2) / window.zoom;
+		window.y = player->y - (RenderWindow::HEIGHT / 2) / window.zoom;
 
 		auto end = chrono::steady_clock().now();
 		chrono::duration<double> frameDone = end - start;

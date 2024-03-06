@@ -1,4 +1,5 @@
 #include "RenderWindow.hpp"
+#include "World.hpp"
 
 using namespace std;
 
@@ -69,35 +70,43 @@ SDL_Rect RenderWindow::getDestRect(Entity* entity, bool stationary) {
 }
 
 void RenderWindow::render(Entity* entity, bool stationary) {
-	if (entity->textureDraw) {
-//		cout << "X: " << entity->x << "Y: " << entity->y << endl;
+	if (stationary) {
+		actualRender(entity, true);
+	}
+	else {
+		SDL_Rect windowRect = {x, y, int(RenderWindow::WIDTH / zoom), int(RenderWindow::HEIGHT / zoom)};
+		SDL_Rect temp;
 
+		for (int z = 0; z < 9; z++) {
+			int xChange = (z % 3 - 1) * World::WORLDLENGTH;
+			int yChange = (z / 3 - 1) * World::WORLDLENGTH;
+
+			SDL_Rect modLoc = entity->getRect();
+			modLoc.x += xChange;
+			modLoc.y += yChange;
+
+			if (SDL_IntersectRect(&windowRect, &modLoc, &temp) == SDL_TRUE) {
+				entity->x += xChange;
+				entity->y += yChange;
+
+				actualRender(entity, false);
+				
+				entity->x -= xChange;
+				entity->y -= yChange;
+			}
+		}
+	}
+}
+
+void RenderWindow::actualRender(Entity* entity, bool stationary) {
+	if (entity->textureDraw) {
 		SDL_Rect dest = getDestRect(entity, stationary);
 		SDL_Rect src = entity->currentFrame;
-
-		//	cout << "x2: " << entity->getsize().x << endl;
-		//	cout << "y2: " << entity->getsize().y << endl;
-		// SDL_RenderCopy(renderer, entity->texture.get(), &src, &dest);
-		
-		/*
-		setColor(255, 0, 0, 255);
-		SDL_RenderDrawRect(renderer, &dest);
-		setColor(0, 0, 0, 255);
-		// */
-		/*
-		float c = cos(entity->angle);
-		float s = sin(entity->angle);
-		int w = dest.w;
-		int h = dest.h;
-		dest.w = c * w + s * h;
-		dest.h = c * h + s * w;
-		*/
-
 		SDL_Point center = SDL_Point();
+
 		center.x = src.w / 2;
 		center.y = src.h / 2;
 
-		// cout << "angle: " << 180 * entity->angle / M_PI << endl;
 		SDL_RendererFlip flip = SDL_FLIP_NONE;
 		if (entity->flip) {
 			flip = SDL_FLIP_HORIZONTAL;

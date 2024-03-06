@@ -1,4 +1,5 @@
 #include "Enemy.hpp"
+#include "World.hpp"
 
 Enemy::Enemy(int x, int y, EnemyData* e) {
 	this->x = x;
@@ -28,9 +29,11 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		recoveryFrames--;
 		if (recoveryFrames < 0) {
 			if (current == "Idle") {
+				float angle = angleBetween(p);
+				
 				recoveryFrames = ed->attackFrames;
-				xvel -= cos(angleBetween(p)) * ed->movementspeed;
-				yvel += sin(angleBetween(p)) * ed->movementspeed;
+				xvel -= cos(angle) * ed->movementspeed;
+				yvel += sin(angle) * ed->movementspeed;
 				changeSpriteSheet("Bounce");
 			}
 			else {
@@ -46,6 +49,8 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 	}
 	// cout << "end\n";
 	setRect();
+
+	
 	window->render(this);
 
 	return false;

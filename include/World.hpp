@@ -4,6 +4,8 @@
 #include "RenderWindow.hpp"
 #include "GameObject.hpp"
 #include "PerlinNoise.hpp"
+#include "Structure.hpp"
+#include "utils.hpp"
 
 #include <chrono>
 #include <algorithm>
@@ -14,9 +16,13 @@ int index(int x, int y);
 
 class World {
 public:
-	static const int WORLDSIZE = 20;
+	static const int WORLDSIZE = 100;
+	static constexpr int WORLDLENGTH = WORLDSIZE * Block::BLOCKSIZE;
+	static const int SEPERATION_FORCE_FACTOR = 500;
 	vector<BlockData*> BLOCKTYPES;
 	vector<Block*> blocks;
+	vector<StructureType*> STRUCTYPES;
+	vector<Structure> structures;
 
 	World(RenderWindow* window);
 	BlockData* getBlockData(string s);

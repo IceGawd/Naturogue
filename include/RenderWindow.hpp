@@ -10,12 +10,15 @@
 
 using namespace std;
 
+struct World;
+
 class RenderWindow {
 public:
 	const static int WIDTH = 1280;
 	const static int HEIGHT = 720;
 	const Uint8* keyboard;
 	ControlsConfig cc;
+	World* world;
 
 	int actualWidth = WIDTH;
 	int actualHeight = HEIGHT;
@@ -37,6 +40,7 @@ public:
 	void clear();
 	SDL_Rect getDestRect(Entity* entity, bool stationary = false);
 	void render(Entity* entity, bool stationary = false);
+	void actualRender(Entity* entity, bool stationary = false);
 	void render(Button* button);
 	void display();
 	void setColor(int r, int g, int b, int a);

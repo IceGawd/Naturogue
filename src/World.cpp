@@ -6,11 +6,18 @@ int index(int x, int y) {
 	} 
 	while (y < 0) {
 		y += World::WORLDSIZE;
-	} 
+	}
 	return (y % World::WORLDSIZE) * World::WORLDSIZE + (x % World::WORLDSIZE);
 }
 
 World::World(RenderWindow* window) {
+	// LOAD STRUCTURES
+	STRUCTYPES = {
+		new StructureType("Entrance", 3, 1), 
+		new StructureType("Enemy", 1, 1), 
+		// new StructureType("Exit", 3, 1), 
+	};
+
 	// LOAD BLOCKS
 	BLOCKTYPES.push_back(new BlockData("Void", window->loadTexture("res/gfx/void.png")));
 
@@ -32,18 +39,57 @@ World::World(RenderWindow* window) {
 	}
 
 	sort(BLOCKTYPES.begin(), BLOCKTYPES.end(), dataCompare);
+
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
 	// auto seed = 1709637698;
 	cout << "SEED: " << seed << endl;
 
 	PerlinNoise pn = PerlinNoise(seed);
-	int z = random();
+	srand(seed);
+	random(); // FIRST RAND CALL IS LINEAR TO SEED [BURN IT]
+	// double z = random();
+	// cout << z << endl;
+
+	// GENERATE STRUCTURE LOCATIONS
+	if (random() > 0.5) {
+		structures.push_back(Structure(STRUCTYPES[0], random() * WORLDLENGTH, 0));
+	}
+	else {
+		structures.push_back(Structure(STRUCTYPES[0], 0, random() * WORLDLENGTH));		
+	}
+
+	int numStructs = WORLDSIZE / 100.0 + random() * WORLDSIZE / 100.0;
+	for (int x = 0; x < numStructs; x++) {
+		int x1 = random() * WORLDLENGTH;
+		int y1 = random() * WORLDLENGTH;
+
+		int xdelta = 0;
+		int ydelta = 0;
+
+		for (Structure& s : structures) {
+			float power = s.type->rarity * SEPERATION_FORCE_FACTOR / sqrt(pow(x1 - s.x, 2) + pow(y1 - s.y, 2));
+			float angle = angleBetween(x1, y1, s.x, s.y);
+
+			xdelta -= cos(angle);
+			ydelta += sin(angle);
+		}
+
+		x1 += xdelta;
+		y1 += ydelta;
+
+		x1 = x1 % WORLDLENGTH;
+		y1 = y1 % WORLDLENGTH;
+
+		structures.push_back(Structure(STRUCTYPES[1], x1, y1));
+	}
 
 	// PLACE DIRT AND GRASS
 	for (int x = 0; x < WORLDSIZE; x++) {
+		float xangle = M_PI * 2.0 * (x + 1) / (WORLDSIZE + 1);
 		for (int y = 0; y < WORLDSIZE; y++) {
-			if (pn.noise(1.0 * x / WORLDSIZE, 1.0 * y / WORLDSIZE, z) > 0.6) {
+			float yangle = M_PI * 1.0 * (y + 1) / (WORLDSIZE + 1);
+			if (pn.noise(sin(xangle) * cos(yangle), sin(xangle) * sin(yangle), cos(xangle)) > 0.6) {
 				blocks.push_back(new Block(x, y, getBlockData("DirtPath")));
 			}
 			else {
@@ -179,9 +225,25 @@ void World::draw(RenderWindow* window) {
 	// cout << x << " "<< y << " "<< w << " "<< h << endl;
 
 	for (Block* b : blocks) {
-		if (blockInRect(b, x, y, w, h)) {
-			window->render(b);
+		// int xChange = 0;
+		// int yChange = 0;
+		/*
+		for (int z = 0; z < 9; z++) {
+			int xChange = (z % 3 - 1) * WORLDLENGTH;
+			int yChange = (z / 3 - 1) * WORLDLENGTH;
+
+			if (blockInRect(b, x + xChange, y + yChange, w, h)) {
+				b->x -= xChange;
+				b->y -= yChange;
+
+				window->render(b);
+				
+				b->x += xChange;
+				b->y += yChange;
+			}
 		}
+		*/
+		window->render(b);
 	}
 }
 

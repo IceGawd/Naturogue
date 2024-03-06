@@ -19,6 +19,16 @@ bool GameObject::draw(RenderWindow* window, World* world, vector<GameObject*>& e
 	
 	bool collided = world->collides(this);
 
+	x -= int(x / World::WORLDLENGTH) * World::WORLDLENGTH;
+	y -= int(y / World::WORLDLENGTH) * World::WORLDLENGTH;
+
+	if (x < 0) {
+		x += World::WORLDLENGTH;
+	}
+	if (y < 0) {
+		y += World::WORLDLENGTH;
+	}
+
 	return false;
 }
 

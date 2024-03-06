@@ -13,6 +13,7 @@ public:
 	int slots = 3;
 	int selectedSlot = 1;
 	float traction;
+	float charge = 0;
 	
 	vector<Slot> items;
 
