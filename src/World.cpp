@@ -23,19 +23,19 @@ World::World(RenderWindow* window) {
 
 	SDL_Texture* grasstiles = window->loadTexture("res/gfx/grasstiles.png");
 
-	BLOCKTYPES.push_back(new BlockData("DirtPath", grasstiles, 0, 400, 80, 80, true));
+	BLOCKTYPES.push_back(new BlockData("DirtPath", grasstiles, 0, 5 * PIXELSIZE, PIXELSIZE, PIXELSIZE, true));
 	for (int x = 0; x < 3; x++) {
 		for (int y = 0; y < 3; y++) {
-			BLOCKTYPES.push_back(new BlockData("Grass" + to_string(x) + to_string(y), grasstiles, 80 * x, 80 * y, 80, 80, true));
+			BLOCKTYPES.push_back(new BlockData("Grass" + to_string(x) + to_string(y), grasstiles, PIXELSIZE * x, PIXELSIZE * y, PIXELSIZE, PIXELSIZE, true));
 		}
-		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(x), grasstiles, 80 * x, 240, 80, 80, true));
+		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(x), grasstiles, PIXELSIZE * x, 3 * PIXELSIZE, PIXELSIZE, PIXELSIZE, true));
 	}
 
 	for (int x = 0; x < 2; x++) {
 		for (int y = 0; y < 2; y++) {
-			BLOCKTYPES.push_back(new BlockData("GrassEdge" + to_string(x) + to_string(y), grasstiles, 80 * x + 480, 80 * y + 240, 80, 80, true));
+			BLOCKTYPES.push_back(new BlockData("GrassEdge" + to_string(x) + to_string(y), grasstiles, PIXELSIZE * (x + 6), PIXELSIZE * (y + 3), PIXELSIZE, PIXELSIZE, true));
 		}
-		BLOCKTYPES.push_back(new BlockData("DirtRandom" + to_string(x), grasstiles, 240, 80 * x + 480, 80, 80, true));		
+		BLOCKTYPES.push_back(new BlockData("DirtRandom" + to_string(x), grasstiles, (10 + x) * PIXELSIZE, 8 * PIXELSIZE, PIXELSIZE, PIXELSIZE, true));		
 	}
 
 	sort(BLOCKTYPES.begin(), BLOCKTYPES.end(), dataCompare);
@@ -155,7 +155,7 @@ World::World(RenderWindow* window) {
 
 	// */
 
-	blocks.push_back(new Block(2, 2, getBlockData("Void")));
+	// blocks.push_back(new Block(2, 2, getBlockData("Void")));
 	// SORT BY LOW TO HIGH (Unecessary?)
 	// sort(blocks.begin(), blocks.end(), blockCompare);
 }

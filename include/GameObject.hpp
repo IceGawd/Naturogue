@@ -28,6 +28,6 @@ public:
 	map<string, SpriteSheet> sheets;
 
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
-	void changeSpriteSheet(string newSheet);
+	virtual void changeSpriteSheet(string newSheet);
 	virtual GameObject* createObject();
 };

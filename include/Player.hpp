@@ -9,16 +9,26 @@
 
 class Player : public GameObject {
 public:
-	int speed;
+	int speed = 6;
 	int slots = 3;
-	int selectedSlot = 1;
-	float traction;
+	int selectedSlot = 0;
+	float traction = 0.7;
+	float chargeTraction = 0.8; // IS ADDITIONAL
 	float charge = 0;
+	float angle = 0;
+
+	bool swing = false;
+	bool yeet = false;
+
+	bool mousedown = false;
+
+	bool animation = false;
 	
 	vector<Slot> items;
 
 	Input input;
 
-	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture);
+	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture);
+	void select(int num);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

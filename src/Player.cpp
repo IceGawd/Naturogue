@@ -1,32 +1,19 @@
 #include "Player.hpp"
 
-Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture) {
-	int w;
-	int h;
-	SDL_QueryTexture(slotTexture.get(), NULL, NULL, &w, &h);
-
-	w /= 4;
-	h /= 4;
-
+Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture) {
 	for (int x = 0; x < slots; x++) {
 		// cout << "w: " << w << " h: " << h << endl;
-		Slot s(x * w + (RenderWindow::WIDTH - slots * w) / 2, RenderWindow::HEIGHT - h, nullptr);
-		s.texture = slotTexture;
+		Slot s(x * Slot::SIZE + (RenderWindow::WIDTH - slots * Slot::SIZE) / 2, RenderWindow::HEIGHT - Slot::SIZE, nullptr, slotTexture, selectedSlotTexture);
 
-		s.fullPicSize();
-		s.show_width = w;
-		s.show_height = h;
-		s.setRect();
 		items.push_back(s);
 	}
+
+	select(0);
 
 	sheets["down"] = SpriteSheet(window->loadTexture("res/gfx/James_Downward.png"), 2, 2, 20);
 	sheets["up"] = SpriteSheet(window->loadTexture("res/gfx/James_Upward.png"), 2, 2, 20);
 
 	changeSpriteSheet("down");
-
-	speed = 6;
-	traction = 0.7;
 
 	// /*
 	show_width = width * 5 / 32;
@@ -36,6 +23,13 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture) {
 	show_width = width / 7;
 	show_height = height / 7;
 	*/
+}
+
+void Player::select(int num) {
+	items[selectedSlot].changeSpriteSheet("Slot");
+	items[num].changeSpriteSheet("Selected");
+
+	selectedSlot = num;
 }
 
 bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
@@ -60,6 +54,18 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	}
 	if (input.right) {
 		xvel += speed * diagDirect;
+	}
+
+	if (mousedown) {
+		charge++;
+		xvel *= chargeTraction;
+		yvel *= chargeTraction;
+	}
+	if (!animation) {
+		if (swing) {
+			// do attack lol
+			
+		}
 	}
 
 	xvel *= traction;

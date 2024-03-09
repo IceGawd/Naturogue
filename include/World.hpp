@@ -17,6 +17,7 @@ int index(int x, int y);
 class World {
 public:
 	static const int WORLDSIZE = 100;
+	static const int PIXELSIZE = 16;
 	static constexpr int WORLDLENGTH = WORLDSIZE * Block::BLOCKSIZE;
 	static const int SEPERATION_FORCE_FACTOR = 500;
 	vector<BlockData*> BLOCKTYPES;

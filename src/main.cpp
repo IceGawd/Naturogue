@@ -14,13 +14,13 @@ using namespace std;
 
 /*
 REMOVED
-Decreased Player movement acceleration (- speed + traction) [max speed = speed * traction / (1 - traction)], attack speed, less slots, and smaller pickup range
+Decreased Player movement acceleration (- speed + traction) [max speed = speed * traction / (1 - traction)], attack speed, less slots, Weapons take double disrepair upon use, and smaller pickup range
 
 1 - Enemies inflict more statuses and for longer
-2 - Weapons take double disrepair upon use
-4 - Enemies can change their home location
-8 - Some enemies can Block, Spotdodge, Roll and/or Reflect
-16 - Increased projectile speed
+2 - Enemies can change their home location
+4 - Improved enemy AI
+8 - Increased projectile speed
+16 - Some enemies can Block, Spotdodge, Roll and/or Reflect
 32 - Increased enemy hp, defence, movement speed, attack speed, damage, knockback resistance
 64 - Enemies and Bosses get new moves
 128 - Enemies respawn
@@ -63,7 +63,8 @@ void runGame() {
 	window.world = world;
 
 	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
-	Player* player = new Player(&window, slotTexture);
+	shared_ptr<SDL_Texture> selectedSlotTexture(window.loadTexture("res/gfx/selectedSlot.png"), sdl_deleter());
+	Player* player = new Player(&window, slotTexture, selectedSlotTexture);
 
 	window.zoom = 0.75;
 
@@ -116,13 +117,32 @@ void runGame() {
 						}
 					}
 				}
+
+				player->mousedown = true;
 			}
-			if (event.type == SDL_KEYUP) {
+			else if (event.type == SDL_MOUSEBUTTONUP) {
+				player->angle = angleBetween(RenderWindow::WIDTH / 2, RenderWindow::HEIGHT / 2, event.motion.x, event.motion.y);
+				if (event.button.button == SDL_BUTTON_LEFT) {
+					player->swing = true;
+					player->mousedown = false;
+				}
+				if (event.button.button == SDL_BUTTON_RIGHT) {
+					player->yeet = true;
+					player->mousedown = false;
+				}
+			}
+			else if (event.type == SDL_KEYUP) {
 				SDL_Keycode kc = event.key.keysym.sym;
 				if (kc == SDLK_RALT) {
 					auto flag = SDL_GetWindowFlags(window.window);
 					auto is_fullscreen  = flag&SDL_WINDOW_FULLSCREEN;
 					SDL_SetWindowFullscreen(window.window, is_fullscreen != SDL_WINDOW_FULLSCREEN);
+				}
+			}
+			else if (event.type == SDL_KEYDOWN) {
+				int num = int(event.key.keysym.sym) - 49; // 48 is 0 key
+				if (num > -1 && num < player->slots) {
+					player->select(num);
 				}
 			}
 
@@ -148,8 +168,8 @@ void runGame() {
 		}
 
 		// CAMERA
-		window.x = player->x - (RenderWindow::WIDTH / 2) / window.zoom;
-		window.y = player->y - (RenderWindow::HEIGHT / 2) / window.zoom;
+		window.x = player->x - ((RenderWindow::WIDTH - player->show_width) / 2) / window.zoom;
+		window.y = player->y - ((RenderWindow::HEIGHT - player->show_height) / 2) / window.zoom;
 
 		auto end = chrono::steady_clock().now();
 		chrono::duration<double> frameDone = end - start;
