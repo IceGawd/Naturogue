@@ -4,6 +4,7 @@
 #include "Input.hpp"
 #include "World.hpp"
 #include "Slot.hpp"
+#include "Weapon.hpp"
 
 #include <math.h>
 
@@ -15,7 +16,7 @@ public:
 	float traction = 0.7;
 	float chargeTraction = 0.8; // IS ADDITIONAL
 	float charge = 0;
-	float angle = 0;
+	float attackAngle = 0;
 
 	bool swing = false;
 	bool yeet = false;
@@ -27,6 +28,7 @@ public:
 	vector<Slot> items;
 
 	Input input;
+	Weapon* beingUsed;
 
 	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture);
 	void select(int num);

@@ -79,7 +79,7 @@ void runGame() {
 	};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(window.loadTexture("res/gfx/knife.png"), "Knife", 10, 100),
+		new ItemData(window.loadTexture("res/gfx/knife.png"), "Knife", 10, 100, 20, M_PI, 0),
 	};
 
 	player->items[0].holding = new Item(itemDatas[0]);
@@ -118,11 +118,17 @@ void runGame() {
 					}
 				}
 
-				player->mousedown = true;
+				if (!player->animation) {
+					player->mousedown = true;
+				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONUP) {
-				player->angle = angleBetween(RenderWindow::WIDTH / 2, RenderWindow::HEIGHT / 2, event.motion.x, event.motion.y);
+				player->attackAngle = angleBetween(RenderWindow::HEIGHT / 2, RenderWindow::WIDTH / 2, event.motion.y, event.motion.x);
+				cout << "emx: " << event.motion.x << " emy: " << event.motion.y << endl;
+				cout << "rw2: " << RenderWindow::WIDTH / 2 << " rh2: " << RenderWindow::HEIGHT / 2 << endl;
+				cout << "paa: " << player->attackAngle << endl;
 				if (event.button.button == SDL_BUTTON_LEFT) {
+					// cout << "SWITHGN\n";
 					player->swing = true;
 					player->mousedown = false;
 				}

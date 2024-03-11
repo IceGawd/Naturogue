@@ -56,15 +56,30 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		xvel += speed * diagDirect;
 	}
 
-	if (mousedown) {
-		charge++;
+	if (mousedown || (animation && swing)) {
 		xvel *= chargeTraction;
 		yvel *= chargeTraction;
 	}
-	if (!animation) {
+	if (mousedown) {
+		charge++;
+	}
+
+	if (animation) {
+		// cout << "drawign\n";
+		bool alive = beingUsed->draw(window, world, entities);
+		if (!alive) {
+			delete beingUsed;
+			beingUsed = nullptr;
+			animation = false;
+			swing = false;
+			yeet = false;
+		}
+	}
+	else {
 		if (swing) {
 			// do attack lol
-			
+			beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
+			animation = true;
 		}
 	}
 

@@ -44,6 +44,9 @@ public:
 	bool textureDraw = true;
 	float angle = 0;
 	bool flip = false;
+
+	int rotationX = -1;
+	int rotationY = -1;
 	
 	int animationFrame = 0;
 	int animationType = 0;

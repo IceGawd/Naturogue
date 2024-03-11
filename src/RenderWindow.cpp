@@ -104,8 +104,18 @@ void RenderWindow::actualRender(Entity* entity, bool stationary) {
 		SDL_Rect src = entity->currentFrame;
 		SDL_Point center = SDL_Point();
 
-		center.x = src.w / 2;
-		center.y = src.h / 2;
+		if (entity->rotationX == -1) {
+			center.x = src.w / 2;
+		}
+		else {
+			center.x = entity->rotationX;
+		}
+		if (entity->rotationY == -1) {
+			center.y = src.h / 2;
+		}
+		else {
+			center.y = entity->rotationY;
+		}
 
 		SDL_RendererFlip flip = SDL_FLIP_NONE;
 		if (entity->flip) {

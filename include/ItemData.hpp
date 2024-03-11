@@ -11,8 +11,11 @@ struct ItemData {
 	string name;
 	int meleeDamage;
 	int rangedDamage;
+	int swingTime;
+	float swingAngle;
+	float angleMod;
 
-	ItemData(SDL_Texture* t, string n, int m, int r) : name(n), meleeDamage(m), rangedDamage(r) {
+	ItemData(SDL_Texture* t, string n, int m, int r, int st, float sa, float am) : name(n), meleeDamage(m), rangedDamage(r), swingTime(st), swingAngle(sa), angleMod(am) {
 		texture = shared_ptr<SDL_Texture>(t, sdl_deleter());
 	}
 };
