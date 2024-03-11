@@ -8,26 +8,39 @@ Weapon::Weapon(Item* i, bool m, float a) {
 	xvel = 0;
 	yvel = 0;
 
-	texture = i->texture;
-	fullPicSize();
-	setRect();
+	copyTexture(item->itemData);
 
 	// /*
-	rotationX = width / 2;
-	rotationY = height;
+	double xTemp = cos(item->itemData->angleMod) / 2.0;
+	double yTemp = -sin(item->itemData->angleMod) / 2.0;
+
+	double largestMod = max(abs(xTemp), abs(yTemp));
+
+	/*
+	rotationX = show_width / 2;
+	rotationY = show_height;
+	*/
+
+	// /*
+	rotationX = show_width * (xTemp / largestMod + 0.5);
+	// rotationX = 0;
+	rotationY = show_height * (yTemp / largestMod + 0.5);
+	// */
+
+	cout << "rx: " << rotationX << " ry: " << rotationY << endl;
 	// */
 }
 
 bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	if (melee) {
 		GameObject::draw(window, world, entities);
-		angle = item->itemData->angleMod + startAngle + item->itemData->swingAngle * (1.0 * framesAlive / item->itemData->swingTime - 0.5);
+		angle = startAngle + item->itemData->swingAngle * (1.0 * framesAlive / item->itemData->swingTime - 0.5);
 		// angle = startAngle;
 		// cout << startAngle << endl;
 		framesAlive++;
 
-		x = (RenderWindow::WIDTH - show_width) / 2;
-		y = (RenderWindow::HEIGHT) / 2 - show_height;		
+		x = (RenderWindow::WIDTH) / 2 - rotationX;
+		y = (RenderWindow::HEIGHT) / 2 - rotationY;
 
 		// x = RenderWindow::WIDTH / 2;
 		// y = RenderWindow::HEIGHT / 2;

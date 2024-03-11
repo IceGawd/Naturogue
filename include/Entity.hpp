@@ -31,6 +31,7 @@ public:
 	SDL_Point getsize();
 	SDL_Rect getRect();
 	void setTexture(SDL_Texture* ptexture);
+	void copyTexture(Entity* e);
 	float distance(Entity* e);
 	float angleBetween(Entity* e);
 	virtual void customDraw(RenderWindow* window);

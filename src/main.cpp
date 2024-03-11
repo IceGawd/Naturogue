@@ -64,6 +64,9 @@ void runGame() {
 
 	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
 	shared_ptr<SDL_Texture> selectedSlotTexture(window.loadTexture("res/gfx/selectedSlot.png"), sdl_deleter());
+	shared_ptr<SDL_Texture> weapons1(window.loadTexture("res/gfx/Tools_weapons.png"), sdl_deleter());
+	shared_ptr<SDL_Texture> knife(window.loadTexture("res/gfx/knife.png"), sdl_deleter());
+
 	Player* player = new Player(&window, slotTexture, selectedSlotTexture);
 
 	window.zoom = 0.75;
@@ -79,10 +82,17 @@ void runGame() {
 	};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(window.loadTexture("res/gfx/knife.png"), "Knife", 10, 100, 20, M_PI, 0),
+		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 10, 100, 20, M_PI / 2, 3 * M_PI / 2),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 2, 0, 80, 80, "Qhasm's Tippy", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 3, 0, 80, 80, "Stick", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
 	};
 
-	player->items[0].holding = new Item(itemDatas[0]);
+	player->items[0].holding = new Item(itemDatas[3]);
 
 	entities.push_back(player);
 	// cout << "a1\n";

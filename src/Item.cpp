@@ -4,16 +4,16 @@
 Item::Item(ItemData* id) {
 	itemData = id;
 
-	texture = id->texture;
-	fullPicSize();
-	setRect();
+	copyTexture(id);
 }
 
 void Item::slotDraw(RenderWindow* window, Slot* s) {
+	/*
 	int sw = show_width;
 	int sh = show_height;
 	int sx = x;
 	int sy = y;
+	*/
 
 	show_width = s->show_width * SLOTSCALER;
 	show_height = s->show_height * SLOTSCALER;
@@ -22,8 +22,10 @@ void Item::slotDraw(RenderWindow* window, Slot* s) {
 
 	window->render(this, true);
 
+	/*
 	show_width = sw;
 	show_height = sh;
 	x = sx;
 	y = sy;
+	*/
 }

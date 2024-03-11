@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Entity.hpp"
 #include "ItemData.hpp"
 
 struct Slot;

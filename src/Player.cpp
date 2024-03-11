@@ -64,25 +64,6 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		charge++;
 	}
 
-	if (animation) {
-		// cout << "drawign\n";
-		bool alive = beingUsed->draw(window, world, entities);
-		if (!alive) {
-			delete beingUsed;
-			beingUsed = nullptr;
-			animation = false;
-			swing = false;
-			yeet = false;
-		}
-	}
-	else {
-		if (swing) {
-			// do attack lol
-			beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
-			animation = true;
-		}
-	}
-
 	xvel *= traction;
 	yvel *= traction;
 
@@ -101,6 +82,25 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 
 	setRect();
 	window->render(this);
+
+	if (animation) {
+		// cout << "drawign\n";
+		bool alive = beingUsed->draw(window, world, entities);
+		if (!alive) {
+			delete beingUsed;
+			beingUsed = nullptr;
+			animation = false;
+			swing = false;
+			yeet = false;
+		}
+	}
+	else {
+		if (swing) {
+			// do attack lol
+			beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
+			animation = true;
+		}
+	}
 
 	for (Slot& s : items) {
 		s.draw(window);

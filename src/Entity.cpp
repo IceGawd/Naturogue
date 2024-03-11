@@ -41,6 +41,17 @@ Entity::Entity(const Entity& e) {
 }
 */
 
+void Entity::copyTexture(Entity* e) {
+	texture = e->texture;
+	animationFrame = e->animationFrame;
+	animationType = e->animationType;
+	width = e->width;
+	height = e->height;
+	show_width = e->show_width;
+	show_height = e->show_height;
+	setRect();
+}
+
 void Entity::fullPicSize() {
 	SDL_Point p = getsize();
 	width = p.x;
