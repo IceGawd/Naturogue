@@ -23,6 +23,12 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, share
 	show_width = width / 7;
 	show_height = height / 7;
 	*/
+
+	chargeBar = new Bar(window, 160, 50, 5, 20);
+	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width - show_width) / 2;
+	// chargeBar->y = RenderWindow::HEIGHT / 2 - chargeBar->height - show_height;
+	chargeBar->x = (RenderWindow::WIDTH - chargeBar->width) / 2;
+	chargeBar->y = (RenderWindow::HEIGHT - chargeBar->height) / 2 - show_height;
 }
 
 void Player::select(int num) {
@@ -61,6 +67,14 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		yvel *= chargeTraction;
 	}
 	if (mousedown) {
+		// chargeBar->value = 20 + exp(-0.025 * charge - 0.15) * (-21 + charge * (-0.5 + charge * -0.005));
+		chargeBar->value = 20 + exp(-0.05 * charge - 0.15) * (-21 + charge * (-1 + charge * -0.02));
+		// chargeBar->x = x - (chargeBar->show_width - show_width) / 2;
+		// chargeBar->y = y - 2 * chargeBar->show_height;
+		chargeBar->draw(window, world, entities);
+
+		cout << "charge: " << charge << endl;
+
 		charge++;
 	}
 
@@ -92,6 +106,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 			animation = false;
 			swing = false;
 			yeet = false;
+			charge = 0;
 		}
 	}
 	else {

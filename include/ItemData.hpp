@@ -13,8 +13,10 @@ struct ItemData : public Entity {
 	int swingTime;
 	double swingAngle;
 	double angleMod;
+	bool throwSpin;
+	bool stab;
 
-	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, int m, int r, int st, double sa, double am) : name(n), meleeDamage(m), rangedDamage(r), swingTime(st), swingAngle(sa), angleMod(am) {
+	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s) {
 		texture = t;
 		width = w;
 		height = h;
@@ -22,5 +24,16 @@ struct ItemData : public Entity {
 		animationType = at;
 		show_width = sw;
 		show_height = sh;
+
+		name = n;
+		swingAngle = sa;
+		angleMod = am;
+
+		meleeDamage = m;
+		rangedDamage = r;
+		swingTime = st;
+
+		throwSpin = ts;
+		stab = s;
 	}
 };

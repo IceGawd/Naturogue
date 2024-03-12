@@ -82,17 +82,24 @@ void runGame() {
 	};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 10, 100, 20, M_PI / 2, 3 * M_PI / 2),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 2, 0, 80, 80, "Qhasm's Tippy", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 3, 0, 80, 80, "Stick", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
-		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 10, 100, 20, M_PI / 2, 5 * M_PI / 4),
+		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false),
+		new ItemData(weapons1, 16, 16, 3, 0, 40, 40, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false),
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false), 
+		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 10, 100, 20, false, true),
+		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false),
+		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      M_PI / 2, 10, 100, 30, true, false),
+		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false),
 	};
 
-	player->items[0].holding = new Item(itemDatas[3]);
+	player->items[0].holding = new Item(itemDatas[0]);
 
 	entities.push_back(player);
 	// cout << "a1\n";

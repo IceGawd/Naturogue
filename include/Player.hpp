@@ -5,6 +5,7 @@
 #include "World.hpp"
 #include "Slot.hpp"
 #include "Weapon.hpp"
+#include "Bar.hpp"
 
 #include <math.h>
 
@@ -26,6 +27,9 @@ public:
 	bool animation = false;
 	
 	vector<Slot> items;
+
+	Bar* healthBar;
+	Bar* chargeBar;
 
 	Input input;
 	Weapon* beingUsed;
