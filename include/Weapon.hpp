@@ -9,6 +9,8 @@ struct Weapon : public GameObject {
 	float startAngle;
 	int framesAlive = 0;
 
+	vector<Vector2f> points;
+
 	Weapon(Item* i, bool m, float a);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

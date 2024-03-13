@@ -73,7 +73,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		// chargeBar->y = y - 2 * chargeBar->show_height;
 		chargeBar->draw(window, world, entities);
 
-		cout << "charge: " << charge << endl;
+		// cout << "charge: " << charge << endl;
 
 		charge++;
 	}

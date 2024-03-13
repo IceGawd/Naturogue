@@ -64,7 +64,13 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 			// /*
 			int index = y * width + x;
 			float mod = waveMod + (entDist + y + x) * M_PI / 180;
-			if ((x > width - thickness) || (y > height - thickness) || (y < thickness) || ((x - thickness) / (width - 2.0 * thickness) < (value / maxValue))) {
+			if ((x > width - thickness) || (x < thickness) || (y > height - thickness) || (y < thickness)) {
+				r = 0;
+				g = 0;
+				b = 0;
+				a = 255;
+			}
+			else if ((x - thickness) / (width - 2.0 * thickness) < (value / maxValue)) {
 				r = (Uint8) (127.5 * sin(mod) + 127.5);
 				g = (Uint8) (127.5 * sin(mod + 2 * M_PI / 3) + 127.5);
 				b = (Uint8) (127.5 * sin(mod + 4 * M_PI / 3) + 127.5);

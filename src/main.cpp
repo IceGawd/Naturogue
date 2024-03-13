@@ -59,8 +59,6 @@ void runGame() {
 	SDL_Event event;
 
 	RenderWindow window("Naturogue");
-	World* world = new World(&window);
-	window.world = world;
 
 	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
 	shared_ptr<SDL_Texture> selectedSlotTexture(window.loadTexture("res/gfx/selectedSlot.png"), sdl_deleter());
@@ -68,6 +66,9 @@ void runGame() {
 	shared_ptr<SDL_Texture> knife(window.loadTexture("res/gfx/knife.png"), sdl_deleter());
 
 	Player* player = new Player(&window, slotTexture, selectedSlotTexture);
+
+	World* world = new World(&window, player);
+	window.world = world;
 
 	window.zoom = 0.75;
 
@@ -86,7 +87,7 @@ void runGame() {
 		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false),
 		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false),
 		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false),
-		new ItemData(weapons1, 16, 16, 3, 0, 40, 40, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false),
+		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false),
 		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false),
 		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false), 
 		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false),
@@ -95,11 +96,13 @@ void runGame() {
 		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false),
 		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false),
 		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false),
-		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      M_PI / 2, 10, 100, 30, true, false),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      2 * M_PI, 10, 100, 30, true, false),
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false),
 	};
 
 	player->items[0].holding = new Item(itemDatas[0]);
+	player->items[1].holding = new Item(itemDatas[3]);
+	player->items[2].holding = new Item(itemDatas[13]);
 
 	entities.push_back(player);
 	// cout << "a1\n";

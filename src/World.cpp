@@ -10,7 +10,9 @@ int index(int x, int y) {
 	return (y % World::WORLDSIZE) * World::WORLDSIZE + (x % World::WORLDSIZE);
 }
 
-World::World(RenderWindow* window) {
+World::World(RenderWindow* window, Player* player) {
+	this->player = player;
+	
 	// LOAD STRUCTURES
 	STRUCTYPES = {
 		new StructureType("Entrance", 3, 1), 

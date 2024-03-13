@@ -25,6 +25,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 	Player* p = static_cast<Player*>(entities[0]);
 	// cout << "b2\n";
 
+	// TODO: FOR AI PROGRAMMING KEEP IN MIND LOOPING WORLD
 	if (ed->ai == BOUNCING) {
 		recoveryFrames--;
 		if (recoveryFrames < 0) {
@@ -48,8 +49,10 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		yvel *= ed->traction;
 	}
 	// cout << "end\n";
-	setRect();
 
+
+
+	setRect();
 	
 	window->render(this);
 

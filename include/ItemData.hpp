@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "utils.hpp"
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -15,25 +17,11 @@ struct ItemData : public Entity {
 	double angleMod;
 	bool throwSpin;
 	bool stab;
+	vector<Vector2f> points;
 
-	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s) {
-		texture = t;
-		width = w;
-		height = h;
-		animationFrame = af;
-		animationType = at;
-		show_width = sw;
-		show_height = sh;
+	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s);
+	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, int x, int y, int hw, int hh);
+	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, vector<Vector2f> p);
 
-		name = n;
-		swingAngle = sa;
-		angleMod = am;
-
-		meleeDamage = m;
-		rangedDamage = r;
-		swingTime = st;
-
-		throwSpin = ts;
-		stab = s;
-	}
+	void constructorBase(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s);
 };

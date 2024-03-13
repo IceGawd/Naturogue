@@ -14,6 +14,8 @@ using namespace std;
 
 int index(int x, int y);
 
+struct Player;
+
 class World {
 public:
 	static const int WORLDSIZE = 100;
@@ -24,8 +26,9 @@ public:
 	vector<Block*> blocks;
 	vector<StructureType*> STRUCTYPES;
 	vector<Structure> structures;
+	Player* player;
 
-	World(RenderWindow* window);
+	World(RenderWindow* window, Player* player);
 	BlockData* getBlockData(string s);
 	void draw(RenderWindow* window);
 	bool collides(GameObject* object);
