@@ -71,7 +71,7 @@ World::World(RenderWindow* window, Player* player) {
 
 		for (Structure& s : structures) {
 			float power = s.type->rarity * SEPERATION_FORCE_FACTOR / sqrt(pow(x1 - s.x, 2) + pow(y1 - s.y, 2));
-			float angle = angleBetween(x1, y1, s.x, s.y);
+			float angle = pointAngleBetween(x1, y1, s.x, s.y);
 
 			xdelta -= cos(angle);
 			ydelta += sin(angle);

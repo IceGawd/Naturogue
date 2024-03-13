@@ -51,6 +51,11 @@ void RenderWindow::setColor(int r, int g, int b, int a) {
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
+void RenderWindow::cross(int x, int y) {
+	drawLine(x - 5, y - 5, x + 5, y + 5);
+	drawLine(x - 5, y + 5, x + 5, y - 5);
+}
+
 void RenderWindow::drawLine(int x1, int y1, int x2, int y2) {
 	SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }

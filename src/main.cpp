@@ -96,7 +96,7 @@ void runGame() {
 		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false),
 		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false),
 		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false),
-		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      2 * M_PI, 10, 100, 30, true, false),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      0, 10, 100, 60, true, false),
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false),
 	};
 
@@ -143,10 +143,11 @@ void runGame() {
 				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONUP) {
-				player->attackAngle = angleBetween(RenderWindow::HEIGHT / 2, RenderWindow::WIDTH / 2, event.motion.y, event.motion.x);
-				cout << "emx: " << event.motion.x << " emy: " << event.motion.y << endl;
-				cout << "rw2: " << RenderWindow::WIDTH / 2 << " rh2: " << RenderWindow::HEIGHT / 2 << endl;
-				cout << "paa: " << player->attackAngle << endl;
+				// TODO: YO WONT WORK FULLSCREEN (IT DOES BUT LIKE WHYYYYY??????) ALSO WHY X Y SWAP???
+				player->attackAngle = pointAngleBetween(RenderWindow::HEIGHT / 2, RenderWindow::WIDTH / 2, event.motion.y, event.motion.x);
+				// cout << "emx: " << event.motion.x << " emy: " << event.motion.y << endl;
+				// cout << "rw2: " << RenderWindow::WIDTH / 2 << " rh2: " << RenderWindow::HEIGHT / 2 << endl;
+				// cout << "paa: " << player->attackAngle << endl;
 				if (event.button.button == SDL_BUTTON_LEFT) {
 					// cout << "SWITHGN\n";
 					player->swing = true;

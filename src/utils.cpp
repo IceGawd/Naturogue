@@ -25,7 +25,7 @@ void arrowChange(RenderWindow* window, vector<SDL_Scancode>& keys, bool* directi
 	}
 }
 
-float angleBetween(int x1, int y1, int x2, int y2) {
+float pointAngleBetween(int x1, int y1, int x2, int y2) {
 	float angle;
 	float xDiff = x1 - x2;
 	float yDiff = y1 - y2;

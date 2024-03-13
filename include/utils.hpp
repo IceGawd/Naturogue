@@ -26,7 +26,7 @@ Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r);
 
 
 void arrowChange(RenderWindow* window, vector<SDL_Scancode>& keys, bool* direction, void (*foo)(vector<void*>), vector<void*> passingArgument);
-float angleBetween(int x1, int y1, int x2, int y2);
+float pointAngleBetween(int x1, int y1, int x2, int y2);
 
 float dotProduct(Vector2f vec1, Vector2f vec2);
 Vector2f vectorFromAngle(float angle);
