@@ -7,6 +7,17 @@ Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r) {
 	return { l.x - r.x, l.y - r.y };
 }
 
+vector<Vector2f> square(float x, float y, float w, float h) {
+	return {
+		{x, y}, 
+		{x + w, y}, 
+		{x + w, y + h}, 
+		{x, y + h}
+	};
+}
+
+
+
 void arrowChange(RenderWindow* window, vector<SDL_Scancode>& keys, bool* direction, void (*foo)(vector<void*>), vector<void*> passingArgument) {
 	bool unpressed = true;
 	for (SDL_Scancode key : keys) {

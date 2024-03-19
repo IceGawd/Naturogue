@@ -51,7 +51,11 @@ void RenderWindow::setColor(int r, int g, int b, int a) {
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
-void RenderWindow::cross(int x, int y) {
+void RenderWindow::cross(int x, int y, bool stationary) {
+	if (!stationary) {
+		x = (x - this->x) * zoom;
+		y = (y - this->y) * zoom;
+	}
 	drawLine(x - 5, y - 5, x + 5, y + 5);
 	drawLine(x - 5, y + 5, x + 5, y - 5);
 }
@@ -113,13 +117,13 @@ void RenderWindow::actualRender(Entity* entity, bool stationary) {
 			center.x = src.w / 2;
 		}
 		else {
-			center.x = entity->rotationX;
+			center.x = entity->rotationX * zoom;
 		}
 		if (entity->rotationY == -1) {
 			center.y = src.h / 2;
 		}
 		else {
-			center.y = entity->rotationY;
+			center.y = entity->rotationY * zoom;
 		}
 
 		SDL_RendererFlip flip = SDL_FLIP_NONE;

@@ -97,6 +97,11 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	setRect();
 	window->render(this);
 
+	if (!animation && swing) {
+		// do attack lol
+		beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
+		animation = true;
+	}
 	if (animation) {
 		// cout << "drawign\n";
 		bool alive = beingUsed->draw(window, world, entities);
@@ -107,13 +112,6 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 			swing = false;
 			yeet = false;
 			charge = 0;
-		}
-	}
-	else {
-		if (swing) {
-			// do attack lol
-			beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
-			animation = true;
 		}
 	}
 

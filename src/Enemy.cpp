@@ -50,7 +50,32 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 	}
 	// cout << "end\n";
 
+	vector<Vector2f> hitbox = square(x, y, show_width, show_height);
 
+	/*
+	window->setColor(0, 0, 255, 255);
+	for (Vector2f& v2f : hitbox) {
+		cout << "v2f.x: " << v2f.x << " v2f.y: " << v2f.y << endl;
+		window->cross(v2f.x, v2f.y);
+	}
+	*/
+
+	if (invincibilityFrames == 0 && world->player->beingUsed != nullptr) {
+		if (collides(window, hitbox, world->player->beingUsed->points)) {
+			invincibilityFrames = 3;
+			xvel += world->player->beingUsed->xvel;
+			yvel += world->player->beingUsed->yvel;
+			// cout << "ouchie\n";
+		}
+		else {
+			// cout << "x: " << x << " y: " << y << " wpbux: " << world->player->beingUsed->x << " wpbuy: " << world->player->beingUsed->y << endl;
+		}
+	}
+
+	if (invincibilityFrames > 0) {
+		// cout << "invincibilityFrames: " << invincibilityFrames << endl;
+		invincibilityFrames--;
+	}
 
 	setRect();
 	

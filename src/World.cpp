@@ -90,8 +90,16 @@ World::World(RenderWindow* window, Player* player) {
 	for (int x = 0; x < WORLDSIZE; x++) {
 		float xangle = M_PI * 2.0 * (x + 1) / (WORLDSIZE + 1);
 		for (int y = 0; y < WORLDSIZE; y++) {
-			float yangle = M_PI * 1.0 * (y + 1) / (WORLDSIZE + 1);
+			float yangle = M_PI * 2.0 * (y + 1) / (WORLDSIZE + 1);
+			/*
 			if (pn.noise(sin(xangle) * cos(yangle), sin(xangle) * sin(yangle), cos(xangle)) > 0.6) {
+				blocks.push_back(new Block(x, y, getBlockData("DirtPath")));
+			}
+			else {
+				blocks.push_back(new Block(x, y, getBlockData("Grass11")));
+			}
+			*/
+			if (x > WORLDSIZE / 2 && y > WORLDSIZE / 2) {
 				blocks.push_back(new Block(x, y, getBlockData("DirtPath")));
 			}
 			else {
@@ -219,10 +227,12 @@ bool World::blockInRect(Block* b, int x, int y, int w, int h) {
 }
 
 void World::draw(RenderWindow* window) {
+	/*
 	int x = window->x;
 	int y = window->y;
 	int w = RenderWindow::WIDTH / window->zoom;
 	int h = RenderWindow::HEIGHT / window->zoom;
+	*/
 
 	// cout << x << " "<< y << " "<< w << " "<< h << endl;
 

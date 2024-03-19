@@ -44,7 +44,7 @@ public:
 	void render(Button* button);
 	void display();
 	void setColor(int r, int g, int b, int a);
-	void cross(int x, int y);
+	void cross(int x, int y, bool stationary = false);
 	void drawLine(int x1, int y1, int x2, int y2);
 	void drawCircle(int x, int y, int radius);
 	void drawText(string text, unsigned char r, unsigned char g, unsigned char b, unsigned char a, int x, int y, int w, int h);

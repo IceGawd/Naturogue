@@ -82,13 +82,16 @@ void runGame() {
 		}, "Idle")
 	};
 
+	vector<Vector2f> boomerangHitbox = {{15, 2}, {2, 15}, {2, 2}};
+	vector<Vector2f> swordHitbox = {{7, 10}, {7, 8}, {16, 0}, {16, 2}};
+
 	vector<ItemData*> itemDatas = {
 		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false),
-		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false),
-		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false),
-		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false),
-		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false, swordHitbox),
+		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false, swordHitbox),
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false, swordHitbox),
 		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false), 
 		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false),
 		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false),
@@ -100,7 +103,7 @@ void runGame() {
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false),
 	};
 
-	player->items[0].holding = new Item(itemDatas[0]);
+	player->items[0].holding = new Item(itemDatas[2]);
 	player->items[1].holding = new Item(itemDatas[3]);
 	player->items[2].holding = new Item(itemDatas[13]);
 
@@ -181,9 +184,44 @@ void runGame() {
 
 		// cout << "BEFORE: " << player->x << " " << player->y << endl;
 
+		bool extendXP = window.x + RenderWindow::WIDTH / window.zoom > World::WORLDLENGTH;
+		bool extendXN = window.x < 0;
+		bool extendYP = window.y + RenderWindow::HEIGHT / window.zoom > World::WORLDLENGTH;
+		bool extendYN = window.y < 0;
+
+		/*
+		if (player->beingUsed != nullptr) {
+			cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+			cout << "extendXP: " << extendXP << " extendXN: " << extendXN << " extendYP: " << extendYP << " extendYN: " << extendYN << endl;
+			// cout << "player->x: " << player->x << " player->y: " << player->y << endl;
+		}
+		*/
+
 		world->draw(&window);
 		for (GameObject* go : entities) {
+			/*
+			if (player->beingUsed != nullptr) {
+				cout << "px: " << go->x << " py: " << go->y << endl;
+			}
+
+			go->x = (extendXP && go->x < World::WORLDLENGTH / 2) ? go->x + World::WORLDLENGTH : go->x;
+			go->x = (extendXN && go->x > World::WORLDLENGTH / 2) ? go->x - World::WORLDLENGTH : go->x;
+			go->y = (extendYP && go->y < World::WORLDLENGTH / 2) ? go->y + World::WORLDLENGTH : go->y;
+			go->y = (extendYN && go->y > World::WORLDLENGTH / 2) ? go->y - World::WORLDLENGTH : go->y;
+			// */
+
+			/*
+			if (player->beingUsed != nullptr) {
+				cout << "x: " << go->x << " y: " << go->y << endl;
+			}
+			*/
+
 			go->draw(&window, world, entities);
+		}
+
+		for (GameObject* go : entities) {
+			go->x -= int(go->x / World::WORLDLENGTH) * World::WORLDLENGTH;
+			go->y -= int(go->y / World::WORLDLENGTH) * World::WORLDLENGTH;
 		}
 
 		// cout << "AFTER: " << player->x << " " << player->y << endl;
