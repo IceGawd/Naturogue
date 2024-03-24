@@ -108,15 +108,19 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	window->render(this);
 
 	if (!animation) {
-		// do attack lol
-		if (swing) {
-			beingUsed.push_back(new Weapon(items[selectedSlot].holding, true, attackAngle, chargeBar->value));
-			animation = true;
-			charge = 0;
-		}
-		if (yeet) {
-			beingUsed.push_back(new Weapon(items[selectedSlot].holding, false, attackAngle, chargeBar->value));
-			items[selectedSlot].holding = nullptr;
+		if (swing || yeet) {
+			// do attack lol
+			if (items[selectedSlot].holding != nullptr) {
+				if (swing) {
+					beingUsed.push_back(new Weapon(items[selectedSlot].holding, true, attackAngle, chargeBar->value));
+					animation = true;
+				}
+				else {
+					beingUsed.push_back(new Weapon(items[selectedSlot].holding, false, attackAngle, chargeBar->value));
+					items[selectedSlot].holding = nullptr;
+				}
+			}
+			swing = false;
 			yeet = false;
 			charge = 0;
 		}

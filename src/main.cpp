@@ -141,7 +141,7 @@ void runGame() {
 					}
 				}
 
-				if (!player->animation) {
+				if (!player->animation && player->items[player->selectedSlot].holding != nullptr) {
 					player->mousedown = true;
 				}
 			}
