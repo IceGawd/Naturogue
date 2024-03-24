@@ -60,15 +60,22 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 	}
 	*/
 
-	if (invincibilityFrames == 0 && world->player->beingUsed != nullptr) {
-		if (collides(window, hitbox, world->player->beingUsed->points)) {
-			invincibilityFrames = 3;
-			xvel += world->player->beingUsed->xvel;
-			yvel += world->player->beingUsed->yvel;
-			// cout << "ouchie\n";
-		}
-		else {
-			// cout << "x: " << x << " y: " << y << " wpbux: " << world->player->beingUsed->x << " wpbuy: " << world->player->beingUsed->y << endl;
+	if (invincibilityFrames == 0 && world->player->beingUsed.size() != 0) {
+		for (Weapon* bu : world->player->beingUsed) {
+			if (collides(window, hitbox, bu->points)) {
+				invincibilityFrames = 10;
+
+				float pab = pointAngleBetween(bu->xvel, bu->yvel, 0, 0);
+				float kbx = bu->item->itemData->knockback * cos(pab) + bu->xvel;
+				float kby = bu->item->itemData->knockback * -sin(pab) + bu->yvel;
+
+				xvel += kbx;
+				yvel += kby;
+				// cout << "ouchie\n";
+			}
+			else {
+				// cout << "x: " << x << " y: " << y << " wpbux: " << world->player->beingUsed->x << " wpbuy: " << world->player->beingUsed->y << endl;
+			}
 		}
 	}
 

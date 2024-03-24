@@ -49,6 +49,8 @@ void Entity::copyTexture(Entity* e) {
 	height = e->height;
 	show_width = e->show_width;
 	show_height = e->show_height;
+	rotationX = e->rotationX;
+	rotationY = e->rotationY;
 	setRect();
 }
 

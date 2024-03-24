@@ -38,6 +38,16 @@ void Player::select(int num) {
 	selectedSlot = num;
 }
 
+bool Player::giveItem(Item* item) {
+	for (Slot& s : items) {
+		if (s.holding == nullptr) {
+			s.holding = item;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	GameObject::draw(window, world, entities);
 
@@ -97,21 +107,34 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	setRect();
 	window->render(this);
 
-	if (!animation && swing) {
+	if (!animation) {
 		// do attack lol
-		beingUsed = new Weapon(items[selectedSlot].holding, true, attackAngle);
-		animation = true;
-	}
-	if (animation) {
-		// cout << "drawign\n";
-		bool alive = beingUsed->draw(window, world, entities);
-		if (!alive) {
-			delete beingUsed;
-			beingUsed = nullptr;
-			animation = false;
-			swing = false;
+		if (swing) {
+			beingUsed.push_back(new Weapon(items[selectedSlot].holding, true, attackAngle, chargeBar->value));
+			animation = true;
+			charge = 0;
+		}
+		if (yeet) {
+			beingUsed.push_back(new Weapon(items[selectedSlot].holding, false, attackAngle, chargeBar->value));
+			items[selectedSlot].holding = nullptr;
 			yeet = false;
 			charge = 0;
+		}
+	}
+
+	for (int x = 0; x < beingUsed.size(); x++) {
+		Weapon* bu = beingUsed.at(x);
+		// cout << "drawign\n";
+		bool alive = bu->draw(window, world, entities);
+		if (!alive) {
+			if (bu->melee) {
+				animation = false;
+				swing = false;
+			}
+
+			delete bu;
+			beingUsed.erase(beingUsed.begin() + x);
+			x--;
 		}
 	}
 

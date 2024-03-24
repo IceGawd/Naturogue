@@ -32,9 +32,10 @@ public:
 	Bar* chargeBar;
 
 	Input input;
-	Weapon* beingUsed;
+	vector<Weapon*> beingUsed;
 
 	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture);
 	void select(int num);
+	bool giveItem(Item* item);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

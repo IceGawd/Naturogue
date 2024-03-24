@@ -33,3 +33,10 @@ Vector2f vectorFromAngle(float angle);
 Vector2f getMinMax(Vector2f vec, const vector<Vector2f>& points);
 void addUnique(Vector2f vec, vector<float>& anglesToCheck);
 bool collides(RenderWindow* window, vector<Vector2f> polygon1, vector<Vector2f> polygon2);
+
+enum WEAPON_PROPERTIES {
+	BOOMERANG, 
+	TIPPER, 
+	HAMMER, 
+	SPEAR
+};

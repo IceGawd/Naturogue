@@ -86,21 +86,21 @@ void runGame() {
 	vector<Vector2f> swordHitbox = {{7, 10}, {7, 8}, {16, 0}, {16, 2}};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false, swordHitbox),
-		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false, swordHitbox),
-		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false, swordHitbox),
-		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false), 
-		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false),
-		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false),
-		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 10, 100, 20, false, true),
-		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false),
-		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false),
-		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false),
-		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      0, 10, 100, 60, true, false),
-		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false),
+		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false, 2.5, 0.95, 5, {}),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false, 2.5, 0.95, 5, {BOOMERANG}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false, 2.5, 0.95, 5, {BOOMERANG}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false, 2.5, 0.95, 5, {TIPPER}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false, 2.5, 0.95, 5, {}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}), 
+		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}),
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {SPEAR}),
+		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 10, 100, 20, false, true, 2.5, 0.95, 5, {SPEAR}),
+		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {}),
+		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      2 * M_PI, 10, 100, 60, true, false, 2.5, 0.95, 5, {HAMMER}),
+		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 2.5, 0.95, 5, {HAMMER}),
 	};
 
 	player->items[0].holding = new Item(itemDatas[2]);
@@ -171,7 +171,7 @@ void runGame() {
 			}
 			else if (event.type == SDL_KEYDOWN) {
 				int num = int(event.key.keysym.sym) - 49; // 48 is 0 key
-				if (num > -1 && num < player->slots) {
+				if (num > -1 && num < player->slots && !player->animation) {
 					player->select(num);
 				}
 			}
@@ -189,34 +189,22 @@ void runGame() {
 		bool extendYP = window.y + RenderWindow::HEIGHT / window.zoom > World::WORLDLENGTH;
 		bool extendYN = window.y < 0;
 
-		/*
-		if (player->beingUsed != nullptr) {
-			cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-			cout << "extendXP: " << extendXP << " extendXN: " << extendXN << " extendYP: " << extendYP << " extendYN: " << extendYN << endl;
-			// cout << "player->x: " << player->x << " player->y: " << player->y << endl;
-		}
-		*/
-
 		world->draw(&window);
-		for (GameObject* go : entities) {
-			/*
-			if (player->beingUsed != nullptr) {
-				cout << "px: " << go->x << " py: " << go->y << endl;
-			}
 
+		for (GameObject* go : entities) {
 			go->x = (extendXP && go->x < World::WORLDLENGTH / 2) ? go->x + World::WORLDLENGTH : go->x;
 			go->x = (extendXN && go->x > World::WORLDLENGTH / 2) ? go->x - World::WORLDLENGTH : go->x;
 			go->y = (extendYP && go->y < World::WORLDLENGTH / 2) ? go->y + World::WORLDLENGTH : go->y;
 			go->y = (extendYN && go->y > World::WORLDLENGTH / 2) ? go->y - World::WORLDLENGTH : go->y;
-			// */
+		}
 
-			/*
-			if (player->beingUsed != nullptr) {
-				cout << "x: " << go->x << " y: " << go->y << endl;
+		for (int g = 0; g < entities.size(); g++) {
+			GameObject* go = entities.at(g);
+			if (go->draw(&window, world, entities)) {
+				delete go;
+				entities.erase(entities.begin() + g);
+				g--;
 			}
-			*/
-
-			go->draw(&window, world, entities);
 		}
 
 		for (GameObject* go : entities) {
