@@ -6,6 +6,7 @@
 #include "PerlinNoise.hpp"
 #include "Structure.hpp"
 #include "utils.hpp"
+#include "EnemyData.hpp"
 
 #include <chrono>
 #include <algorithm>
@@ -28,7 +29,7 @@ public:
 	vector<Structure> structures;
 	Player* player;
 
-	World(RenderWindow* window, Player* player);
+	World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas);
 	void edgeCleanup(string toEdge);
 	BlockData* getBlockData(string s);
 	void draw(RenderWindow* window, bool front);

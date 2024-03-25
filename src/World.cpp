@@ -1,4 +1,6 @@
 #include "World.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
 
 int index(int x, int y) {
 	while (x < 0) {
@@ -10,7 +12,7 @@ int index(int x, int y) {
 	return (y % World::WORLDSIZE) * World::WORLDSIZE + (x % World::WORLDSIZE);
 }
 
-World::World(RenderWindow* window, Player* player) {
+World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
 	this->player = player;
 	
 	// LOAD STRUCTURES
@@ -76,9 +78,9 @@ World::World(RenderWindow* window, Player* player) {
 		structures.push_back(Structure(STRUCTYPES[0], 0, (int) ((random() * WORLDLENGTH) / Block::BLOCKSIZE) * Block::BLOCKSIZE));		
 	}
 
-	structures.push_back(Structure(STRUCTYPES[2], WORLDLENGTH / 2, WORLDLENGTH / 2));
+	structures.push_back(Structure(STRUCTYPES[1], WORLDLENGTH / 2, WORLDLENGTH / 2));
 
-	int numStructs = WORLDSIZE / 100.0 + random() * WORLDSIZE / 100.0;
+	int numStructs = WORLDSIZE / 10.0 + random() * WORLDSIZE / 10.0;
 	for (int x = 0; x < numStructs; x++) {
 		int x1 = random() * WORLDLENGTH;
 		int y1 = random() * WORLDLENGTH;
@@ -88,11 +90,40 @@ World::World(RenderWindow* window, Player* player) {
 
 		for (int n = 1; n < 10; n++) {
 			for (Structure& s : structures) {
-				float power = s.type->rarity * SEPERATION_FORCE_FACTOR / sqrt(pow(x1 - s.x, 2) + pow(y1 - s.y, 2));
-				float angle = pointAngleBetween(x1, y1, s.x, s.y);
+				int x2 = s.x;
+				int y2 = s.y;
 
-				xdelta -= cos(angle);
-				ydelta += sin(angle);
+				if (abs(x1 - x2) > 4000) {
+					if (x1 > x2) {
+						x2 += 8000;
+					}
+					else {
+						x2 -= 8000;
+					}
+				}
+				if (abs(y1 - y2) > 4000) {
+					if (y1 > y2) {
+						y2 += 8000;
+					}
+					else {
+						y2 -= 8000;
+					}
+				}
+
+				float power = s.type->rarity * SEPERATION_FORCE_FACTOR / sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+				float angle = pointAngleBetween(x1, y1, x2, y2);
+
+				xdelta += power * cos(angle);
+				ydelta -= power * sin(angle);
+
+				/*
+				cout << "power: " << power << endl;
+				cout << "angle: " << angle * 180 / M_PI << endl;
+				cout << "x1: " << x1 << " y1: " << y1 << endl;
+				cout << "x2: " << x2 << " y2: " << y2 << endl;
+				cout << "s.x: " << s.x << " s.y: " << s.y << endl;
+				cout << "power * cos(angle): " << power * cos(angle) << " -power * sin(angle): " << -power * sin(angle) << endl;
+				*/
 			}
 			xdelta /= n;
 			ydelta /= n;
@@ -100,8 +131,8 @@ World::World(RenderWindow* window, Player* player) {
 			x1 += xdelta;
 			y1 += ydelta;
 
-			x1 = x1 % WORLDLENGTH;
-			y1 = y1 % WORLDLENGTH;
+			x1 -= int(floor(x1 / WORLDLENGTH)) * WORLDLENGTH;
+			y1 -= int(floor(y1 / WORLDLENGTH)) * WORLDLENGTH;
 
 			if (xdelta * ydelta < 10) {
 				break;
@@ -162,6 +193,26 @@ World::World(RenderWindow* window, Player* player) {
 	*/
 	// SORT BY LOW TO HIGH (Unecessary?)
 	// sort(blocks.begin(), blocks.end(), blockCompare);
+
+	for (Structure& s : structures) {
+		cout << s.x << " " << s.y << endl;
+		if (s.type->name == "Entrance") {
+			player->x = s.x - player->show_width / 2;
+			player->y = s.y - player->show_height;
+
+			int midX = s.x / Block::BLOCKSIZE;
+			int midY = s.y / Block::BLOCKSIZE;
+
+			for (int x = 0; x < 2; x++) {
+				for (int y = 0; y < 2; y++) {
+					blocks.push_back(new Block(midX + x - 1, midY + y - 1, getBlockData("SpawnPlatform" + to_string(x) + to_string(y))));
+				}
+			}
+		}
+		else if (s.type->name == "Enemy") {
+			entities.push_back(new Enemy(s.x, s.y, enemyDatas[0]));
+		}
+	}
 }
 
 void World::edgeCleanup(string toEdge) {
@@ -326,7 +377,7 @@ bool World::collides(GameObject* object) {
 							object->y += actual.h;
 						}
 					}
-					
+
 					/*
 					if (abs(intersect->w) <= ceil(abs(object->xvel))) {
 						xStop = true;

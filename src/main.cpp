@@ -67,11 +67,6 @@ void runGame() {
 
 	Player* player = new Player(&window, slotTexture, selectedSlotTexture);
 
-	World* world = new World(&window, player);
-	window.world = world;
-
-	window.zoom = 0.75;
-
 	vector<Button*> buttons;
 	vector<GameObject*> entities;
 
@@ -109,8 +104,13 @@ void runGame() {
 
 	entities.push_back(player);
 	// cout << "a1\n";
-	entities.push_back(new Enemy(-100, -100, enemyDatas[0]));
+	// entities.push_back(new Enemy(-100, -100, enemyDatas[0]));
 	// cout << "b1\n";
+
+	World* world = new World(&window, player, entities, enemyDatas);
+	window.world = world;
+
+	window.zoom = 0.75;
 
 	while (gameRunning) {
 		auto start = chrono::steady_clock().now();
@@ -207,7 +207,7 @@ void runGame() {
 
 		for (GameObject* go : entities) {
 			loopPostFix(go);
-			cout << "x: " << go->x << " y: " << go->y << endl;
+			// cout << "x: " << go->x << " y: " << go->y << endl;
 		}
 
 		// cout << "AFTER: " << player->x << " " << player->y << endl;

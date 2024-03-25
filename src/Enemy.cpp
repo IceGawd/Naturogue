@@ -13,8 +13,8 @@ Enemy::Enemy(int x, int y, EnemyData* e) {
 	show_width = width / 7;
 	show_height = height / 7;
 
-	cout << "width: " << width << endl;
-	cout << "height: " << height << endl;
+	// cout << "width: " << width << endl;
+	// cout << "height: " << height << endl;
 }
 
 void Enemy::pixelEdit(void (*func)(Uint8&, Uint8&, Uint8&, Uint8&)) {
