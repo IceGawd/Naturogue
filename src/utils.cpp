@@ -1,6 +1,7 @@
 #include "utils.hpp"
 #include "RenderWindow.hpp"
-
+#include "Entity.hpp"
+#include "World.hpp"
 
 template <typename T>
 Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r) {
@@ -15,7 +16,6 @@ vector<Vector2f> square(float x, float y, float w, float h) {
 		{x, y + h}
 	};
 }
-
 
 
 void arrowChange(RenderWindow* window, vector<SDL_Scancode>& keys, bool* direction, void (*foo)(vector<void*>), vector<void*> passingArgument) {
@@ -127,4 +127,23 @@ bool collides(RenderWindow* window, vector<Vector2f> polygonPoints, vector<Vecto
 		}
 	}
 	return true;
+}
+
+void fixPreLoop(RenderWindow* window, bool& extendXP, bool& extendXN, bool& extendYP, bool& extendYN) {
+	extendXP = window->x + RenderWindow::WIDTH / window->zoom > World::WORLDLENGTH;
+	extendXN = window->x < 0;
+	extendYP = window->y + RenderWindow::HEIGHT / window->zoom > World::WORLDLENGTH;
+	extendYN = window->y < 0;
+}
+
+void loopPreFix(Entity* go, bool extendXP, bool extendXN, bool extendYP, bool extendYN) {
+	go->x = (extendXP && go->x < World::WORLDLENGTH / 2) ? go->x + World::WORLDLENGTH : go->x;
+	go->x = (extendXN && go->x > World::WORLDLENGTH / 2) ? go->x - World::WORLDLENGTH : go->x;
+	go->y = (extendYP && go->y < World::WORLDLENGTH / 2) ? go->y + World::WORLDLENGTH : go->y;
+	go->y = (extendYN && go->y > World::WORLDLENGTH / 2) ? go->y - World::WORLDLENGTH : go->y;
+}
+
+void loopPostFix(Entity* go) {
+	go->x -= int(floor(go->x / World::WORLDLENGTH)) * World::WORLDLENGTH;
+	go->y -= int(floor(go->y / World::WORLDLENGTH)) * World::WORLDLENGTH;
 }

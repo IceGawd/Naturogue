@@ -11,6 +11,7 @@
 using namespace std;
 
 class RenderWindow;
+class Entity;
 
 template <class T>
 struct Vector2 final {
@@ -33,6 +34,10 @@ Vector2f vectorFromAngle(float angle);
 Vector2f getMinMax(Vector2f vec, const vector<Vector2f>& points);
 void addUnique(Vector2f vec, vector<float>& anglesToCheck);
 bool collides(RenderWindow* window, vector<Vector2f> polygon1, vector<Vector2f> polygon2);
+
+void fixPreLoop(RenderWindow* window, bool& extendXP, bool& extendXN, bool& extendYP, bool& extendYN);
+void loopPreFix(Entity* go, bool extendXP, bool extendXN, bool extendYP, bool extendYN);
+void loopPostFix(Entity* go);
 
 enum WEAPON_PROPERTIES {
 	BOOMERANG, 

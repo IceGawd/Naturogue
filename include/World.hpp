@@ -29,8 +29,9 @@ public:
 	Player* player;
 
 	World(RenderWindow* window, Player* player);
+	void edgeCleanup(string toEdge);
 	BlockData* getBlockData(string s);
-	void draw(RenderWindow* window);
+	void draw(RenderWindow* window, bool front);
 	bool collides(GameObject* object);
 	// Block* blockAt(int x, int y);
 	static bool blockInRect(Block* b, int x, int y, int w, int h);

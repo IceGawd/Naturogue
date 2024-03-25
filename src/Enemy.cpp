@@ -17,6 +17,63 @@ Enemy::Enemy(int x, int y, EnemyData* e) {
 	cout << "height: " << height << endl;
 }
 
+void Enemy::pixelEdit(void (*func)(Uint8&, Uint8&, Uint8&, Uint8&)) {
+	Uint32* pixels = nullptr;
+	int pitch = 0;
+	Uint32 format;
+	int w, h;
+	SDL_QueryTexture(texture.get(), &format, nullptr, &w, &h);
+
+	if (SDL_LockTexture(texture.get(), nullptr, (void**)&pixels, &pitch)) {
+		SDL_GetError();
+		// cout << "TEXTURE LOCK!!!!!!!!!!\n";
+	}
+
+	SDL_PixelFormat pixelFormat;
+	pixelFormat.format = format;
+
+	Uint8 r;
+	Uint8 g;
+	Uint8 b;
+	Uint8 a;
+
+	for (int x = animationFrame * width; x < (animationFrame + 1) * width; x++) {
+		for (int y = animationType * height; y < (animationType + 1) * height; y++) {
+			Uint32 pixelPosition = y * (pitch / sizeof(unsigned int)) + x;
+
+			SDL_GetRGBA(pixels[pixelPosition], &pixelFormat, &r, &g, &b, &a);
+
+			func(r, g, b, a);
+
+			Uint32 color = SDL_MapRGBA(&pixelFormat, r, g, b, a);
+			pixels[pixelPosition] = color;
+		}
+	}
+
+	SDL_UnlockTexture(texture.get());
+}
+
+void light(Uint8& r, Uint8& g, Uint8& b, Uint8& a) {
+	r = 255 - ((255 - r) / 2);
+	g = 255 - ((255 - g) / 2);
+	b = 255 - ((255 - b) / 2);
+}
+
+void dark(Uint8& r, Uint8& g, Uint8& b, Uint8& a) {
+	r = 255 - (2 * (255 - r));
+	g = 255 - (2 * (255 - g));
+	b = 255 - (2 * (255 - b));
+}
+
+void Enemy::lighten() {
+	pixelEdit(light);
+}
+
+void Enemy::darken() {
+	pixelEdit(dark);
+}
+
+
 bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	// cout << "start\n";
 	GameObject::draw(window, world, entities);
@@ -81,12 +138,27 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 
 	if (invincibilityFrames > 0) {
 		// cout << "invincibilityFrames: " << invincibilityFrames << endl;
+
+		// lighter = (invincibilityFrames % 2 == 0) ? lighter : !lighter;
+		lighter = !lighter;
+		/*
+		if (lighter) {
+			lighten();
+		}
+		*/
+
 		invincibilityFrames--;
+	}
+	else if (lighter) {
+		// darken();
+		lighter = false;
 	}
 
 	setRect();
 	
-	window->render(this);
+	if (!lighter) {
+		window->render(this);
+	}
 
 	return false;
 }

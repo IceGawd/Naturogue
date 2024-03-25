@@ -79,6 +79,8 @@ SDL_Rect RenderWindow::getDestRect(Entity* entity, bool stationary) {
 }
 
 void RenderWindow::render(Entity* entity, bool stationary) {
+	actualRender(entity, stationary);
+	/*
 	if (stationary) {
 		actualRender(entity, true);
 	}
@@ -105,6 +107,7 @@ void RenderWindow::render(Entity* entity, bool stationary) {
 			}
 		}
 	}
+	*/
 }
 
 void RenderWindow::actualRender(Entity* entity, bool stationary) {

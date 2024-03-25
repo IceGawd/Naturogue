@@ -184,18 +184,16 @@ void runGame() {
 
 		// cout << "BEFORE: " << player->x << " " << player->y << endl;
 
-		bool extendXP = window.x + RenderWindow::WIDTH / window.zoom > World::WORLDLENGTH;
-		bool extendXN = window.x < 0;
-		bool extendYP = window.y + RenderWindow::HEIGHT / window.zoom > World::WORLDLENGTH;
-		bool extendYN = window.y < 0;
+		bool extendXP;
+		bool extendXN;
+		bool extendYP;
+		bool extendYN;
 
-		world->draw(&window);
+		world->draw(&window, false);
 
+		fixPreLoop(&window, extendXP, extendXN, extendYP, extendYN);
 		for (GameObject* go : entities) {
-			go->x = (extendXP && go->x < World::WORLDLENGTH / 2) ? go->x + World::WORLDLENGTH : go->x;
-			go->x = (extendXN && go->x > World::WORLDLENGTH / 2) ? go->x - World::WORLDLENGTH : go->x;
-			go->y = (extendYP && go->y < World::WORLDLENGTH / 2) ? go->y + World::WORLDLENGTH : go->y;
-			go->y = (extendYN && go->y > World::WORLDLENGTH / 2) ? go->y - World::WORLDLENGTH : go->y;
+			loopPreFix(go, extendXP, extendXN, extendYP, extendYN);
 		}
 
 		for (int g = 0; g < entities.size(); g++) {
@@ -208,11 +206,13 @@ void runGame() {
 		}
 
 		for (GameObject* go : entities) {
-			go->x -= int(go->x / World::WORLDLENGTH) * World::WORLDLENGTH;
-			go->y -= int(go->y / World::WORLDLENGTH) * World::WORLDLENGTH;
+			loopPostFix(go);
+			cout << "x: " << go->x << " y: " << go->y << endl;
 		}
 
 		// cout << "AFTER: " << player->x << " " << player->y << endl;
+
+		world->draw(&window, true);
 
 		for (Button* b : buttons) {
 			if (b->show) {
