@@ -28,4 +28,5 @@ struct ItemData : public Entity {
 	ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, int tv, float f, float k, vector<WEAPON_PROPERTIES> pr, vector<Vector2f> p);
 
 	void constructorBase(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, int tv, float f, float k, vector<WEAPON_PROPERTIES> pr);
+	bool hasProperty(WEAPON_PROPERTIES wp);
 };

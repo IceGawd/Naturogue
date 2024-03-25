@@ -1,7 +1,12 @@
 #include "Enemy.hpp"
 #include "World.hpp"
 
-Enemy::Enemy(int x, int y, EnemyData* e) {
+
+Enemy::~Enemy() {
+	delete healthBar;
+}
+
+Enemy::Enemy(int x, int y, EnemyData* e, RenderWindow* window) {
 	this->x = x;
 	this->y = y;
 	this->ed = e;
@@ -12,6 +17,8 @@ Enemy::Enemy(int x, int y, EnemyData* e) {
 
 	show_width = width / 7;
 	show_height = height / 7;
+
+	healthBar = new Bar(window, show_width * 0.8, show_height * 0.3, 5, health);
 
 	// cout << "width: " << width << endl;
 	// cout << "height: " << height << endl;
@@ -75,6 +82,13 @@ void Enemy::darken() {
 
 
 bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
+	if (health != ed->maxHP) {
+		healthBar->x = x + (show_width - healthBar->show_width) / 2;
+		healthBar->y = y - 2 * healthBar->show_height;
+		healthBar->value = health;
+		healthBar->draw(window, world, entities);
+	}
+
 	// cout << "start\n";
 	GameObject::draw(window, world, entities);
 
@@ -121,13 +135,26 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		for (Weapon* bu : world->player->beingUsed) {
 			if (collides(window, hitbox, bu->points)) {
 				invincibilityFrames = 10;
+				float mod = 1;
+				if (bu->item->itemData->hasProperty(TIPPER)) {
+					mod *= 1.1 * atan((distance(world->player) - 156) / 60.3) + 1.3; 
+					// cout << "mod: " << mod << endl;
+				}
 
 				float pab = pointAngleBetween(bu->xvel, bu->yvel, 0, 0);
 				float kbx = bu->item->itemData->knockback * cos(pab) + bu->xvel;
 				float kby = bu->item->itemData->knockback * -sin(pab) + bu->yvel;
 
-				xvel += kbx;
-				yvel += kby;
+				kbx *= 1 - ed->knockbackResistance;
+				kby *= 1 - ed->knockbackResistance;
+
+				xvel += kbx * mod;
+				yvel += kby * mod;
+
+				int damageTaken = (bu->damage * mod) - ed->defence;
+				if (damageTaken > 0) {
+					health -= damageTaken;
+				}
 				// cout << "ouchie\n";
 			}
 			else {
@@ -160,5 +187,5 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		window->render(this);
 	}
 
-	return false;
+	return health <= 0;
 }

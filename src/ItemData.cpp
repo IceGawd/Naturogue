@@ -43,3 +43,12 @@ void ItemData::constructorBase(shared_ptr<SDL_Texture> t, int w, int h, int af, 
 
 	properties = pr;
 }
+
+bool ItemData::hasProperty(WEAPON_PROPERTIES wp) {
+	for (WEAPON_PROPERTIES wp2 : properties) {
+		if (wp == wp2) {
+			return true;
+		}
+	}
+	return false;
+}

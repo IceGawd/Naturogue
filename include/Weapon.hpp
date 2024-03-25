@@ -8,11 +8,14 @@ struct Weapon : public GameObject {
 	bool melee;
 	float startAngle;
 	int framesAlive = 0;
-	int charge;
+	float charge;
+	int damage;
+
+	bool comeBack = false;
 
 	vector<Vector2f> points;
 
-	Weapon(Item* i, bool m, float a, int c);
+	Weapon(Item* i, bool m, float a, float c);
 	void calculatePoints();
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

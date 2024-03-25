@@ -24,6 +24,7 @@ Decreased Player movement acceleration (- speed + traction) [max speed = speed *
 32 - Increased enemy hp, defence, movement speed, attack speed, damage, knockback resistance
 64 - Enemies and Bosses get new moves
 128 - Enemies respawn
+256 - You don't slowly regenerate health
 */
 
 void runGame() {
@@ -71,7 +72,7 @@ void runGame() {
 	vector<GameObject*> entities;
 
 	vector<EnemyData*> enemyDatas = {
-		new EnemyData("Flowy", 5, 40, 500, 60, 30, 0, 0.9, 0, BOUNCING, {
+		new EnemyData("Flowy", 5, 40, 500, 60, 100, 0, 0.9, 0, BOUNCING, {
 			{"Bounce", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}, 
 			{"Idle", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
 		}, "Idle")
@@ -82,19 +83,19 @@ void runGame() {
 
 	vector<ItemData*> itemDatas = {
 		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false, 2.5, 0.95, 5, {}),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 10, 100, 20, true, false, 2.5, 0.95, 5, {BOOMERANG}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 30, 90, 20, true, false, 2.5, 0.95, 5, {BOOMERANG, DANGER}, boomerangHitbox),
 		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false, 2.5, 0.95, 5, {BOOMERANG}, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 30, 30, 15, false, false, 2.5, 0.95, 5, {TIPPER}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 40, 30, 15, false, false, 2.5, 0.95, 5, {TIPPER}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false, 2.5, 0.95, 5, {}, swordHitbox),
-		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}, swordHitbox),
-		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}), 
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 40, 30, 20, true, false, 2.5, 0.95, 5, {}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2.5, 0.95, 5, {}), 
 		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}),
 		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {SPEAR}),
 		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 10, 100, 20, false, true, 2.5, 0.95, 5, {SPEAR}),
 		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {}),
 		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {HAMMER}),
 		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {HAMMER}),
-		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      2 * M_PI, 10, 100, 60, true, false, 2.5, 0.95, 5, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      6 * M_PI, 10, 100, 60, true, false, 2.5, 0.95, 5, {HAMMER}),
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 2.5, 0.95, 5, {HAMMER}),
 	};
 

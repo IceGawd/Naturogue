@@ -1,6 +1,7 @@
 #include "World.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "utils.hpp"
 
 int index(int x, int y) {
 	while (x < 0) {
@@ -210,7 +211,7 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 			}
 		}
 		else if (s.type->name == "Enemy") {
-			entities.push_back(new Enemy(s.x, s.y, enemyDatas[0]));
+			entities.push_back(new Enemy(s.x, s.y, enemyDatas[0], window));
 		}
 	}
 }
@@ -343,9 +344,18 @@ bool World::collides(GameObject* object) {
 	bool yStop = false;
 	// */
 
+	bool extendXP = object->x > 3 * World::WORLDLENGTH / 4;
+	bool extendXN = object->x < 1 * World::WORLDLENGTH / 4;
+	bool extendYP = object->y > 3 * World::WORLDLENGTH / 4;
+	bool extendYN = object->y < 1 * World::WORLDLENGTH / 4;
+
 	bool collided = true;
 
 	unsigned int rounds = 0;
+
+	for (Block* b : blocks) {
+		loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
+	}
 
 	while (collided && rounds < 10) {
 		collided = false;
@@ -412,5 +422,9 @@ bool World::collides(GameObject* object) {
 	}
 	// */
 	// return xStop || yStop;
+	for (Block* b : blocks) {
+		loopPostFix(b);
+	}
+
 	return rounds != 0;
 }

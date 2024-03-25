@@ -5,7 +5,7 @@
 #include "utils.hpp"
 #include "ItemDrop.hpp"
 
-Weapon::Weapon(Item* i, bool m, float a, int c) {
+Weapon::Weapon(Item* i, bool m, float a, float c) {
 	item = i;
 	melee = m;
 	startAngle = a;
@@ -13,6 +13,9 @@ Weapon::Weapon(Item* i, bool m, float a, int c) {
 
 	xvel = 0;
 	yvel = 0;
+
+	damage = m ? i->itemData->meleeDamage : i->itemData->rangedDamage;
+	damage *= c / 20;
 
 	copyTexture(item->itemData);
 
@@ -101,6 +104,14 @@ bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		return framesAlive <= item->itemData->swingTime;
 	}
 	else {
+		bool extendXP;
+		bool extendXN;
+		bool extendYP;
+		bool extendYN;
+
+		fixPreLoop(window, extendXP, extendXN, extendYP, extendYN);
+		loopPreFix(this, extendXP, extendXN, extendYP, extendYN);
+
 		if (framesAlive == 0) {
 			x = world->player->x + world->player->show_width / 2 - rotationX;
 			y = world->player->y + world->player->show_height / 2 - rotationY;
@@ -124,14 +135,37 @@ bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		calculatePoints();
 		window->render(this);
 
-		if (velocity <= 1) {
+		if (item->itemData->hasProperty(BOOMERANG)) {
+			float velChange = (22 * atan((framesAlive - 71) / 75.6) + 17) * (1 - item->itemData->friction);
+			// cout << "velChange: " << velChange << endl;
+
+			float a = angleBetween(world->player);
+			xvel -= velChange * cos(a);
+			yvel += velChange * sin(a);
+
+			if (comeBack) {
+				if (distance(world->player) < 50) {
+					velocity = 0;
+					comeBack = false;
+				}
+			}
+			else if (velocity <= 10) {
+				comeBack = true;
+			}
+		}
+
+		loopPostFix(this);
+		if (velocity > 1 || comeBack) {
+			return true;
+		}
+		else {
 			ItemDrop* id = new ItemDrop(x, y, item, angle);
 			
 			id->rotationX = rotationX;
 			id->rotationY = rotationY;
 
 			entities.push_back(id);
+			return false;
 		}
-		return velocity > 1;
 	}
 }

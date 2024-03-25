@@ -58,12 +58,11 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 	Uint8 b;
 	Uint8 a;
 
-	float entDist = x + y;
 	for (int y = 0; y < surf->h; y++) {
 		for (int x = 0; x < surf->w; x++) {
 			// /*
 			int index = y * width + x;
-			float mod = waveMod + (entDist + y + x) * M_PI / 180;
+			float mod = waveMod + (y + x) * M_PI / 180;
 			if ((x > width - thickness) || (x < thickness) || (y > height - thickness) || (y < thickness)) {
 				r = 0;
 				g = 0;
@@ -97,7 +96,7 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 
 	SDL_UpdateTexture(texture.get(), NULL, pixels, surf->pitch);
 
-	window->render(this, true);
+	window->render(this);
 
 	return false;
 }
