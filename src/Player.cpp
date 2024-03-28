@@ -48,6 +48,10 @@ bool Player::giveItem(Item* item) {
 	return false;
 }
 
+float Player::valueFromCharge() {
+	return 20 + exp(-0.05 * charge - 0.15) * (-21 + charge * (-1 + charge * -0.02));
+}
+
 bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	GameObject::draw(window, world, entities);
 
@@ -78,7 +82,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	}
 	if (mousedown) {
 		// chargeBar->value = 20 + exp(-0.025 * charge - 0.15) * (-21 + charge * (-0.5 + charge * -0.005));
-		chargeBar->value = 20 + exp(-0.05 * charge - 0.15) * (-21 + charge * (-1 + charge * -0.02));
+		chargeBar->value = valueFromCharge();
 		chargeBar->x = x + (show_width - chargeBar->show_width) / 2;
 		chargeBar->y = y - 2 * chargeBar->show_height;
 		chargeBar->draw(window, world, entities);
@@ -87,6 +91,17 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 
 		charge++;
 	}
+
+	Block* block = world->blocks[index((y + 3 * show_height / 4) / Block::BLOCKSIZE, (x + show_width / 2) / Block::BLOCKSIZE)];
+	float traction = block->type->traction;
+
+	/*
+	window->setColor(255, 0, 0, 255);
+	window->cross(block->x, block->y);
+	window->cross(block->x + block->show_width, block->y);
+	window->cross(block->x + block->show_width, block->y + block->show_height);
+	window->cross(block->x, block->y + block->show_height);
+	*/
 
 	xvel *= traction;
 	yvel *= traction;
@@ -112,11 +127,11 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 			// do attack lol
 			if (items[selectedSlot].holding != nullptr) {
 				if (swing) {
-					beingUsed.push_back(new Weapon(items[selectedSlot].holding, true, attackAngle, chargeBar->value));
+					beingUsed.push_back(new Weapon(items[selectedSlot].holding, true, attackAngle, valueFromCharge()));
 					animation = true;
 				}
 				else {
-					beingUsed.push_back(new Weapon(items[selectedSlot].holding, false, attackAngle, chargeBar->value));
+					beingUsed.push_back(new Weapon(items[selectedSlot].holding, false, attackAngle, valueFromCharge()));
 					items[selectedSlot].holding = nullptr;
 				}
 			}
@@ -140,10 +155,6 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 			beingUsed.erase(beingUsed.begin() + x);
 			x--;
 		}
-	}
-
-	for (Slot& s : items) {
-		s.draw(window);
 	}
 
 	/*

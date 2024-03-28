@@ -24,6 +24,8 @@ using Vector2f = Vector2<float>;
 
 template <typename T>
 Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r);
+pair<int, int> operator- (const pair<int, int>& l, const pair<int, int>& r);
+pair<int, int> operator+ (const pair<int, int>& l, const pair<int, int>& r);
 
 vector<Vector2f> square(float x, float y, float w, float h);
 void arrowChange(RenderWindow* window, vector<SDL_Scancode>& keys, bool* direction, void (*foo)(vector<void*>), vector<void*> passingArgument);
@@ -45,4 +47,9 @@ enum WEAPON_PROPERTIES {
 	HAMMER, 
 	SPEAR, 
 	DANGER
+};
+
+enum TRIGGER {
+	NO_TRIGGER, 
+	BOSS
 };

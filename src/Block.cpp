@@ -4,6 +4,17 @@ Block::Block(int x, int y, BlockData* bt) : Entity(x * BLOCKSIZE, y * BLOCKSIZE,
 	switchBlockType(bt);
 }
 
+Block::Block(pair<int, int> coords, BlockData* bt) : Entity(coords.first * BLOCKSIZE, coords.second * BLOCKSIZE, bt->texture, BLOCKSIZE, BLOCKSIZE) {
+	switchBlockType(bt);
+}
+
+Block::Block(pair<int, int> coords, BlockData* bt, TRIGGER w) : Entity(coords.first * BLOCKSIZE, coords.second * BLOCKSIZE, bt->texture, BLOCKSIZE, BLOCKSIZE) {
+	switchBlockType(bt);
+	word = w;
+	active = false;
+}
+
+
 void Block::switchBlockType(BlockData* bt) {
 	type = bt;
 	currentFrame.x = bt->x;
@@ -12,6 +23,10 @@ void Block::switchBlockType(BlockData* bt) {
 	currentFrame.h = bt->h;
 	width = bt->w;
 	height = bt->h;
+}
+
+bool Block::isSolidGrass() {
+	return type->name.substr(0, 7) == "Grass11" || type->name.substr(0, 11) == "GrassRandom";
 }
 
 bool pointCompare(int ax, int ay, int bx, int by) {

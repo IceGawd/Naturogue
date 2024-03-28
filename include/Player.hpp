@@ -14,7 +14,6 @@ public:
 	int speed = 6;
 	int slots = 3;
 	int selectedSlot = 0;
-	float traction = 0.7;
 	float chargeTraction = 0.8; // IS ADDITIONAL
 	float charge = 0;
 	float attackAngle = 0;
@@ -36,6 +35,7 @@ public:
 
 	Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture);
 	void select(int num);
+	float valueFromCharge();
 	bool giveItem(Item* item);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

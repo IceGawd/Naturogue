@@ -75,9 +75,20 @@ void runGame() {
 		new EnemyData("Flowy", 5, 40, 500, 60, 100, 0, 0.9, 0, BOUNCING, {
 			{"Bounce", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}, 
 			{"Idle", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
-		}, "Idle")
+		}, "Idle", 1000, 68, 90),
+		new EnemyData("Mossling", 5, 40, 500, 60, 100, 0, 0.2, 0, SNEAKING, {
+			{"Hidden", SpriteSheet(window.loadTexture("res/gfx/grasstiles.png"), 18, 9, 1)}, 
+			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 4, 7, 5)}
+//			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 1, 1, 1)}
+		}, "Walking", 500, 80, 80)
 	};
 
+	/*
+		new EnemyData("Mossling", 5, 40, 500, 60, 100, 0, 0.2, 0, SNEAKING, {
+			{"Hidden", SpriteSheet(window.loadTexture("res/gfx/grasstiles.png"), 18, 9, 1)}, 
+			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
+		}, "Walking", 1000),
+	*/
 	vector<Vector2f> boomerangHitbox = {{15, 2}, {2, 15}, {2, 2}};
 	vector<Vector2f> swordHitbox = {{7, 10}, {7, 8}, {16, 0}, {16, 2}};
 
@@ -196,6 +207,9 @@ void runGame() {
 		for (GameObject* go : entities) {
 			loopPreFix(go, extendXP, extendXN, extendYP, extendYN);
 		}
+		for (Block* b : world->blocks) {
+			loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
+		}
 
 		for (int g = 0; g < entities.size(); g++) {
 			GameObject* go = entities.at(g);
@@ -210,10 +224,17 @@ void runGame() {
 			loopPostFix(go);
 			// cout << "x: " << go->x << " y: " << go->y << endl;
 		}
-
 		// cout << "AFTER: " << player->x << " " << player->y << endl;
 
 		world->draw(&window, true);
+
+		for (Block* b : world->blocks) {
+			loopPostFix(b);
+		}
+
+		for (Slot& s : player->items) {
+			s.draw(&window);
+		}
 
 		for (Button* b : buttons) {
 			if (b->show) {

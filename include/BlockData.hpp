@@ -16,9 +16,10 @@ struct BlockData {
 	int h;
 	bool permissable;
 	bool front;
+	float traction;
 
 	BlockData(string n, SDL_Texture* t);
-	BlockData(string n, SDL_Texture* t, int x1, int y1, int w1, int h1, bool p = false, bool f = false);
+	BlockData(string n, SDL_Texture* t, int x1, int y1, int w1, int h1, float tr = 0, bool p = false, bool f = false);
 };
 
 bool dataCompare(BlockData* a, BlockData* b);

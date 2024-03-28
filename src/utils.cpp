@@ -8,6 +8,15 @@ Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r) {
 	return { l.x - r.x, l.y - r.y };
 }
 
+pair<int, int> operator- (const pair<int, int>& l, const pair<int, int>& r) {
+	return {l.first - r.first, l.second - r.second};
+}
+
+pair<int, int> operator+ (const pair<int, int>& l, const pair<int, int>& r) {
+	return {l.first + r.first, l.second + r.second};
+}
+
+
 vector<Vector2f> square(float x, float y, float w, float h) {
 	return {
 		{x, y}, 
@@ -45,7 +54,7 @@ float pointAngleBetween(int x1, int y1, int x2, int y2) {
 			angle = M_PI / -2.0;
 		}
 		else {
-			angle = M_PI / 2.0;			
+			angle = M_PI / 2.0;	
 		}
 	}
 	else if (xDiff > 0) {

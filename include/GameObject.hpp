@@ -16,6 +16,7 @@ using namespace std;
 
 class GameObject : public Entity {
 public:
+	virtual ~GameObject();
 	GameObject();
 	GameObject(float px, float py, SDL_Texture* ptexture, int pw, int ph);
 	

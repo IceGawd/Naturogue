@@ -10,7 +10,15 @@ using namespace std;
 
 enum AI {
 	NONE, 
-	BOUNCING
+	BOUNCING, 
+	SNEAKING
+};
+
+enum DIRECTION {
+	UP, 
+	DOWN, 
+	RIGHT, 
+	LEFT
 };
 
 struct EnemyData {
@@ -23,11 +31,14 @@ struct EnemyData {
 	int defence;
 	float traction;
 	float knockbackResistance;
+	int aggroRange;
+	int show_width;
+	int show_height;
 	AI ai;
 	map<string, SpriteSheet> sheets;
 	string startSheetName;
 
-	EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, float t, float k, AI ai, map<string, SpriteSheet> sh, string st) {
+	EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, float t, float k, AI ai, map<string, SpriteSheet> sh, string st, int ar, int w, int h) {
 		name = n;
 		damage = da;
 		movementspeed = mo;
@@ -40,5 +51,8 @@ struct EnemyData {
 		this->ai = ai;
 		sheets = sh;
 		startSheetName = st;
+		aggroRange = ar;
+		show_width = w;
+		show_height = h;
 	}
 };

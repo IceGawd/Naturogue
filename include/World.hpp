@@ -19,10 +19,10 @@ struct Player;
 
 class World {
 public:
-	static const int WORLDSIZE = 100;
+	static const int WORLDSIZE = 200;
 	static const int PIXELSIZE = 16;
 	static constexpr int WORLDLENGTH = WORLDSIZE * Block::BLOCKSIZE;
-	static const int SEPERATION_FORCE_FACTOR = 500;
+	static const int SEPERATION_FORCE_FACTOR = 1000;
 	vector<BlockData*> BLOCKTYPES;
 	vector<Block*> blocks;
 	vector<StructureType*> STRUCTYPES;
@@ -31,9 +31,11 @@ public:
 
 	World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas);
 	void edgeCleanup(string toEdge);
+	bool notNearStructure(int x, int y);
 	BlockData* getBlockData(string s);
 	void draw(RenderWindow* window, bool front);
 	bool collides(GameObject* object);
 	// Block* blockAt(int x, int y);
 	static bool blockInRect(Block* b, int x, int y, int w, int h);
+	void activateTrigger(TRIGGER t);
 };
