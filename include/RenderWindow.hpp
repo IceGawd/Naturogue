@@ -16,6 +16,7 @@ class RenderWindow {
 public:
 	const static int WIDTH = 1280;
 	const static int HEIGHT = 720;
+	constexpr static int SCREENRADIUS = sqrt(WIDTH * WIDTH + HEIGHT * HEIGHT) / 2;
 	const Uint8* keyboard;
 	ControlsConfig cc;
 	World* world;

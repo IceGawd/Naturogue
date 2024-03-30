@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "ItemDrop.hpp"
 
 Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture) {
 	for (int x = 0; x < slots; x++) {
@@ -50,6 +51,41 @@ bool Player::giveItem(Item* item) {
 
 float Player::valueFromCharge() {
 	return 20 + exp(-0.05 * charge - 0.15) * (-21 + charge * (-1 + charge * -0.02));
+}
+
+void interact(vector<void*> object) {
+	World* world = (World*) (object[0]);
+	Player* player = (Player*) (object[1]);
+	vector<ItemData*>* itemDatas = (vector<ItemData*>*) (object[2]);
+	vector<GameObject*>* entities = (vector<GameObject*>*) (object[3]);
+
+	int midX = (player->x + player->show_width / 2) / Block::BLOCKSIZE;
+	int midY = (player->y + player->show_height / 2) / Block::BLOCKSIZE;
+
+	vector<pair<int, int>> areasToCheck;
+
+	if (player->current == "up" || player->input.up) {
+		areasToCheck.push_back({midX, midY - 1});
+	}
+	if (player->current == "down" || player->input.down) {
+		areasToCheck.push_back({midX, midY + 1});
+	}
+	if (player->current == "left" || player->input.left) {
+		areasToCheck.push_back({midX - 1, midY});
+	}
+	if (player->current == "right" || player->input.right) {
+		areasToCheck.push_back({midX + 1, midY});
+	}
+
+	for (Block* block : world->blocks) {
+		for (pair<int, int> pii : areasToCheck) {
+			string name = block->type->name;
+			if (name.substr(0, 5) == "Chest" && name.substr(name.size() - 6, 6) == "Closed" && block->x == pii.first * Block::BLOCKSIZE && block->y == pii.second * Block::BLOCKSIZE) {
+				block->switchBlockType(world->getBlockData(name.substr(0, name.size() - 6) + "Open"));
+				entities->push_back(new ItemDrop(block->x + Block::BLOCKSIZE / 2, block->y + Block::BLOCKSIZE / 2, new Item((*itemDatas)[(int) (random() * itemDatas->size())]), 0));
+			}
+		}
+	}
 }
 
 bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {

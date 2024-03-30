@@ -1,13 +1,15 @@
 #include "Bar.hpp"
 #include "RenderWindow.hpp"
 
-Bar::Bar(RenderWindow* window, int w, int h, int t, float mv) {
+Bar::Bar(RenderWindow* window, int w, int h, int t, float mv, bool s, bool so) {
 	width = w;
 	height = h;
 	show_width = w;
 	show_height = h;
 	thickness = t;
 	maxValue = mv;
+	stationary = s;
+	solidColor = so;
 
 	// /*
 	// */
@@ -70,10 +72,18 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 				a = 255;
 			}
 			else if ((x - thickness) / (width - 2.0 * thickness) < (value / maxValue)) {
-				r = (Uint8) (127.5 * sin(mod) + 127.5);
-				g = (Uint8) (127.5 * sin(mod + 2 * M_PI / 3) + 127.5);
-				b = (Uint8) (127.5 * sin(mod + 4 * M_PI / 3) + 127.5);
-				a = 255;
+				if (solidColor) {
+					r = (value > maxValue / 2) ? 510 * (1 - value / maxValue) : 255;
+					g = (value > maxValue / 2) ? 255 : 510 * (value / maxValue);
+					b = 0;
+					a = 255;
+				}
+				else {
+					r = (Uint8) (127.5 * sin(mod) + 127.5);
+					g = (Uint8) (127.5 * sin(mod + 2 * M_PI / 3) + 127.5);
+					b = (Uint8) (127.5 * sin(mod + 4 * M_PI / 3) + 127.5);
+					a = 255;
+				}
 			}
 			else {
 				a = 0;
@@ -96,7 +106,7 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 
 	SDL_UpdateTexture(texture.get(), NULL, pixels, surf->pitch);
 
-	window->render(this);
+	window->render(this, stationary);
 
 	return false;
 }

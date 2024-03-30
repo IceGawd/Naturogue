@@ -42,7 +42,7 @@ vector<pair<int, int>> getDegrees(int r) {
 void generateWorld(World* world, RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
-	// auto seed = 1711571682;
+	// auto seed = 1711753232;
 	cout << "SEED: " << seed << endl;
 
 	PerlinNoise pn = PerlinNoise(seed);
@@ -52,7 +52,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// cout << z << endl;
 
 	// GENERATE STRUCTURE LOCATIONS
-	// /*
+	/*
 	if (random() > 0.5) {
 		world->structures.push_back(Structure(world->STRUCTYPES[0], (int) ((random() * World::WORLDLENGTH) / Block::BLOCKSIZE) * Block::BLOCKSIZE, 0));
 	}
@@ -61,13 +61,13 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	}
 	// */
 
-	// world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2));		
+	world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
 
 	world->structures.push_back(Structure(world->STRUCTYPES[1], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2));
 	// world->structures.push_back(Structure(world->STRUCTYPES[2], World::WORLDLENGTH / 2 + 1000, World::WORLDLENGTH / 2));
 
 	// /*
-	int numStructs = World::WORLDSIZE / 5.0 + random() * World::WORLDSIZE / 5.0;
+	int numStructs = World::WORLDSIZE / 15.0 + random() * World::WORLDSIZE / 15.0;
 	for (int x = 0; x < numStructs; x++) {
 		int x1 = random() * World::WORLDLENGTH;
 		int y1 = random() * World::WORLDLENGTH;
@@ -191,12 +191,13 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// PLACE STRUCTURES
 	for (Structure& s : world->structures) {
 		// cout << s.x << " " << s.y << endl;
+		int midX = s.x / Block::BLOCKSIZE;
+		int midY = s.y / Block::BLOCKSIZE;
+
 		if (s.type->name == "Entrance") {
+			cout << s.x << " " << s.y << endl;
 			player->x = s.x - player->show_width / 2;
 			player->y = s.y - player->show_height;
-
-			int midX = s.x / Block::BLOCKSIZE;
-			int midY = s.y / Block::BLOCKSIZE;
 
 			for (int x = 0; x < 2; x++) {
 				for (int y = 0; y < 2; y++) {
@@ -204,9 +205,18 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 				}
 			}
 		}
+		else if (s.type->name == "Chest") {
+			cout << s.x << " " << s.y << endl;
+			int type = random() * 3;
+			if (type) {
+				world->blocks.push_back(new Block(midX, midY, world->getBlockData("ChestSmallSideClosed"), type - 1));
+			}
+			else {
+				world->blocks.push_back(new Block(midX, midY, world->getBlockData("ChestSmallForwardClosed")));
+			}
+		}
 		else if (s.type->name == "Enemy") {
 			// /*
-			cout << s.x << " " << s.y << endl;
 			vector<Enemy*> group;
 			EnemyData* ed = enemyDatas[(int) (random() * enemyDatas.size())];
 			// EnemyData* ed = enemyDatas[0];
@@ -234,7 +244,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			vector<pair<int, int>> pillarCircle = getDegrees(r * 3 / 4);
 			int pillarMod = random() * pillarCircle.size();
 
-			pair<int, int> battleCenter = {s.x / Block::BLOCKSIZE, s.y / Block::BLOCKSIZE};
+			pair<int, int> battleCenter = {midX, midY};
 			pair<int, int> left = {-1, 0};
 			pair<int, int> up = {0, -1};
 			pair<int, int> down = {0, 1};
@@ -279,24 +289,44 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 					world->blocks.push_back(new Block(pii + up, world->getBlockData("TallPillar1")));
 				}
 			}
-		}
-	}
-	for (Structure& s : world->structures) {
-		if (s.type->name == "Tree") {
-			int midX = s.x / Block::BLOCKSIZE;
-			int midY = s.y / Block::BLOCKSIZE;
 
-			bool safePosition = true;
-			for (Block* block : world->blocks) {
-				if (!block->type->permissable && abs(block->x / Block::BLOCKSIZE - midX) < 3 && abs(block->y / Block::BLOCKSIZE - midY) < 3) {
-					safePosition = false;
-					break;
+			for (int x = 0; x < 4; x++) {
+				for (int y = 0; y < 5; y++) {
+					world->blocks.push_back(new Block(midX + x - 2, midY + y - 5, world->getBlockData("BigTree" + to_string(x) + to_string(y))));
 				}
 			}
-			if (!safePosition) {
-				continue;
-			}
+		}
+	}
 
+	int numGrowth = (World::WORLDSIZE * World::WORLDSIZE / 20.0) * (1 + random());
+	for (int z = 0; z < numGrowth; z++) {
+		int midX = random() * World::WORLDSIZE;
+		int midY = random() * World::WORLDSIZE;
+
+		bool safePosition = true;
+		for (int y = 0; y < 2; y++) {
+			int spawnX = world->structures[y].x / Block::BLOCKSIZE;
+			int spawnY = world->structures[y].y / Block::BLOCKSIZE;
+
+			if ((abs(spawnX - midX) < 15 || abs(spawnX - midX) > World::WORLDSIZE - 15) && (abs(spawnY - midY) < 15 || abs(spawnY - midY) > World::WORLDSIZE - 15)) {
+				safePosition = false;
+				break;
+			}
+		}
+		if (!safePosition) {
+			continue;
+		}
+		for (Block* block : world->blocks) {
+			if ((!block->type->permissable || !block->isSolidGrass()) && abs(block->x / Block::BLOCKSIZE - midX) < 3 && abs(block->y / Block::BLOCKSIZE - midY) < 3) {
+				safePosition = false;
+				break;
+			}
+		}
+		if (!safePosition) {
+			continue;
+		}
+
+		if (random() < 0.1) { // TREE
 			if (random() < 0.3) {
 				for (int x = 0; x < 4; x++) {
 					for (int y = 0; y < 5; y++) {
@@ -312,21 +342,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 				}
 			}
 		}
-		if (s.type->name == "Bush") {
-			int midX = s.x / Block::BLOCKSIZE;
-			int midY = s.y / Block::BLOCKSIZE;
-
-			bool safePosition = true;
-			for (Block* block : world->blocks) {
-				if ((!block->type->permissable || !block->isSolidGrass()) && abs(block->x / Block::BLOCKSIZE - midX) < 3 && abs(block->y / Block::BLOCKSIZE - midY) < 3) {
-					safePosition = false;
-					break;
-				}
-			}
-			if (!safePosition) {
-				continue;
-			}
-
+		else { // BUSH
 			if (random() < 0.3) {
 				for (int x = 0; x < 2; x++) {
 					for (int y = 0; y < 2; y++) {

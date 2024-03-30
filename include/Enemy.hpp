@@ -17,6 +17,9 @@ public:
 	EnemyData* ed;
 	Bar* healthBar;
 
+	int randoSampledX = 0;
+	int randoSampledY = 0;
+
 	bool lighter = false;
 	bool active = false;
 	bool rage = false;

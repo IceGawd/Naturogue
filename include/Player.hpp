@@ -9,6 +9,8 @@
 
 #include <math.h>
 
+void interact(vector<void*> objects);
+
 class Player : public GameObject {
 public:
 	int speed = 6;

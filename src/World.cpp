@@ -16,15 +16,25 @@ int index(int x, int y) {
 
 World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
 	this->player = player;
+	activeTriggers.push_back({BOSS, false});
 	
+	boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.1, SHRUB, {
+		{"ShrubBattleStart", SpriteSheet(window->loadTexture("res/gfx/ShrubBattleStart.png"), 10, 1, 5)}, 
+		{"ShrubAttackL", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackL.png"), 10, 1, 5)}, 
+		{"ShrubAttackR", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackR.png"), 10, 1, 5)}, 
+		{"ShrubIdleL", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleL.png"), 2, 1, 5)}, 
+		{"ShrubIdleR", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleR.png"), 2, 1, 5)}, 
+		{"ShrubRunL", SpriteSheet(window->loadTexture("res/gfx/ShrubRunL.png"), 4, 1, 5)}, 
+		{"ShrubRunR", SpriteSheet(window->loadTexture("res/gfx/ShrubRunR.png"), 4, 1, 5)}, 
+		{"ShrubDeath", SpriteSheet(window->loadTexture("res/gfx/ShrubDeath.png"), 6, 1, 5)}, 
+	}, "ShrubBattleStart", 2000, 120, 120);
+
 	// LOAD STRUCTURES
 	STRUCTYPES = {
 		new StructureType("Entrance", 4, 1), 
 		new StructureType("Exit", 4, 1), 
-		new StructureType("Enemy", 1, 0.2), 
-		new StructureType("Tree", 2, 0.4), 
-		new StructureType("Bush", 1, 0.3), 
-		new StructureType("Chest", 1, 0.1), 
+		new StructureType("Enemy", 1, 0.7), 
+		new StructureType("Chest", 1, 0.3), 
 	};
 
 	// LOAD BLOCKS
@@ -34,10 +44,12 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 	SDL_Texture* props = window->loadTexture("res/gfx/Props_1.2.png");
 
 	BLOCKTYPES.push_back(new BlockData("DirtPath", grasstiles, 0, 5 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.7, true));
-	BLOCKTYPES.push_back(new BlockData("TallPillar1", props, PIXELSIZE * 4, 0, PIXELSIZE, PIXELSIZE, 1, true, true));
-	BLOCKTYPES.push_back(new BlockData("TallPillar0", props, PIXELSIZE * 4, PIXELSIZE, PIXELSIZE, PIXELSIZE));
 	BLOCKTYPES.push_back(new BlockData("ShortPillar", props, PIXELSIZE * 4, PIXELSIZE * 2, PIXELSIZE, PIXELSIZE));
 	BLOCKTYPES.push_back(new BlockData("SmallBush", grasstiles, 0, PIXELSIZE * 4, PIXELSIZE, PIXELSIZE));
+	BLOCKTYPES.push_back(new BlockData("ChestSmallForwardClosed", props, PIXELSIZE * 5, 0, PIXELSIZE, PIXELSIZE));
+	BLOCKTYPES.push_back(new BlockData("ChestSmallForwardOpen", props, PIXELSIZE * 5, PIXELSIZE, PIXELSIZE, PIXELSIZE));
+	BLOCKTYPES.push_back(new BlockData("ChestSmallSideClosed", props, PIXELSIZE * 8, 0, PIXELSIZE, PIXELSIZE));
+	BLOCKTYPES.push_back(new BlockData("ChestSmallSideOpen", props, PIXELSIZE * 8, PIXELSIZE, PIXELSIZE, 19));
 
 	for (int x = 0; x < 3; x++) {
 		for (int y = 0; y < 3; y++) {
@@ -46,7 +58,8 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 			BLOCKTYPES.push_back(new BlockData("BrickArch" + to_string(x) + to_string(y), props, PIXELSIZE * x, PIXELSIZE * (y + 2), PIXELSIZE, PIXELSIZE, 1, (y != 2 || x == 1), (y != 2 || x == 1)));
 			BLOCKTYPES.push_back(new BlockData("SmallTree" + to_string(x) + to_string(y), props, PIXELSIZE * (x + 15), PIXELSIZE * y, PIXELSIZE, PIXELSIZE, 1, (y != 2 || x != 1), (y != 2 || x != 1)));			
 		}
-		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(x), grasstiles, PIXELSIZE * x, 3 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, true));
+		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(2 - x), grasstiles, PIXELSIZE * x, 3 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, true));
+		BLOCKTYPES.push_back(new BlockData("SidewaysSign" + to_string(2 - x), props, PIXELSIZE * 7, (x + 3) * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, !(x == 2), !(x == 2)));
 	}
 
 	for (int x = 0; x < 2; x++) {
@@ -57,6 +70,11 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 			BLOCKTYPES.push_back(new BlockData("BigBush" + to_string(x) + to_string(y), grasstiles, PIXELSIZE * (x + 1), PIXELSIZE * (y + 4), PIXELSIZE, PIXELSIZE));
 		}
 		BLOCKTYPES.push_back(new BlockData("DirtRandom" + to_string(x), grasstiles, (10 + x) * PIXELSIZE, 8 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.68, true));		
+		BLOCKTYPES.push_back(new BlockData("TallPillar" + to_string(1 - x), props, PIXELSIZE * 4, PIXELSIZE * x, PIXELSIZE, PIXELSIZE, 1, !(x == 1), !(x == 1)));
+		BLOCKTYPES.push_back(new BlockData("DownRightSign" + to_string(1 - x), props, PIXELSIZE * 5, PIXELSIZE * (x + 2), PIXELSIZE, PIXELSIZE, 1, !(x == 1), !(x == 1)));
+		BLOCKTYPES.push_back(new BlockData("DownLeftSign" + to_string(1 - x), props, PIXELSIZE * 5, PIXELSIZE * (x + 4), PIXELSIZE, PIXELSIZE, 1, !(x == 1), !(x == 1)));
+		BLOCKTYPES.push_back(new BlockData("UpRightSign" + to_string(1 - x), props, PIXELSIZE * 6, PIXELSIZE * (x + 2), PIXELSIZE, PIXELSIZE, 1, !(x == 1), !(x == 1)));
+		BLOCKTYPES.push_back(new BlockData("UpLeftSign" + to_string(1 - x), props, PIXELSIZE * 6, PIXELSIZE * (x + 4), PIXELSIZE, PIXELSIZE, 1, !(x == 1), !(x == 1)));
 	}
 
 	for (int x = 0; x < 4; x++) {
@@ -196,7 +214,7 @@ void World::activateTrigger(TRIGGER t) {
 	}
 }
 
-void World::draw(RenderWindow* window, bool front) {
+void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front) {
 	bool extendXP;
 	bool extendXN;
 	bool extendYP;
@@ -210,6 +228,16 @@ void World::draw(RenderWindow* window, bool front) {
 			window->render(b);
 			loopPostFix(b);
 		}
+	}
+
+	int xDiff = player->x - WORLDLENGTH / 2 + player->show_width / 2;
+	int yDiff = player->y - WORLDLENGTH / 2 + player->show_height / 2;
+	// cout << xDiff * xDiff + yDiff * yDiff << endl;
+	if (xDiff * xDiff + yDiff * yDiff < 40000 && !activeTriggers[0].second) { // Distance is less than 200
+		activeTriggers[0].second = true;
+		activateTrigger(activeTriggers[0].first);
+		shrub = new Enemy(WORLDLENGTH / 2 - Block::BLOCKSIZE / 2, WORLDLENGTH / 2 - 3 * Block::BLOCKSIZE, boss, window);
+		entities.push_back(shrub);
 	}
 }
 

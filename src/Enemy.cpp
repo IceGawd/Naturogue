@@ -28,7 +28,12 @@ Enemy::Enemy(int x, int y, EnemyData* e, RenderWindow* window) {
 	show_width = e->show_width;
 	show_height = e->show_height;
 
-	healthBar = new Bar(window, show_width * 0.8, show_height * 0.3, 5, health);
+	if (e->ai == SHRUB) {
+		healthBar = new Bar(window, RenderWindow::WIDTH * 0.8, 70, 10, health, true, M_PI / 108.0);
+	}
+	else {
+		healthBar = new Bar(window, show_width * 0.8, show_height * 0.3, 5, health);
+	}
 
 	// cout << "width: " << width << endl;
 	// cout << "height: " << height << endl;
@@ -92,17 +97,10 @@ void Enemy::darken() {
 
 
 bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
-	if (health != ed->maxHP) {
-		healthBar->x = x + (show_width - healthBar->show_width) / 2;
-		healthBar->y = y - 2 * healthBar->show_height;
-		healthBar->value = health;
-		healthBar->draw(window, world, entities);
-	}
-
+	Player* p = world->player;
 	// cout << "start\n";
 
 	// cout << "a2\n";
-	Player* p = world->player;
 	// cout << "b2\n";
 
 	float distanceFromPlayer = distance(p);
@@ -110,8 +108,14 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 	// TODO: FOR AI PROGRAMMING KEEP IN MIND LOOPING WORLD (patched with utils.cpp's 3 loopFix functions)
 	// /*
 
-	if (distanceFromPlayer < 5000) {
-		GameObject::draw(window, world, entities);
+	if (distanceFromPlayer < world->renderSize) {
+		if (ed->ai != SHRUB && health != ed->maxHP) {
+			healthBar->x = x + (show_width - healthBar->show_width) / 2;
+			healthBar->y = y - 2 * healthBar->show_height;
+			healthBar->value = health;
+			healthBar->draw(window, world, entities);
+		}
+
 		if (ed->ai == BOUNCING) {
 			active = true;
 			recoveryFrames--;
@@ -137,6 +141,101 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					changeSpriteSheet("Idle");
 				}
 			}
+		}
+		else if (ed->ai == SHRUB) {
+			float speedMod = 1.5 - health / 2000;
+
+			string facingString = (facing == LEFT) ? "L" : "R";
+			if (random() < 0.01) {
+				randoSampledX = x;
+				randoSampledY = y;
+			}
+
+			if (p->x + show_width / 2 < x + show_width / 2) {
+				facing = LEFT;
+			}
+			else {
+				facing = RIGHT;
+			}
+
+			if (health <= 0) {
+				if (current != "ShrubDeath") {
+					changeSpriteSheet("ShrubDeath");
+					rageMeter = 0;
+				}
+			}
+			else if (current == "ShrubBattleStart" || active) {
+				active = true;
+				// changeSpriteSheet("ShrubBattleStart");
+				if (rageMeter < 50) {
+					y += 8;
+					changeSpriteSheet("ShrubIdle" + facingString);
+				}
+				else {
+					changeSpriteSheet("ShrubBattleStart");		
+				}
+				if (rageMeter == 100) {
+					changeSpriteSheet("ShrubIdle" + facingString);
+					active = false;
+					rageMeter = 0;
+				}
+			}
+			else {
+				if (rageMeter == 0) {
+					if (1 / (abs(randoSampledX - x) + abs(randoSampledY - y) + 1) > random()) {
+						changeSpriteSheet("ShrubRun" + facingString);
+						rage = true;						
+					}
+					else if (distanceFromPlayer < 400 && random() < 0.9) {
+						changeSpriteSheet("ShrubAttack" + facingString);
+					}
+					else if (distanceFromPlayer < 800 && random() < 0.8) {
+						changeSpriteSheet("ShrubRun" + facingString);
+					}
+					else if (distanceFromPlayer < 1200 && random() < 0.7) {
+						changeSpriteSheet("ShrubIdle" + facingString);
+					}
+					else {
+						changeSpriteSheet("ShrubRun" + facingString);
+						rage = random() < 0.6;
+					}
+				}
+				else {
+					float angle = angleBetween(p);
+					if (current.substr(0, current.size() - 1) == "ShrubAttack") {
+						changeSpriteSheet("ShrubAttack" + facingString);
+
+						xvel -= cos(angle) * ed->movementspeed / 2 * speedMod;
+						yvel += sin(angle) * ed->movementspeed / 2 * speedMod;
+					}
+					else if (current.substr(0, current.size() - 1) == "ShrubRun" && !rage) {
+						changeSpriteSheet("ShrubRun" + facingString);
+
+						xvel -= cos(angle) * ed->movementspeed * speedMod;
+						yvel += sin(angle) * ed->movementspeed * speedMod;
+					}
+					else if (current.substr(0, current.size() - 1) == "ShrubIdle") {
+						changeSpriteSheet("ShrubIdle" + facingString);
+						xvel = 0;
+						yvel = 0;
+					}
+					else if (current.substr(0, current.size() - 1) == "ShrubRun" && rage) {
+						if ((int) (rageMeter) % 20 == 0) {
+							// angle += (random() + random() + random() - 1.5) * M_PI / 6;
+							angle = random() * M_PI * 2;
+							xvel -= cos(angle) * ed->movementspeed * 30 * speedMod;
+							yvel += sin(angle) * ed->movementspeed * 30 * speedMod;
+						}
+					}
+
+					if (next->xFrames * next->frames == rageMeter) {
+						rageMeter = -1;
+					}
+				}
+			}
+			animationType = 0;
+			animationFrame = (int) (rageMeter / next->frames) % next->xFrames;
+			rageMeter++;
 		}
 		else if (ed->ai == SNEAKING) {
 			// active = true;
@@ -313,6 +412,9 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						mod *= 1.1 * atan((distance(world->player) - 156) / 60.3) + 1.3; 
 						// cout << "mod: " << mod << endl;
 					}
+					if (bu->item->itemData->hasProperty(HAMMER)) {
+						mod *= bu->charge / 10.0;						
+					}
 
 					float pab = pointAngleBetween(bu->xvel, bu->yvel, 0, 0);
 					float kbx = bu->item->itemData->knockback * cos(pab) + bu->xvel;
@@ -361,5 +463,9 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		}
 	}
 
-	return health <= 0;
+	if (!active || ed->ai != SHRUB) {
+		GameObject::draw(window, world, entities);
+	}
+
+	return ((health <= 0 && ed->ai != SHRUB) || (rageMeter == 30 && current == "ShrubDeath"));
 }

@@ -27,6 +27,10 @@ Decreased Player movement acceleration (- speed + traction) [max speed = speed *
 256 - You don't slowly regenerate health
 */
 
+bool height(GameObject* go1, GameObject* go2) {
+	return go1->y < go2->y;
+}
+
 void runGame() {
 	const int FPS = 60;
 
@@ -72,11 +76,11 @@ void runGame() {
 	vector<GameObject*> entities;
 
 	vector<EnemyData*> enemyDatas = {
-		new EnemyData("Flowy", 5, 40, 500, 60, 100, 0, 0.9, 0, BOUNCING, {
+		new EnemyData("Flowy", 20, 40, 500, 60, 100, 0, 0.9, 0, BOUNCING, {
 			{"Bounce", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}, 
 			{"Idle", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
 		}, "Idle", 1000, 68, 90),
-		new EnemyData("Mossling", 5, 40, 500, 60, 100, 0, 0.2, 0, SNEAKING, {
+		new EnemyData("Mossling", 10, 40, 500, 60, 70, 0, 0.2, 0, SNEAKING, {
 			{"Hidden", SpriteSheet(window.loadTexture("res/gfx/grasstiles.png"), 18, 9, 1)}, 
 			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 4, 7, 5)}
 //			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 1, 1, 1)}
@@ -93,26 +97,24 @@ void runGame() {
 	vector<Vector2f> swordHitbox = {{7, 10}, {7, 8}, {16, 0}, {16, 2}};
 
 	vector<ItemData*> itemDatas = {
-		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 20, 50, 10, false, false, 2.5, 0.95, 5, {}),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 30, 90, 20, true, false, 2.5, 0.95, 5, {BOOMERANG, DANGER}, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 40, 20, true, false, 2.5, 0.95, 5, {BOOMERANG}, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 40, 30, 15, false, false, 2.5, 0.95, 5, {TIPPER}, swordHitbox),
-		new ItemData(weapons1, 16, 16, 3, 0, 60, 60, "Stick", 5 * M_PI / 4,                 M_PI / 5, 5, 5, 5, true, false, 2.5, 0.95, 5, {}, swordHitbox),
-		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 40, 30, 20, true, false, 2.5, 0.95, 5, {}, swordHitbox),
-		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2.5, 0.95, 5, {}), 
-		new ItemData(weapons1, 16, 16, 6, 0, 80, 80, "Trickshot", 5 * M_PI / 4,             M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {}),
-		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {SPEAR}),
-		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 10, 100, 20, false, true, 2.5, 0.95, 5, {SPEAR}),
-		new ItemData(weapons1, 16, 16, 9, 0, 80, 80, "Blossom", 5 * M_PI / 4,               M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {}),
-		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 10, 100, 20, true, false, 2.5, 0.95, 5, {HAMMER}),
-		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 10, 100, 20, false, false, 2.5, 0.95, 5, {HAMMER}),
-		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      6 * M_PI, 10, 100, 60, true, false, 2.5, 0.95, 5, {HAMMER}),
-		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 2.5, 0.95, 5, {HAMMER}),
+		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 30, 40, 4, false, false, 2.5, 0.95, 2, {}),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 40, 80, 8, true, false, 3.5, 0.95, 10, {BOOMERANG, DANGER}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 20, 30, 8, true, false, 3, 0.95, 5, {BOOMERANG}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 50, 20, 6, false, false, 2, 0.9, 10, {TIPPER}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 3, 0, 70, 70, "Stick", 5 * M_PI / 4,                 M_PI / 5, 25, 15, 2, true, false, 2.5, 0.8, 5, {}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 50, 20, 10, true, false, 1.5, 0.95, 10, {}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2, 0.95, 4, {}), 
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 10, 20, true, false, 2.5, 0.95, 15, {SPEAR}),
+		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 2, 0.85, 3, {SPEAR}),
+		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 15, 15, 20, true, false, 2, 0.85, 4, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 30, 30, 20, false, false, 3, 0.95, 6, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      6 * M_PI, 35, 15, 60, true, false, 2, 0.9, 10, {HAMMER}),
+		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 1, 0.95, 20, {HAMMER}),
 	};
 
-	player->items[0].holding = new Item(itemDatas[2]);
-	player->items[1].holding = new Item(itemDatas[3]);
-	player->items[2].holding = new Item(itemDatas[13]);
+	player->items[0].holding = new Item(itemDatas[4]);
+	// player->items[1].holding = new Item(itemDatas[3]);
+	// player->items[2].holding = new Item(itemDatas[13]);
 
 	entities.push_back(player);
 	// cout << "a1\n";
@@ -187,12 +189,13 @@ void runGame() {
 					player->select(num);
 				}
 			}
-
-			arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
-			arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
-			arrowChange(&window, window.cc.right, &player->input.right, nullptr, {});
-			arrowChange(&window, window.cc.down, &player->input.down, nullptr, {});
 		}
+
+		arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
+		arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
+		arrowChange(&window, window.cc.right, &player->input.right, nullptr, {});
+		arrowChange(&window, window.cc.down, &player->input.down, nullptr, {});
+		arrowChange(&window, window.cc.okay, &player->input.okay, interact, {world, player, &itemDatas, &entities});
 
 		// cout << "BEFORE: " << player->x << " " << player->y << endl;
 
@@ -201,7 +204,7 @@ void runGame() {
 		bool extendYP;
 		bool extendYN;
 
-		world->draw(&window, false);
+		world->draw(&window, entities, false);
 
 		fixPreLoop(&window, extendXP, extendXN, extendYP, extendYN);
 		for (GameObject* go : entities) {
@@ -210,6 +213,8 @@ void runGame() {
 		for (Block* b : world->blocks) {
 			loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
 		}
+
+		sort(entities.begin(), entities.end(), height);
 
 		for (int g = 0; g < entities.size(); g++) {
 			GameObject* go = entities.at(g);
@@ -226,7 +231,7 @@ void runGame() {
 		}
 		// cout << "AFTER: " << player->x << " " << player->y << endl;
 
-		world->draw(&window, true);
+		world->draw(&window, entities, true);
 
 		for (Block* b : world->blocks) {
 			loopPostFix(b);
@@ -246,11 +251,37 @@ void runGame() {
 		window.x = player->x - ((RenderWindow::WIDTH - player->show_width) / 2) / window.zoom;
 		window.y = player->y - ((RenderWindow::HEIGHT - player->show_height) / 2) / window.zoom;
 
+		if (world->shrub != nullptr) {
+			world->shrub->healthBar->x = (RenderWindow::WIDTH - world->shrub->healthBar->show_width) / 2;
+			world->shrub->healthBar->y = world->shrub->healthBar->show_height / 2;
+			if (world->shrub->active) {
+				world->shrub->healthBar->value = world->shrub->rageMeter * world->shrub->health / 100;
+			}
+			else {
+				world->shrub->healthBar->value = world->shrub->health;				
+			}
+			world->shrub->healthBar->draw(&window, world, entities);
+		}
+
 		auto end = chrono::steady_clock().now();
 		chrono::duration<double> frameDone = end - start;
 
 		window.display();
 		double delay = 1000 * ((1.0 / FPS) - frameDone.count());
+		cout << delay << " " << world->renderSize << endl;
+		if (delay > 2) {
+			world->renderSize += 100;
+		}
+		else {
+			world->renderSize -= 100;
+		}
+		if (world->renderSize > World::WORLDLENGTH) {
+			world->renderSize = World::WORLDLENGTH;
+		}
+		if (world->renderSize < RenderWindow::SCREENRADIUS / window.zoom) {
+			world->renderSize = RenderWindow::SCREENRADIUS / window.zoom;
+		}
+
 		if (delay > 0) {
 			SDL_Delay(delay);
 		}

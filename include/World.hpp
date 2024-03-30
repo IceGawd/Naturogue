@@ -16,6 +16,7 @@ using namespace std;
 int index(int x, int y);
 
 struct Player;
+struct Enemy;
 
 class World {
 public:
@@ -27,13 +28,17 @@ public:
 	vector<Block*> blocks;
 	vector<StructureType*> STRUCTYPES;
 	vector<Structure> structures;
+	vector<pair<TRIGGER, bool>> activeTriggers; 
 	Player* player;
+	EnemyData* boss;
+	Enemy* shrub = nullptr;
+	int renderSize = 5000;
 
 	World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas);
 	void edgeCleanup(string toEdge);
 	bool notNearStructure(int x, int y);
 	BlockData* getBlockData(string s);
-	void draw(RenderWindow* window, bool front);
+	void draw(RenderWindow* window, vector<GameObject*>& entities, bool front);
 	bool collides(GameObject* object);
 	// Block* blockAt(int x, int y);
 	static bool blockInRect(Block* b, int x, int y, int w, int h);

@@ -11,7 +11,8 @@ using namespace std;
 enum AI {
 	NONE, 
 	BOUNCING, 
-	SNEAKING
+	SNEAKING, 
+	SHRUB
 };
 
 enum DIRECTION {

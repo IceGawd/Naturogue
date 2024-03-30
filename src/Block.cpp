@@ -1,7 +1,8 @@
 #include "Block.hpp"
 
-Block::Block(int x, int y, BlockData* bt) : Entity(x * BLOCKSIZE, y * BLOCKSIZE, bt->texture, BLOCKSIZE, BLOCKSIZE) {
+Block::Block(int x, int y, BlockData* bt, bool f) : Entity(x * BLOCKSIZE, y * BLOCKSIZE, bt->texture, BLOCKSIZE, BLOCKSIZE) {
 	switchBlockType(bt);
+	flip = f;
 }
 
 Block::Block(pair<int, int> coords, BlockData* bt) : Entity(coords.first * BLOCKSIZE, coords.second * BLOCKSIZE, bt->texture, BLOCKSIZE, BLOCKSIZE) {
@@ -13,7 +14,6 @@ Block::Block(pair<int, int> coords, BlockData* bt, TRIGGER w) : Entity(coords.fi
 	word = w;
 	active = false;
 }
-
 
 void Block::switchBlockType(BlockData* bt) {
 	type = bt;
