@@ -98,8 +98,8 @@ void runGame() {
 
 	vector<ItemData*> itemDatas = {
 		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 30, 40, 4, false, false, 2.5, 0.95, 2, {}),
-		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 40, 80, 8, true, false, 3.5, 0.95, 10, {BOOMERANG, DANGER}, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 20, 30, 8, true, false, 3, 0.95, 5, {BOOMERANG}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 15, 45, 8, true, false, 3.5, 0.95, 10, {BOOMERANG, DANGER}, boomerangHitbox),
+		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 30, 8, true, false, 3, 0.95, 5, {BOOMERANG}, boomerangHitbox),
 		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 50, 20, 6, false, false, 2, 0.9, 10, {TIPPER}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 3, 0, 70, 70, "Stick", 5 * M_PI / 4,                 M_PI / 5, 25, 15, 2, true, false, 2.5, 0.8, 5, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 50, 20, 10, true, false, 1.5, 0.95, 10, {}, swordHitbox),
@@ -268,15 +268,15 @@ void runGame() {
 
 		window.display();
 		double delay = 1000 * ((1.0 / FPS) - frameDone.count());
-		cout << delay << " " << world->renderSize << endl;
+		// cout << delay << " " << world->renderSize << endl;
 		if (delay > 2) {
 			world->renderSize += 100;
 		}
 		else {
 			world->renderSize -= 100;
 		}
-		if (world->renderSize > World::WORLDLENGTH) {
-			world->renderSize = World::WORLDLENGTH;
+		if (world->renderSize > World::WORLDLENGTH * World::WORLDLENGTH) {
+			world->renderSize = World::WORLDLENGTH * World::WORLDLENGTH;
 		}
 		if (world->renderSize < RenderWindow::SCREENRADIUS / window.zoom) {
 			world->renderSize = RenderWindow::SCREENRADIUS / window.zoom;

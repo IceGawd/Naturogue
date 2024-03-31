@@ -33,8 +33,8 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 	STRUCTYPES = {
 		new StructureType("Entrance", 4, 1), 
 		new StructureType("Exit", 4, 1), 
-		new StructureType("Enemy", 1, 0.7), 
 		new StructureType("Chest", 1, 0.3), 
+		new StructureType("Enemy", 1, 0.7), 
 	};
 
 	// LOAD BLOCKS
@@ -59,7 +59,7 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 			BLOCKTYPES.push_back(new BlockData("SmallTree" + to_string(x) + to_string(y), props, PIXELSIZE * (x + 15), PIXELSIZE * y, PIXELSIZE, PIXELSIZE, 1, (y != 2 || x != 1), (y != 2 || x != 1)));			
 		}
 		BLOCKTYPES.push_back(new BlockData("GrassRandom" + to_string(2 - x), grasstiles, PIXELSIZE * x, 3 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, true));
-		BLOCKTYPES.push_back(new BlockData("SidewaysSign" + to_string(2 - x), props, PIXELSIZE * 7, (x + 3) * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, !(x == 2), !(x == 2)));
+		BLOCKTYPES.push_back(new BlockData("SidewaysSign" + to_string(2 - x), props, PIXELSIZE * 7, (x + 2) * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.6, !(x == 2), !(x == 2)));
 	}
 
 	for (int x = 0; x < 2; x++) {
@@ -96,6 +96,30 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 	generateWorld(this, window, player, entities, enemyDatas);
 }
 
+bool World::isSafePosition(int midX, int midY) {
+	bool safePosition = true;
+	for (int y = 0; y < 2; y++) {
+		int spawnX = structures[y].x / Block::BLOCKSIZE;
+		int spawnY = structures[y].y / Block::BLOCKSIZE;
+
+		if ((abs(spawnX - midX) < 15 || abs(spawnX - midX) > World::WORLDSIZE - 15) && (abs(spawnY - midY) < 15 || abs(spawnY - midY) > World::WORLDSIZE - 15)) {
+			safePosition = false;
+			break;
+		}
+	}
+	if (!safePosition) {
+		return false;
+	}
+	for (Block* block : blocks) {
+		if ((!block->type->permissable || !block->isSolidGrass()) && abs(block->x / Block::BLOCKSIZE - midX) <= 3 && abs(block->y / Block::BLOCKSIZE - midY) <= 3) {
+			safePosition = false;
+			break;
+		}
+	}
+
+	return safePosition;
+}
+
 void World::edgeCleanup(string toEdge) {
 	for (int x = 0; x < WORLDSIZE; x++) {
 		for (int y = 0; y < WORLDSIZE; y++) {
@@ -104,20 +128,25 @@ void World::edgeCleanup(string toEdge) {
 			if (b->type->name == toEdge + "11") {
 				int xdelta = 1;
 				int ydelta = 1;
+				int edgeDiffs = 0;
 
 				// cout << ">???\n";
 
 				if (blocks[index(x + 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
 					xdelta = 2;
+					edgeDiffs++;
 				}
 				if (blocks[index(x - 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
 					xdelta = 0;
+					edgeDiffs++;
 				}
 				if (blocks[index(x, y + 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
 					ydelta = 2;
+					edgeDiffs++;
 				}
 				if (blocks[index(x, y - 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
 					ydelta = 0;
+					edgeDiffs++;
 				}
 				if (xdelta == 1 && ydelta == 1) {
 					if (blocks[index(x + 1, y + 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
@@ -140,6 +169,35 @@ void World::edgeCleanup(string toEdge) {
 		}
 	}
 }
+
+void World::tempEdgeCleanup(string toEdge, string toReplace) {
+	for (int x = 0; x < WORLDSIZE; x++) {
+		for (int y = 0; y < WORLDSIZE; y++) {
+			Block* b = blocks[index(x, y)];
+			if (b->type->name == toEdge + "11") {
+				int edgeDiffs = 0;
+
+				if (blocks[index(x + 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
+					edgeDiffs++;
+				}
+				if (blocks[index(x - 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
+					edgeDiffs++;
+				}
+				if (blocks[index(x, y + 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
+					edgeDiffs++;
+				}
+				if (blocks[index(x, y - 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
+					edgeDiffs++;
+				}
+
+				if (edgeDiffs >= 3) {
+					b->switchBlockType(getBlockData(toReplace));
+				}
+			}
+		}
+	}
+}
+
 
 bool World::notNearStructure(int x, int y) {
 	for (Structure& s : structures) {
@@ -222,7 +280,29 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 
 	fixPreLoop(window, extendXP, extendXN, extendYP, extendYN);
 
-	for (Block* b : blocks) {
+	if (!front) {
+		int xMin = ((player->x - RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) - 1;
+		int xMax = ((player->x + RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) + 1;
+		int yMin = ((player->y - RenderWindow::HEIGHT / window->zoom) / Block::BLOCKSIZE) - 1;
+		int yMax = ((player->y + RenderWindow::HEIGHT / window->zoom) / Block::BLOCKSIZE) + 1;
+
+		// cout << "xMin: " << xMin << " xMax: " << xMax << " yMin: " << yMin << " yMax: " << yMax << endl;
+		for (int x = xMin; x < xMax; x++) {
+			// int actualX = x - int(floor(x / World::WORLDLENGTH)) * World::WORLDLENGTH;
+			for (int y = yMin; y < yMax; y++) {
+				// int actualY = y - int(floor(y / World::WORLDLENGTH)) * World::WORLDLENGTH;
+				Block* b = blocks[index(y, x)];
+				loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
+				window->render(b);
+				loopPostFix(b);
+				// cout << index(y, x) << " ";
+			}
+		}
+		// cout << endl;
+	}
+
+	for (int x = WORLDSIZE * WORLDSIZE; x < blocks.size(); x++) {
+		Block* b = blocks[x];
 		if (b->type->front == front && b->active) {
 			loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
 			window->render(b);
@@ -230,10 +310,10 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 		}
 	}
 
-	int xDiff = player->x - WORLDLENGTH / 2 + player->show_width / 2;
-	int yDiff = player->y - WORLDLENGTH / 2 + player->show_height / 2;
+	int xDiff = player->x - structures[0].x + player->show_width / 2;
+	int yDiff = player->y - structures[0].y + player->show_height / 2;
 	// cout << xDiff * xDiff + yDiff * yDiff << endl;
-	if (xDiff * xDiff + yDiff * yDiff < 40000 && !activeTriggers[0].second) { // Distance is less than 200
+	if (xDiff * xDiff + yDiff * yDiff < 160000 && !activeTriggers[0].second) { // Distance is less than 400
 		activeTriggers[0].second = true;
 		activateTrigger(activeTriggers[0].first);
 		shrub = new Enemy(WORLDLENGTH / 2 - Block::BLOCKSIZE / 2, WORLDLENGTH / 2 - 3 * Block::BLOCKSIZE, boss, window);

@@ -186,13 +186,17 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						changeSpriteSheet("ShrubRun" + facingString);
 						rage = true;						
 					}
-					else if (distanceFromPlayer < 400 && random() < 0.9) {
+					else if (distanceFromPlayer < 200 && random() < 0.9) {
 						changeSpriteSheet("ShrubAttack" + facingString);
 					}
-					else if (distanceFromPlayer < 800 && random() < 0.8) {
+					else if (distanceFromPlayer < 400 && random() < 0.8) {
 						changeSpriteSheet("ShrubRun" + facingString);
 					}
-					else if (distanceFromPlayer < 1200 && random() < 0.7) {
+					else if (distanceFromPlayer < 600 && random() < 0.7) {
+						changeSpriteSheet("ShrubIdle" + facingString);
+						rage = random() < 0.4;
+					}
+					else if (distanceFromPlayer < 800 && random() < 0.6) {
 						changeSpriteSheet("ShrubIdle" + facingString);
 					}
 					else {
@@ -467,5 +471,8 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		GameObject::draw(window, world, entities);
 	}
 
+	if (rageMeter == 30 && current == "ShrubDeath") {
+		world->shrub = nullptr;
+	}
 	return ((health <= 0 && ed->ai != SHRUB) || (rageMeter == 30 && current == "ShrubDeath"));
 }

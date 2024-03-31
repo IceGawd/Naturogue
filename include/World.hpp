@@ -23,7 +23,7 @@ public:
 	static const int WORLDSIZE = 200;
 	static const int PIXELSIZE = 16;
 	static constexpr int WORLDLENGTH = WORLDSIZE * Block::BLOCKSIZE;
-	static const int SEPERATION_FORCE_FACTOR = 1000;
+	static const int SEPERATION_FORCE_FACTOR = 10000;
 	vector<BlockData*> BLOCKTYPES;
 	vector<Block*> blocks;
 	vector<StructureType*> STRUCTYPES;
@@ -35,7 +35,9 @@ public:
 	int renderSize = 5000;
 
 	World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas);
+	bool isSafePosition(int midX, int midY);
 	void edgeCleanup(string toEdge);
+	void tempEdgeCleanup(string toEdge, string toReplace);
 	bool notNearStructure(int x, int y);
 	BlockData* getBlockData(string s);
 	void draw(RenderWindow* window, vector<GameObject*>& entities, bool front);

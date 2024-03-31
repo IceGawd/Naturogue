@@ -42,7 +42,7 @@ vector<pair<int, int>> getDegrees(int r) {
 void generateWorld(World* world, RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
-	// auto seed = 1711753232;
+	// auto seed = 1711829592;
 	cout << "SEED: " << seed << endl;
 
 	PerlinNoise pn = PerlinNoise(seed);
@@ -52,7 +52,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// cout << z << endl;
 
 	// GENERATE STRUCTURE LOCATIONS
-	/*
+	// /*
 	if (random() > 0.5) {
 		world->structures.push_back(Structure(world->STRUCTYPES[0], (int) ((random() * World::WORLDLENGTH) / Block::BLOCKSIZE) * Block::BLOCKSIZE, 0));
 	}
@@ -61,14 +61,15 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	}
 	// */
 
-	world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
+	// world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
 
 	world->structures.push_back(Structure(world->STRUCTYPES[1], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2));
 	// world->structures.push_back(Structure(world->STRUCTYPES[2], World::WORLDLENGTH / 2 + 1000, World::WORLDLENGTH / 2));
 
 	// /*
-	int numStructs = World::WORLDSIZE / 15.0 + random() * World::WORLDSIZE / 15.0;
-	for (int x = 0; x < numStructs; x++) {
+	int numStructs = World::WORLDSIZE * World::WORLDSIZE / 3000.0 + (1 + random());
+	int minChests = World::WORLDSIZE / 100;
+	for (int x = 0; x < minChests + numStructs; x++) {
 		int x1 = random() * World::WORLDLENGTH;
 		int y1 = random() * World::WORLDLENGTH;
 
@@ -78,15 +79,20 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		float r = random();
 		StructureType* type = nullptr;
 
-		for (StructureType* st : world->STRUCTYPES) {
-			if (st->size < 3) {
-				// cout << st->name << endl;
-				r -= st->rarity;
-				// cout << r << endl;
-				if (r < 0) {
-					// cout << "SELECTED: " << st->name << endl;
-					type = st;
-					break;
+		if (x < minChests) {
+			type = world->STRUCTYPES[2];
+		}
+		else {
+			for (StructureType* st : world->STRUCTYPES) {
+				if (st->size < 3) {
+					// cout << st->name << endl;
+					r -= st->rarity;
+					// cout << r << endl;
+					if (r < 0) {
+						// cout << "SELECTED: " << st->name << endl;
+						type = st;
+						break;
+					}
 				}
 			}
 		}
@@ -147,13 +153,15 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	}
 	// */
 
+	float zHeight = random();
+
 	// PLACE DIRT AND GRASS
 	for (int x = 0; x < World::WORLDSIZE; x++) {
 		float xangle = M_PI * 2.0 * (x + 1) / (World::WORLDSIZE + 1);
 		for (int y = 0; y < World::WORLDSIZE; y++) {
 			float yangle = M_PI * 2.0 * (y + 1) / (World::WORLDSIZE + 1);
 			// /*
-			float val = pn.noise(sin(xangle) * cos(yangle), sin(xangle) * sin(yangle), cos(xangle));
+			float val = pn.noise(sin(xangle) / 2 + 0.5, sin(yangle) / 2 + 0.5, zHeight);
 			if (val > 0.7 && world->notNearStructure(x, y)) {
 				// world->blocks.push_back(new Block(x, y, world->getBlockData("DirtPath")));
 				world->blocks.push_back(new Block(x, y, world->getBlockData("GrassBlock11")));
@@ -195,7 +203,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		int midY = s.y / Block::BLOCKSIZE;
 
 		if (s.type->name == "Entrance") {
-			cout << s.x << " " << s.y << endl;
+			// cout << s.x << " " << s.y << endl;
 			player->x = s.x - player->show_width / 2;
 			player->y = s.y - player->show_height;
 
@@ -206,7 +214,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			}
 		}
 		else if (s.type->name == "Chest") {
-			cout << s.x << " " << s.y << endl;
+			// cout << s.x << " " << s.y << endl;
 			int type = random() * 3;
 			if (type) {
 				world->blocks.push_back(new Block(midX, midY, world->getBlockData("ChestSmallSideClosed"), type - 1));
@@ -298,31 +306,60 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		}
 	}
 
+	// SIGNS
+	vector<SignInfo> vsi = {
+		{"SidewaysSign", 3, 1, 0}, 
+		{"SidewaysSign", 3, -1, 0},
+		{"DownRightSign", 2, -1, -1},
+		{"DownLeftSign", 2, 1, -1},
+		{"UpRightSign", 2, 1, 1},
+		{"UpLeftSign", 2, -1, 1},
+	};
+
+	int numSigns = 0;
+
+	while (numSigns < world->structures.size()) {
+		for (Structure& s : world->structures) {
+			// cout << "s.x: " << s.x << " s.y: " << s.y << endl;
+			if (s.type->name == "Chest" || s.type->name == "Exit") {
+				for (int x = 0; x < s.type->size + 1; x++) {
+					for (SignInfo& si : vsi) {
+						float distanceMod = random() * (x + 1) / (s.type->size + 1);
+
+						int distance = World::WORLDSIZE * distanceMod / 2;
+						// int distance = 5;
+						cout << "distance: " << distance << endl;
+						// int diagDist = sqrt(distance / 2);
+
+						// cout << "si.x: " << si.x << " si.y: " << si.y << endl;
+						int midX = s.x / Block::BLOCKSIZE + si.x * distance;
+						int midY = s.y / Block::BLOCKSIZE + si.y * distance;
+
+						// cout << "midX: " << midX << " midY: " << midY << endl;
+
+						midX -= int(floor(midX / World::WORLDSIZE)) * World::WORLDSIZE;
+						midY -= int(floor(midY / World::WORLDSIZE)) * World::WORLDSIZE;
+
+						if (world->isSafePosition(midX, midY)) {
+							// cout << "SIGN " << midX << " " << midY << endl;
+							numSigns++;
+							for (int y = 0; y < si.size; y++) {
+								world->blocks.push_back(new Block(midX, midY + 1 - y, world->getBlockData(si.name + to_string(y))));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// TREES AND BUSHES
 	int numGrowth = (World::WORLDSIZE * World::WORLDSIZE / 20.0) * (1 + random());
 	for (int z = 0; z < numGrowth; z++) {
 		int midX = random() * World::WORLDSIZE;
 		int midY = random() * World::WORLDSIZE;
 
-		bool safePosition = true;
-		for (int y = 0; y < 2; y++) {
-			int spawnX = world->structures[y].x / Block::BLOCKSIZE;
-			int spawnY = world->structures[y].y / Block::BLOCKSIZE;
-
-			if ((abs(spawnX - midX) < 15 || abs(spawnX - midX) > World::WORLDSIZE - 15) && (abs(spawnY - midY) < 15 || abs(spawnY - midY) > World::WORLDSIZE - 15)) {
-				safePosition = false;
-				break;
-			}
-		}
-		if (!safePosition) {
-			continue;
-		}
-		for (Block* block : world->blocks) {
-			if ((!block->type->permissable || !block->isSolidGrass()) && abs(block->x / Block::BLOCKSIZE - midX) < 3 && abs(block->y / Block::BLOCKSIZE - midY) < 3) {
-				safePosition = false;
-				break;
-			}
-		}
-		if (!safePosition) {
+		if (!world->isSafePosition(midX, midY)) {
 			continue;
 		}
 
@@ -357,6 +394,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	}
 
 	// DIRT EDGE CLEANUP
+	world->tempEdgeCleanup("Grass", "DirtPath");
+	world->tempEdgeCleanup("GrassBlock", "Grass11");
 	world->edgeCleanup("Grass");
 	world->edgeCleanup("GrassBlock");
 
