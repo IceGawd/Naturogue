@@ -15,6 +15,7 @@ struct Bar : public GameObject {
 
 	bool stationary;
 
+	~Bar();
 	Bar(RenderWindow* window, int w, int h, int t, float mv, bool s = false, bool so = false);
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);
 };

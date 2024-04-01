@@ -2,7 +2,7 @@
 
 ItemData::ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, float tv, float f, float k, vector<WEAPON_PROPERTIES> pr) {
 	constructorBase(t, w, h, af, at, sw, sh, n, am, sa, m, r, st, ts, s, tv, f, k, pr);
-	points = square(0, 0, w, h);
+	points = square(0, 0, sw, sh);
 }
 
 ItemData::ItemData(shared_ptr<SDL_Texture> t, int w, int h, int af, int at, int sw, int sh, string n, double am, double sa, int m, int r, int st, bool ts, bool s, float tv, float f, float k, vector<WEAPON_PROPERTIES> pr, int x, int y, int hw, int hh) {

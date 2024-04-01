@@ -119,6 +119,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		if (ed->ai == BOUNCING) {
 			active = true;
 			recoveryFrames--;
+			animationType = 0;
 			if (recoveryFrames < 0) {
 				if (current == "Idle") {
 					float angle;
@@ -139,6 +140,16 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					yvel = 0;
 					recoveryFrames = ed->attackdelay;
 					changeSpriteSheet("Idle");
+				}
+			}
+
+			if (current == "Idle" && next->xFrames == 2) {
+				animationFrame = 0;
+				if (x + show_width / 2 < p->x + p->show_width / 2) {
+					animationFrame = 1;
+				}
+				if (recoveryFrames < 10) {
+					animationType = 1;
 				}
 			}
 		}
@@ -235,8 +246,8 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						changeSpriteSheet("ShrubIdle" + facingString);
 						xvel = 0;
 						yvel = 0;
-						x = (p->x + world->structures[0].x) / 2;
-						y = (p->y + world->structures[0].y - 200) / 2;
+						x = (p->x + world->structures[1].x) / 2;
+						y = (p->y + world->structures[1].y - 200) / 2;
 						rageMeter -= int(random() * 2);
 					}
 
@@ -410,12 +421,26 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			y += yvel;
 			bool collided = world->collides(this);
 
+			if (!collided) {
+				SDL_Rect me = getRect();
+				for (Enemy* dude : group) {
+					SDL_Rect you = dude->getRect();
+					if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
+						me.x += (you.x > me.x) ? -1 : 1;
+						me.y += (you.y > me.y) ? -1 : 1;
+						you.x += (you.x > me.x) ? 1 : -1;
+						you.y += (you.y > me.y) ? 1 : -1;
+						collided = true;
+						break;
+					}
+				}
+			}
+
 			if (collided) {
 				xvel = -xvel;
 				yvel = -yvel;
 
 				rage = !rage;
-
 			}
 
 			float angle = (M_PI * rageMeter) / (2 * ed->attackFrames * distanceFromPlayer);
@@ -424,8 +449,8 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 			angle += angleBetween(p);
 
-			xvel += ed->movementspeed * cos(angle);
-			yvel -= ed->movementspeed * sin(angle);
+			xvel -= ed->movementspeed * cos(angle);
+			yvel += ed->movementspeed * sin(angle);
 
 			rageMeter -= distanceFromPlayer;
 			if (rageMeter < 0) {
@@ -529,7 +554,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		}
 	}
 
-	if (!active || ed->ai != SHRUB) {
+	if ((!active || ed->ai != SHRUB) && ed->ai != SPIN) {
 		GameObject::draw(window, world, entities);
 	}
 

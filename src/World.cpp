@@ -14,11 +14,11 @@ int index(int x, int y) {
 	return (y % World::WORLDSIZE) * World::WORLDSIZE + (x % World::WORLDSIZE);
 }
 
-World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
+World::World(RenderWindow* window, Player* player) {
 	this->player = player;
 	activeTriggers.push_back({BOSS, false});
 	
-	boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.1, SHRUB, {
+	boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.2, SHRUB, {
 		{"ShrubBattleStart", SpriteSheet(window->loadTexture("res/gfx/ShrubBattleStart.png"), 10, 1, 5)}, 
 		{"ShrubAttackL", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackL.png"), 10, 1, 5)}, 
 		{"ShrubAttackR", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackR.png"), 10, 1, 5)}, 
@@ -92,8 +92,6 @@ World::World(RenderWindow* window, Player* player, vector<GameObject*>& entities
 	}
 
 	sort(BLOCKTYPES.begin(), BLOCKTYPES.end(), dataCompare);
-
-	generateWorld(this, window, player, entities, enemyDatas);
 }
 
 bool World::isSafePosition(int midX, int midY) {

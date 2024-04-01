@@ -23,7 +23,7 @@ void RenderWindow::resizeWindow() {
 	double wScale = 1.0 * actualWidth / WIDTH;
 	double hScale = 1.0 * actualHeight / HEIGHT;
 
-	cout << "actualWidth: " << actualWidth << " actualHeight: " << actualHeight << endl;
+	// cout << "actualWidth: " << actualWidth << " actualHeight: " << actualHeight << endl;
 	scaleMultiplier = min(wScale, hScale);
 	xOrigin = (actualWidth - (WIDTH * scaleMultiplier)) / 2;
 	yOrigin = (actualHeight - (HEIGHT * scaleMultiplier)) / 2;
@@ -137,16 +137,6 @@ void RenderWindow::actualRender(Entity* entity, bool stationary) {
 		SDL_RenderCopyEx(renderer, entity->texture.get(), &src, &dest, 180 * entity->angle / M_PI, &center, flip);
 	}
 	entity->customDraw(this);
-}
-
-void RenderWindow::render(Button* button) {
-	SDL_Rect r = button->area;
-	SDL_Color tc = button->textcolor;
-	SDL_Color bc = button->buttoncolor;
-
-	setColor(bc.r, bc.g, bc.b, bc.a);
-	SDL_RenderFillRect(renderer, &r);
-	drawText(button->name, tc.r, tc.g, tc.b, tc.a, r.x, r.y, r.w, r.h);
 }
 
 void RenderWindow::display() {

@@ -1,6 +1,10 @@
 #include "Bar.hpp"
 #include "RenderWindow.hpp"
 
+Bar::~Bar() {
+	SDL_FreeSurface(surf);
+}
+
 Bar::Bar(RenderWindow* window, int w, int h, int t, float mv, bool s, bool so) {
 	width = w;
 	height = h;

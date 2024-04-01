@@ -40,6 +40,13 @@ vector<pair<int, int>> getDegrees(int r) {
 }
 
 void generateWorld(World* world, RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
+	// CLEAR PREVIOUS WORLD
+	world->structures.clear();
+	while (!world->blocks.empty()) {
+		delete world->blocks[0];
+		world->blocks.erase(world->blocks.begin());
+	}
+
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
 	// auto seed = 1711864216;
@@ -64,7 +71,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
 
 	world->structures.push_back(Structure(world->STRUCTYPES[1], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2));
-	// world->structures.push_back(Structure(world->STRUCTYPES[2], World::WORLDLENGTH / 2 + 1000, World::WORLDLENGTH / 2));
+	// world->structures.push_back(Structure(world->STRUCTYPES[3], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
 
 	// /*
 	int numStructs = World::WORLDSIZE * World::WORLDSIZE / 3000.0 + (1 + random());

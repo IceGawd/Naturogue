@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "Entity.hpp"
-#include "Button.hpp"
 #include "ControlsConfig.hpp"
 
 using namespace std;
@@ -42,7 +41,6 @@ public:
 	SDL_Rect getDestRect(Entity* entity, bool stationary = false);
 	void render(Entity* entity, bool stationary = false);
 	void actualRender(Entity* entity, bool stationary = false);
-	void render(Button* button);
 	void display();
 	void setColor(int r, int g, int b, int a);
 	void cross(int x, int y, bool stationary = false);

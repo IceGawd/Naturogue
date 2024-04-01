@@ -34,7 +34,7 @@ public:
 	Enemy* shrub = nullptr;
 	int renderSize = 5000;
 
-	World(RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas);
+	World(RenderWindow* window, Player* player);
 	bool isSafePosition(int midX, int midY);
 	void edgeCleanup(string toEdge);
 	void tempEdgeCleanup(string toEdge, string toReplace);
