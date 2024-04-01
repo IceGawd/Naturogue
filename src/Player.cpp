@@ -26,6 +26,9 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, share
 	*/
 
 	chargeBar = new Bar(window, 160, 50, 5, 20);
+	healthBar = new Bar(window, 160, 50, 5, 100, true);
+	healthBar->x = 0;
+	healthBar->y = RenderWindow::HEIGHT - healthBar->show_height;
 	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width - show_width) / 2;
 	// chargeBar->y = RenderWindow::HEIGHT / 2 - chargeBar->height - show_height;
 	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width) / 2;
@@ -92,6 +95,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	GameObject::draw(window, world, entities);
 
 	double diagDirect = (input.diagonal()) ? 1 / sqrt(2) : 1;
+	healthBar->value = HP;
 
 	if (input.up) {
 		if (current != "up") {
@@ -156,7 +160,15 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	animationFrame = int(next->xFrames * next->yFrames * frames / next->frames) % next->xFrames;
 
 	setRect();
-	window->render(this);
+
+	if (invincibilityFrames > 0) {
+		invincibilityFrames--;
+	}
+	lighter = invincibilityFrames % 2 == 0;
+
+	if (lighter) {
+		window->render(this);
+	}
 
 	if (!animation) {
 		if (swing || yeet) {

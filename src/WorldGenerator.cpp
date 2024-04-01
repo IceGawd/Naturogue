@@ -42,7 +42,7 @@ vector<pair<int, int>> getDegrees(int r) {
 void generateWorld(World* world, RenderWindow* window, Player* player, vector<GameObject*>& entities, vector<EnemyData*> enemyDatas) {
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
-	// auto seed = 1711829592;
+	// auto seed = 1711864216;
 	cout << "SEED: " << seed << endl;
 
 	PerlinNoise pn = PerlinNoise(seed);
@@ -153,7 +153,20 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	}
 	// */
 
-	float zHeight = random();
+	// float zHeight = random();
+	// vector<float> testingTheWaters;
+	double biggestValue = 0;
+	for (float x = 0; x <= 1; x += 0.5) {
+		for (float y = 0; y <= 1; y += 0.5) {
+			for (float z = 0; z <= 1; z += 0.5) {
+				biggestValue = max(biggestValue, pn.noise(x, y, z));
+				// testingTheWaters.push_back(pn.noise(x, y, z));
+			}
+			// cout << endl;
+		}
+		// cout << endl;
+	}
+	// cout << endl;
 
 	// PLACE DIRT AND GRASS
 	for (int x = 0; x < World::WORLDSIZE; x++) {
@@ -161,8 +174,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		for (int y = 0; y < World::WORLDSIZE; y++) {
 			float yangle = M_PI * 2.0 * (y + 1) / (World::WORLDSIZE + 1);
 			// /*
-			float val = pn.noise(sin(xangle) / 2 + 0.5, sin(yangle) / 2 + 0.5, zHeight);
-			if (val > 0.7 && world->notNearStructure(x, y)) {
+			float val = pn.noise(sin(xangle) / 2 + 0.5, sin(yangle) / 2 + 0.5, cos(xangle) * cos(yangle) / 2 + 0.5);
+			if (val > biggestValue && world->notNearStructure(x, y)) {
 				// world->blocks.push_back(new Block(x, y, world->getBlockData("DirtPath")));
 				world->blocks.push_back(new Block(x, y, world->getBlockData("GrassBlock11")));
 			}
@@ -328,7 +341,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 
 						int distance = World::WORLDSIZE * distanceMod / 2;
 						// int distance = 5;
-						cout << "distance: " << distance << endl;
+						// cout << "distance: " << distance << endl;
 						// int diagDist = sqrt(distance / 2);
 
 						// cout << "si.x: " << si.x << " si.y: " << si.y << endl;

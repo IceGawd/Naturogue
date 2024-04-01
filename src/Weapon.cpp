@@ -89,11 +89,11 @@ bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		window->setColor(255, 0, 0, 255);
 
 		calculatePoints();
-		/*
+		// /*
 		for (Vector2f& v2f : points) {
 			window->cross(v2f.x, v2f.y);
 		}
-		*/
+		// */
 
 		// x = RenderWindow::WIDTH / 2;
 		// y = RenderWindow::HEIGHT / 2;

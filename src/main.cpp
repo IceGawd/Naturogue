@@ -25,6 +25,17 @@ Decreased Player movement acceleration (- speed + traction) [max speed = speed *
 64 - Enemies and Bosses get new moves
 128 - Enemies respawn
 256 - You don't slowly regenerate health
+
+TEMP FOR THE CURRENT VERSION
+
+1 - Projectile speed
+2 - Enemy damage
+4 - Enemy speed
+8 - Enemy knockback resistance
+16 - Weapon no pierce-u (unless spear)
+32 - Max HP x2
+64 - Remove regen health
+128 - Enemies respawn???
 */
 
 bool height(GameObject* go1, GameObject* go2) {
@@ -80,11 +91,14 @@ void runGame() {
 			{"Bounce", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}, 
 			{"Idle", SpriteSheet(window.loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
 		}, "Idle", 1000, 68, 90),
-		new EnemyData("Mossling", 10, 40, 500, 60, 70, 0, 0.2, 0, SNEAKING, {
+		new EnemyData("Mossling", 5, 40, -1, -1, 70, 0, 0.2, 0, SNEAKING, {
 			{"Hidden", SpriteSheet(window.loadTexture("res/gfx/grasstiles.png"), 18, 9, 1)}, 
 			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 4, 7, 5)}
 //			{"Walking", SpriteSheet(window.loadTexture("res/gfx/Mossling_Spritesheet.png"), 1, 1, 1)}
 		}, "Walking", 500, 80, 80)
+		new EnemyData("Acorn", 10, 10, 60, -1, 50, 5, 0.8, 0.05, SPIN, {
+			{"Spin", SpriteSheet(window.loadTexture("res/gfx/acorntop.png"), 2, 2, 1)}, 
+		}, "Spin", 500, 80, 80)
 	};
 
 	/*
@@ -95,6 +109,7 @@ void runGame() {
 	*/
 	vector<Vector2f> boomerangHitbox = {{15, 2}, {2, 15}, {2, 2}};
 	vector<Vector2f> swordHitbox = {{7, 10}, {7, 8}, {16, 0}, {16, 2}};
+	vector<Vector2f> spearHitbox = {{2, 16}, {0, 14}, {11, 1}, {15, 0}, {15, 5}};
 
 	vector<ItemData*> itemDatas = {
 		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 30, 40, 4, false, false, 2.5, 0.95, 2, {}),
@@ -104,15 +119,15 @@ void runGame() {
 		new ItemData(weapons1, 16, 16, 3, 0, 70, 70, "Stick", 5 * M_PI / 4,                 M_PI / 5, 25, 15, 2, true, false, 2.5, 0.8, 5, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 50, 20, 10, true, false, 1.5, 0.95, 10, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2, 0.95, 4, {}), 
-		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 10, 20, true, false, 2.5, 0.95, 15, {SPEAR}),
-		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 2, 0.85, 3, {SPEAR}),
-		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI / 2, 15, 15, 20, true, false, 2, 0.85, 4, {HAMMER}),
-		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Lightning Man Hammer", 5 * M_PI / 4, M_PI / 2, 30, 30, 20, false, false, 3, 0.95, 6, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 10, 20, true, false, 2.5, 0.95, 15, {SPEAR}, spearHitbox),
+		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 2, 0.85, 3, {SPEAR}, spearHitbox),
+		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI, 15, 15, 20, true, false, 2, 0.85, 4, {HAMMER}),
+		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Heavy Hammer", 3 * M_PI / 2,         M_PI, 30, 30, 20, false, false, 3, 0.95, 6, {HAMMER}),
 		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      6 * M_PI, 35, 15, 60, true, false, 2, 0.9, 10, {HAMMER}),
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 1, 0.95, 20, {HAMMER}),
 	};
 
-	player->items[0].holding = new Item(itemDatas[4]);
+	player->items[0].holding = new Item(itemDatas[9]);
 	// player->items[1].holding = new Item(itemDatas[3]);
 	// player->items[2].holding = new Item(itemDatas[13]);
 
@@ -262,6 +277,8 @@ void runGame() {
 			}
 			world->shrub->healthBar->draw(&window, world, entities);
 		}
+
+		player->healthBar->draw(&window, world, entities);
 
 		auto end = chrono::steady_clock().now();
 		chrono::duration<double> frameDone = end - start;

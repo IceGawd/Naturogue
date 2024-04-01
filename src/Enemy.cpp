@@ -194,7 +194,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					}
 					else if (distanceFromPlayer < 600 && random() < 0.7) {
 						changeSpriteSheet("ShrubIdle" + facingString);
-						rage = random() < 0.4;
+						rage = random() > 0.8 * health / ed->maxHP;
 					}
 					else if (distanceFromPlayer < 800 && random() < 0.6) {
 						changeSpriteSheet("ShrubIdle" + facingString);
@@ -218,7 +218,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						xvel -= cos(angle) * ed->movementspeed * speedMod;
 						yvel += sin(angle) * ed->movementspeed * speedMod;
 					}
-					else if (current.substr(0, current.size() - 1) == "ShrubIdle") {
+					else if (current.substr(0, current.size() - 1) == "ShrubIdle" && !rage) {
 						changeSpriteSheet("ShrubIdle" + facingString);
 						xvel = 0;
 						yvel = 0;
@@ -230,6 +230,14 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 							xvel -= cos(angle) * ed->movementspeed * 30 * speedMod;
 							yvel += sin(angle) * ed->movementspeed * 30 * speedMod;
 						}
+					}
+					else if (current.substr(0, current.size() - 1) == "ShrubIdle" && rage) {
+						changeSpriteSheet("ShrubIdle" + facingString);
+						xvel = 0;
+						yvel = 0;
+						x = (p->x + world->structures[0].x) / 2;
+						y = (p->y + world->structures[0].y - 200) / 2;
+						rageMeter -= int(random() * 2);
 					}
 
 					if (next->xFrames * next->frames == rageMeter) {
@@ -390,8 +398,50 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					findHidingSpot = true;
 				}
 			}
-		}	
-		// */			
+		}
+		else if (ed->ai == SPIN) {
+			bool curActive = ed->aggroRange > distanceFromPlayer;
+			if (curActive && !active) {
+				rageMeter = ed->attackFrames * distanceFromPlayer;
+			}
+
+			active = curActive;
+			x += xvel;
+			y += yvel;
+			bool collided = world->collides(this);
+
+			if (collided) {
+				xvel = -xvel;
+				yvel = -yvel;
+
+				rage = !rage;
+
+			}
+
+			float angle = (M_PI * rageMeter) / (2 * ed->attackFrames * distanceFromPlayer);
+			if (rage) {
+				angle *= -1;
+			}
+			angle += angleBetween(p);
+
+			xvel += ed->movementspeed * cos(angle);
+			yvel -= ed->movementspeed * sin(angle);
+
+			rageMeter -= distanceFromPlayer;
+			if (rageMeter < 0) {
+				rageMeter = ed->attackFrames * distanceFromPlayer;
+			}
+
+			frames += sqrt(xvel * xvel + yvel * yvel) / (5 * ed->movementspeed);
+			while (frames > 4) {
+				frames -= 4;
+			}
+			int actualFrame = int(frames);
+
+			animationFrame = actualFrame / 2;
+			animationType = actualFrame % 2;
+		}
+		// */
 
 		xvel *= ed->traction;
 		yvel *= ed->traction;
@@ -440,6 +490,18 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					// cout << "x: " << x << " y: " << y << " wpbux: " << world->player->beingUsed->x << " wpbuy: " << world->player->beingUsed->y << endl;
 				}
 			}
+		}
+
+		SDL_Rect me = getRect();
+		SDL_Rect you = p->getRect();
+		if (p->invincibilityFrames == 0 && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
+			p->invincibilityFrames = ed->damage;
+			p->HP -= ed->damage;
+
+			float angle = angleBetween(p);
+
+			p->xvel -= cos(angle) * ed->damage;
+			p->yvel += sin(angle) * ed->damage;
 		}
 
 		if (invincibilityFrames > 0) {

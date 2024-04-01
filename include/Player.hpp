@@ -20,6 +20,10 @@ public:
 	float charge = 0;
 	float attackAngle = 0;
 
+	int HP = 100;
+	int invincibilityFrames = 0;
+	bool lighter;
+
 	bool swing = false;
 	bool yeet = false;
 

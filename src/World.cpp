@@ -175,22 +175,23 @@ void World::tempEdgeCleanup(string toEdge, string toReplace) {
 		for (int y = 0; y < WORLDSIZE; y++) {
 			Block* b = blocks[index(x, y)];
 			if (b->type->name == toEdge + "11") {
-				int edgeDiffs = 0;
+				int xDiffs = 0;
+				int yDiffs = 0;
 
 				if (blocks[index(x + 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
-					edgeDiffs++;
+					xDiffs++;
 				}
 				if (blocks[index(x - 1, y)]->type->name.substr(0, toEdge.size()) != toEdge) {
-					edgeDiffs++;
+					xDiffs++;
 				}
 				if (blocks[index(x, y + 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
-					edgeDiffs++;
+					yDiffs++;
 				}
 				if (blocks[index(x, y - 1)]->type->name.substr(0, toEdge.size()) != toEdge) {
-					edgeDiffs++;
+					yDiffs++;
 				}
 
-				if (edgeDiffs >= 3) {
+				if (xDiffs == 2 || yDiffs == 2) {
 					b->switchBlockType(getBlockData(toReplace));
 				}
 			}
@@ -310,8 +311,8 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 		}
 	}
 
-	int xDiff = player->x - structures[0].x + player->show_width / 2;
-	int yDiff = player->y - structures[0].y + player->show_height / 2;
+	int xDiff = player->x - structures[1].x + player->show_width / 2;
+	int yDiff = player->y - structures[1].y + player->show_height / 2;
 	// cout << xDiff * xDiff + yDiff * yDiff << endl;
 	if (xDiff * xDiff + yDiff * yDiff < 160000 && !activeTriggers[0].second) { // Distance is less than 400
 		activeTriggers[0].second = true;

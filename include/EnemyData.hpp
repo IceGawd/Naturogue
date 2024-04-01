@@ -12,7 +12,8 @@ enum AI {
 	NONE, 
 	BOUNCING, 
 	SNEAKING, 
-	SHRUB
+	SHRUB, 
+	SPIN
 };
 
 enum DIRECTION {
