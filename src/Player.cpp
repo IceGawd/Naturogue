@@ -1,15 +1,12 @@
 #include "Player.hpp"
 #include "ItemDrop.hpp"
 
-Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture) {
-	for (int x = 0; x < slots; x++) {
-		// cout << "w: " << w << " h: " << h << endl;
-		Slot s(x * Slot::SIZE + (RenderWindow::WIDTH - slots * Slot::SIZE) / 2, RenderWindow::HEIGHT - Slot::SIZE, nullptr, slotTexture, selectedSlotTexture);
+Player::Player(RenderWindow* window, SDL_Texture* slotTexture, SDL_Texture* selectedSlotTexture) {
+	this->slotTexture = slotTexture;
+	this->selectedSlotTexture = selectedSlotTexture;
 
-		items.push_back(s);
-	}
-
-	select(0);
+	// cout << "pst: " << slotTexture << endl;
+	// cout << "psst: " << selectedSlotTexture << endl;
 
 	sheets["down"] = SpriteSheet(window->loadTexture("res/gfx/James_Downward.png"), 2, 2, 20);
 	sheets["up"] = SpriteSheet(window->loadTexture("res/gfx/James_Upward.png"), 2, 2, 20);
@@ -26,13 +23,59 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture>& slotTexture, share
 	*/
 
 	chargeBar = new Bar(window, 160, 50, 5, 20);
-	healthBar = new Bar(window, 160, 50, 5, 100, true);
+	healthBar = new Bar(window, 160, 50, 5, MAXIMUM_HP, true);
 	healthBar->x = 0;
 	healthBar->y = RenderWindow::HEIGHT - healthBar->show_height;
 	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width - show_width) / 2;
 	// chargeBar->y = RenderWindow::HEIGHT / 2 - chargeBar->height - show_height;
 	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width) / 2;
 	// chargeBar->y = (RenderWindow::HEIGHT - chargeBar->height) / 2 - show_height;
+}
+
+void Player::readyToPlay(World* world) {
+	// cout << "maxHP?\n";
+	// cout << "world: " << world << endl;
+	// cout << "prev: " << actualMaxHp << endl;
+	if (world->d.getOption(DONTDOUBLEMAXHP)) {
+		actualMaxHp = MAXIMUM_HP;
+		// cout << "after1: " << actualMaxHp << endl;
+	}
+	else {
+		actualMaxHp = 2 * MAXIMUM_HP;
+		// cout << "after2: " << actualMaxHp << endl;
+	}
+	// cout << "setHPs???\n";
+	HP = actualMaxHp;
+	// cout << "is maxvaliue the issue???\n";
+	// cout << actualMaxHp << " " << healthBar->maxValue << endl;
+	healthBar->maxValue = (float) actualMaxHp;
+	// cout << "healthBar->maxValue: " << healthBar->maxValue << endl;
+
+	// cout << "itemClear\n";
+	while (!items.empty()) {
+		if (items.at(0).holding != nullptr) {
+			delete items.at(0).holding;
+		}
+
+		items.erase(items.begin());
+	}
+
+	// cout << "slots\n";	
+	slots = 3;
+	if (!world->d.getOption(BONUSITEMSLOTS)) {
+		slots = 5;
+	}
+
+	// cout << slotTexture.get() << endl;
+	// cout << selectedSlotTexture.get() << endl;
+
+	for (int x = 0; x < slots; x++) {
+		Slot s(x * Slot::SIZE + (RenderWindow::WIDTH - slots * Slot::SIZE) / 2, RenderWindow::HEIGHT - Slot::SIZE, nullptr, slotTexture, selectedSlotTexture);
+
+		items.push_back(s);
+	}
+
+	select(0);
 }
 
 void Player::select(int num) {
@@ -161,10 +204,21 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 
 	setRect();
 
+	timeWithoutDamage++;
 	if (invincibilityFrames > 0) {
+		if (timeWithoutDamage > 0) {
+			timeWithoutDamage = 0;
+		}
+		timeWithoutDamage -= invincibilityFrames;
 		invincibilityFrames--;
 	}
 	lighter = invincibilityFrames % 2 == 0;
+	if (!world->d.getOption(NOREGEN)) {
+		HP += random() * pow(timeWithoutDamage / 100, 0.2);
+		if (HP > actualMaxHp) {
+			HP = actualMaxHp;
+		}
+	}
 
 	if (lighter) {
 		window->render(this);

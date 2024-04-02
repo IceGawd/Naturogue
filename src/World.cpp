@@ -17,17 +17,6 @@ int index(int x, int y) {
 World::World(RenderWindow* window, Player* player) {
 	this->player = player;
 	activeTriggers.push_back({BOSS, false});
-	
-	boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.2, SHRUB, {
-		{"ShrubBattleStart", SpriteSheet(window->loadTexture("res/gfx/ShrubBattleStart.png"), 10, 1, 5)}, 
-		{"ShrubAttackL", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackL.png"), 10, 1, 5)}, 
-		{"ShrubAttackR", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackR.png"), 10, 1, 5)}, 
-		{"ShrubIdleL", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleL.png"), 2, 1, 5)}, 
-		{"ShrubIdleR", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleR.png"), 2, 1, 5)}, 
-		{"ShrubRunL", SpriteSheet(window->loadTexture("res/gfx/ShrubRunL.png"), 4, 1, 5)}, 
-		{"ShrubRunR", SpriteSheet(window->loadTexture("res/gfx/ShrubRunR.png"), 4, 1, 5)}, 
-		{"ShrubDeath", SpriteSheet(window->loadTexture("res/gfx/ShrubDeath.png"), 6, 1, 5)}, 
-	}, "ShrubBattleStart", 2000, 120, 120);
 
 	// LOAD STRUCTURES
 	STRUCTYPES = {

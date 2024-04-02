@@ -75,7 +75,7 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 				b = 0;
 				a = 255;
 			}
-			else if ((x - thickness) / (width - 2.0 * thickness) < (value / maxValue)) {
+			else if ((x - thickness) / (width - 2.0 * thickness) <= (value / maxValue)) {
 				if (solidColor) {
 					r = (value > maxValue / 2) ? 510 * (1 - value / maxValue) : 255;
 					g = (value > maxValue / 2) ? 255 : 510 * (value / maxValue);

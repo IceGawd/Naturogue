@@ -119,7 +119,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		if (ed->ai == BOUNCING) {
 			active = true;
 			recoveryFrames--;
-			animationType = 0;
+			animationFrame = 0;
 			if (recoveryFrames < 0) {
 				if (current == "Idle") {
 					float angle;
@@ -144,7 +144,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 
 			if (current == "Idle" && next->xFrames == 2) {
-				animationFrame = 0;
+				animationType = 0;
 				if (x + show_width / 2 < p->x + p->show_width / 2) {
 					animationFrame = 1;
 				}
@@ -229,7 +229,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						xvel -= cos(angle) * ed->movementspeed * speedMod;
 						yvel += sin(angle) * ed->movementspeed * speedMod;
 					}
-					else if (current.substr(0, current.size() - 1) == "ShrubIdle" && !rage) {
+					else if (current.substr(0, current.size() - 1) == "ShrubIdle") {
 						changeSpriteSheet("ShrubIdle" + facingString);
 						xvel = 0;
 						yvel = 0;
@@ -242,6 +242,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 							yvel += sin(angle) * ed->movementspeed * 30 * speedMod;
 						}
 					}
+					/*
 					else if (current.substr(0, current.size() - 1) == "ShrubIdle" && rage) {
 						changeSpriteSheet("ShrubIdle" + facingString);
 						xvel = 0;
@@ -250,6 +251,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						y = (p->y + world->structures[1].y - 200) / 2;
 						rageMeter -= int(random() * 2);
 					}
+					*/
 
 					if (next->xFrames * next->frames == rageMeter) {
 						rageMeter = -1;
@@ -430,6 +432,11 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 						me.y += (you.y > me.y) ? -1 : 1;
 						you.x += (you.x > me.x) ? 1 : -1;
 						you.y += (you.y > me.y) ? 1 : -1;
+
+						xvel += (you.x > me.x) ? -1 : 1;
+						yvel += (you.y > me.y) ? -1 : 1;
+						dude->xvel += (you.x > me.x) ? 1 : -1;
+						dude->yvel += (you.y > me.y) ? 1 : -1;
 						collided = true;
 						break;
 					}
@@ -508,6 +515,11 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					int damageTaken = (bu->damage * mod) - ed->defence;
 					if (damageTaken > 0) {
 						health -= damageTaken;
+					}
+
+					if (!bu->melee && !bu->item->itemData->hasProperty(SPEAR) && world->d.getOption(WEAPONPIERCE)) {
+						bu->xvel = 0;
+						bu->yvel = 0;
 					}
 					// cout << "ouchie\n";
 				}

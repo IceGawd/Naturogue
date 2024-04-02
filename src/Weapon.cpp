@@ -57,39 +57,54 @@ void Weapon::calculatePoints() {
 bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	if (melee) {
 		// GameObject::draw(window, world, entities);
-		float angleBase = startAngle + item->itemData->swingAngle * (1.0 * framesAlive / item->itemData->swingTime - 0.5);
-		angle = angleBase + item->itemData->angleMod - 3 * M_PI / 2; // TODO: 3 * M_PI / 2 is up but thats not our 0 angle unless we do x y swap? 
+		float percent = 1.0 * framesAlive / item->itemData->swingTime;
 
-		// angle = 0;
-		// angle = startAngle;
-		// cout << startAngle << endl;
+		if (item->itemData->hasProperty(SPEAR)) {
+			angle = startAngle + item->itemData->angleMod - 3 * M_PI / 2;
+
+			x = world->player->x - rotationX + world->player->show_width / 2 + sin(startAngle) * percent * show_width;
+			y = world->player->y - rotationY + world->player->show_height / 2 - cos(startAngle) * percent * show_height;
+
+			float kbpower = item->itemData->swingAngle * sqrt(pow(show_width, 2) + pow(show_height, 2)) / (2 * item->itemData->swingTime);
+
+			// /*
+			xvel = kbpower * sin(startAngle);
+			yvel = -kbpower * cos(startAngle);
+		}
+		else {
+			float angleBase = startAngle + item->itemData->swingAngle * (percent - 0.5);
+			angle = angleBase + item->itemData->angleMod - 3 * M_PI / 2; // TODO: 3 * M_PI / 2 is up but thats not our 0 angle unless we do x y swap? 
+
+			// angle = 0;
+			// angle = startAngle;
+			// cout << startAngle << endl;
+
+			x = world->player->x - rotationX + world->player->show_width / 2;
+			y = world->player->y - rotationY + world->player->show_height / 2;
+			// cout << "rx: " << rotationX << " ry: " << rotationY << endl;
+			// cout << x << " " << y << endl;
+
+			/*
+			window->setColor(0, 0, 255, 255);
+
+			window->cross(x, y);
+			window->cross(x + rotationX, y + rotationY);
+			*/
+			// */
+
+			// cout << xvel << " "  << yvel << endl;
+			float kbpower = item->itemData->swingAngle * sqrt(pow(show_width, 2) + pow(show_height, 2)) / (2 * item->itemData->swingTime);
+
+			// /*
+			xvel = kbpower * cos(angleBase);
+			yvel = kbpower * sin(angleBase);
+		}
+
 		framesAlive++;
 
-		x = world->player->x - rotationX + world->player->show_width / 2;
-		y = world->player->y - rotationY + world->player->show_height / 2;
-		// cout << "rx: " << rotationX << " ry: " << rotationY << endl;
-		// cout << x << " " << y << endl;
-
-		/*
-		window->setColor(0, 0, 255, 255);
-
-		window->cross(x, y);
-		window->cross(x + rotationX, y + rotationY);
-		*/
-
-		float kbpower = item->itemData->swingAngle * sqrt(pow(show_width, 2) + pow(show_height, 2)) / (2 * item->itemData->swingTime);
-
-		// /*
-		xvel = kbpower * cos(angleBase);
-		yvel = kbpower * sin(angleBase);
-		// */
-
-		// cout << xvel << " "  << yvel << endl;
-
-		window->setColor(255, 0, 0, 255);
-
 		calculatePoints();
-		// /*
+		/*
+		window->setColor(255, 0, 0, 255);
 		for (Vector2f& v2f : points) {
 			window->cross(v2f.x, v2f.y);
 		}

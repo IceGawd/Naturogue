@@ -46,6 +46,21 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		delete world->blocks[0];
 		world->blocks.erase(world->blocks.begin());
 	}
+	if (world->boss != nullptr) {
+		delete world->boss;
+	}
+
+	// CREATE BOSS (NOW WITH DIFFICULTY)
+	world->boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.2, SHRUB, {
+		{"ShrubBattleStart", SpriteSheet(window->loadTexture("res/gfx/ShrubBattleStart.png"), 10, 1, 5)}, 
+		{"ShrubAttackL", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackL.png"), 10, 1, 5)}, 
+		{"ShrubAttackR", SpriteSheet(window->loadTexture("res/gfx/ShrubAttackR.png"), 10, 1, 5)}, 
+		{"ShrubIdleL", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleL.png"), 2, 1, 5)}, 
+		{"ShrubIdleR", SpriteSheet(window->loadTexture("res/gfx/ShrubIdleR.png"), 2, 1, 5)}, 
+		{"ShrubRunL", SpriteSheet(window->loadTexture("res/gfx/ShrubRunL.png"), 4, 1, 5)}, 
+		{"ShrubRunR", SpriteSheet(window->loadTexture("res/gfx/ShrubRunR.png"), 4, 1, 5)}, 
+		{"ShrubDeath", SpriteSheet(window->loadTexture("res/gfx/ShrubDeath.png"), 6, 1, 5)}, 
+	}, "ShrubBattleStart", 2000, 120, 120, world);
 
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
@@ -151,7 +166,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			y1 -= int(floor(y1 / World::WORLDLENGTH)) * World::WORLDLENGTH;
 
 			if (xdelta * ydelta < 10) {
-				cout << n << endl;
+				// cout << n << endl;
 				break;
 			}
 		}

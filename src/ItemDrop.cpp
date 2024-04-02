@@ -1,5 +1,13 @@
 #include "ItemDrop.hpp"
 
+ItemDrop::~ItemDrop() {
+	// /*
+	if (item != nullptr) {
+		delete item;
+	}
+	// */	
+}
+
 ItemDrop::ItemDrop(int x, int y, Item* i, float a) {
 	this->x = x;
 	this->y = y;
@@ -33,7 +41,7 @@ bool ItemDrop::draw(RenderWindow* window, World* world, vector<GameObject*>& ent
 	SDL_bool intersected = SDL_HasIntersection(&me, &you);
 	bool die = (intersected == SDL_TRUE);
 	if (intersected == SDL_TRUE) {
-		die = world->player->giveItem(item);
+		die = world->player->giveItem(new Item(*item));
 	}
 
 	return die;

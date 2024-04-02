@@ -1,13 +1,16 @@
 #include "Slot.hpp"
 
-Slot::Slot(int x, int y, Item* h, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture) {
+Slot::Slot(int x, int y, Item* h, SDL_Texture* slotTexture, SDL_Texture* selectedSlotTexture) {
 	this->x = x;
 	this->y = y;
 	holding = h;
 
+	// cout << slotTexture.get() << endl;
+	// cout << selectedSlotTexture.get() << endl;
+
 	sheets = {
-		{"Slot", SpriteSheet(slotTexture.get(), 1, 1, 1)}, 
-		{"Selected", SpriteSheet(selectedSlotTexture.get(), 1, 1, 1)}, 
+		{"Slot", SpriteSheet(slotTexture, 1, 1, 1)}, 
+		{"Selected", SpriteSheet(selectedSlotTexture, 1, 1, 1)}, 
 	};
 
 	changeSpriteSheet("Slot");

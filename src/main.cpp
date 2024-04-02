@@ -30,12 +30,13 @@ Decreased Player movement acceleration (- speed + traction) [max speed = speed *
 TEMP FOR THE CURRENT VERSION
 
 1 - Enemy damage
-2 - Enemy speed
-4 - Enemy knockback resistance (x2 + 0.1)
+2 - Enemy knockback resistance (x2 + 0.1)
+4 - Enemy speed
 8 - Weapon no pierce-u (unless spear)
-16 - Max HP x2
-32 - Enemy HP x2
-64 - Remove regen health
+16 - Bonus Items
+32 - Max HP x2
+64 - Enemy HP x2
+128 - Remove regen health
 */
 
 bool height(GameObject* go1, GameObject* go2) {
@@ -50,6 +51,8 @@ void diffSelect(vector<void*> passingArgument) {
 }
 
 void startGame(vector<void*> passingArgument) {
+	// cout << "startGame\n";
+
 	SCREEN* s = (SCREEN*) passingArgument[0];
 	Button* b = (Button*) passingArgument[1];
 	World* world = (World*) passingArgument[2];
@@ -57,31 +60,84 @@ void startGame(vector<void*> passingArgument) {
 	RenderWindow* window = (RenderWindow*) passingArgument[4];
 	Player* player = (Player*) passingArgument[5];
 	vector<EnemyData*>* enemyDatas = (vector<EnemyData*>*) passingArgument[6];
+	float* difficulty = (float*) passingArgument[7];
+	vector<ItemData*>* itemDatas = (vector<ItemData*>*) passingArgument[8];
+
+	// cout << "player: " << player << endl;
+	// cout << "world: " << world << endl;
+	// cout << "FUNCprev: " << player->actualMaxHp << endl;
+
+	// cout << "preDiff\n";
+	world->d = Difficulty(*difficulty);
 
 	while (!enemyDatas->empty()) {
 		delete enemyDatas->at(0);
 		enemyDatas->erase(enemyDatas->begin());
 	}
+	while (entities->size() != 1) {
+		delete entities->at(1);
+		entities->erase(entities->begin() + 1);
+	}
 
+	// cout << "createEnemyDatea\n";
 	*enemyDatas = {
 		new EnemyData("Flowy", 20, 40, 500, 60, 150, 0, 0.95, 0, BOUNCING, {
 			{"Bounce", SpriteSheet(window->loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}, 
 			{"Idle", SpriteSheet(window->loadTexture("res/gfx/Flowy.png"), 1, 1, 1)}
-		}, "Idle", 2000, 68, 90),
+		}, "Idle", 2000, 68, 90, world),
 		new EnemyData("Mossling", 5, 40, -1, -1, 70, 0, 0.2, 0, SNEAKING, {
 			{"Hidden", SpriteSheet(window->loadTexture("res/gfx/grasstiles.png"), 18, 9, 1)}, 
 			{"Walking", SpriteSheet(window->loadTexture("res/gfx/Mossling_Spritesheet.png"), 4, 7, 5)}
 //			{"Walking", SpriteSheet(window->loadTexture("res/gfx/Mossling_Spritesheet.png"), 1, 1, 1)}
-		}, "Walking", 500, 80, 80),
+		}, "Walking", 500, 80, 80, world),
 		new EnemyData("Acorn", 10, 1, 60, -1, 50, 5, 0.95, 0.1, SPIN, {
 			{"Spin", SpriteSheet(window->loadTexture("res/gfx/acorntop.png"), 2, 2, 1)}, 
-		}, "Spin", 2000, 80, 80),
+		}, "Spin", 2000, 80, 80, world),
 		new EnemyData("Cacty", 5, 40, 60, 60, 100, 0, 0.9, 0, BOUNCING, {
 			{"Bounce", SpriteSheet(window->loadTexture("res/gfx/Cacty.png"), 2, 2, 1)}, 
 			{"Idle", SpriteSheet(window->loadTexture("res/gfx/Cacty.png"), 2, 2, 1)}, 
-		}, "Idle", 1000, 80, 80),
+		}, "Idle", 1000, 80, 80, world),
 	};
 
+	// cout << "modEnemyData\n";
+	/*
+	for (EnemyData* ed : *enemyDatas) {
+		if (!world->d.getOption(ENEMYDAMAGE)) {
+			ed->damage /= 2;
+		}
+		if (!world->d.getOption(ENEMYSPEED)) {
+			ed->movementspeed /= 2;
+		}
+		else {
+			ed->attackFrames *= 0.75;
+			ed->attackdelay *= 0.75;
+		}
+		if (world->d.getOption(ENEMYKNOCKBACK)) {
+			ed->knockbackResistance = 2 * ed->knockbackResistance + 0.1;
+		}
+		if (world->d.getOption(ENEMYHP)) {
+			ed->maxHP *= 2;
+			ed->defence *= 1.5;
+			ed->defence += 1;
+		}
+	}
+	*/
+
+	// cout << "player: " << player << endl;
+	// cout << "world: " << world << endl;
+	// cout << "readyToPlay\n";
+	// cout << "FUNCprev: " << player->actualMaxHp << endl;
+	player->slotTexture = window->loadTexture("res/gfx/slot.png");
+	player->selectedSlotTexture = window->loadTexture("res/gfx/selectedSlot.png");
+	player->readyToPlay(world);
+	// cout << "item!\n";
+	player->giveItem(new Item(itemDatas->at(4)));
+	if (!world->d.getOption(BONUSITEMSLOTS)) {
+		// cout << "item?\n";
+		player->giveItem(new Item(itemDatas->at(int(random() * itemDatas->size()))));
+	}
+
+	// cout << "generateWorld\n";
 	generateWorld(world, window, player, *entities, *enemyDatas);
 	b->show = false;
 
@@ -122,8 +178,8 @@ void runGame() {
 
 	RenderWindow window("Naturogue");
 
-	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
-	shared_ptr<SDL_Texture> selectedSlotTexture(window.loadTexture("res/gfx/selectedSlot.png"), sdl_deleter());
+	SDL_Texture* slotTexture = window.loadTexture("res/gfx/slot.png");
+	SDL_Texture* selectedSlotTexture = window.loadTexture("res/gfx/selectedSlot.png");
 	shared_ptr<SDL_Texture> weapons1(window.loadTexture("res/gfx/Tools_weapons.png"), sdl_deleter());
 	shared_ptr<SDL_Texture> knife(window.loadTexture("res/gfx/knife.png"), sdl_deleter());
 
@@ -147,19 +203,19 @@ void runGame() {
 		new ItemData(knife, 480, 480, 0, 0, 80, 80, "Knife", 3 * M_PI / 2,                  M_PI / 4, 30, 40, 4, false, false, 2.5, 0.95, 2, {}),
 		new ItemData(weapons1, 16, 16, 0, 0, 80, 80, "Dangerang", 5 * M_PI / 4,             M_PI / 4, 15, 45, 8, true, false, 3.5, 0.95, 10, {BOOMERANG, DANGER}, boomerangHitbox),
 		new ItemData(weapons1, 16, 16, 1, 0, 80, 80, "Bloomerang", 5 * M_PI / 4,            M_PI / 2, 10, 30, 8, true, false, 3, 0.95, 5, {BOOMERANG}, boomerangHitbox),
-		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 50, 20, 6, false, false, 2, 0.9, 10, {TIPPER}, swordHitbox),
+		new ItemData(weapons1, 16, 16, 2, 0, 120, 120, "Qhasm's Tippy", 5 * M_PI / 4,       M_PI / 2, 40, 30, 6, false, false, 2, 0.9, 10, {TIPPER}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 3, 0, 70, 70, "Stick", 5 * M_PI / 4,                 M_PI / 5, 25, 20, 2, true, false, 2.5, 0.8, 5, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 50, 20, 10, true, false, 1.5, 0.95, 10, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2, 0.95, 4, {}), 
-		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 10, 20, true, false, 2.5, 0.95, 15, {SPEAR}, spearHitbox),
-		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 2, 0.85, 3, {SPEAR}, spearHitbox),
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 10, 10, 20, true, false, 2.5, 0.97, 15, {SPEAR}, spearHitbox),
+		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 5, 0.85, 3, {SPEAR}, spearHitbox),
 		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI, 15, 15, 20, true, false, 2, 0.85, 4, {HAMMER}),
 		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Heavy Hammer", 3 * M_PI / 2,         M_PI, 30, 30, 20, false, false, 3, 0.95, 6, {HAMMER}),
 		new ItemData(weapons1, 16, 16, 12, 0, 80, 80, "Swinging Hammer", 5 * M_PI / 4,      6 * M_PI, 35, 15, 60, true, false, 2, 0.9, 10, {HAMMER}),
 		new ItemData(weapons1, 16, 32, 13, 0, 80, 160, "Hamber", 3 * M_PI / 2,              M_PI / 2, 0, 0, 30, true, false, 1, 0.95, 20, {HAMMER}),
 	};
 
-	player->items[0].holding = new Item(itemDatas[8]);
+	// player->items[0].holding = new Item(itemDatas[8]);
 	// player->items[1].holding = new Item(itemDatas[3]);
 	// player->items[2].holding = new Item(itemDatas[13]);
 
@@ -170,6 +226,8 @@ void runGame() {
 
 	World* world = new World(&window, player);
 	window.world = world;
+	player->readyToPlay(world);
+	// player->readyToPlay(world);
 
 	window.zoom = 0.75;
 
@@ -177,6 +235,12 @@ void runGame() {
 	Entity* mainMenu = new Entity(0, 0, window.loadTexture("res/gfx/Naturogue.png"), RenderWindow::WIDTH, RenderWindow::HEIGHT);
 	buttons.push_back(new Button(&window, "Start", 490, 310, 300, 100, 0, 255, 0, 0, 0, 0, true, &diffSelect));
 	buttons.push_back(new Button(&window, "Play", 500, 500, 300, 100, 0, 255, 0, 0, 0, 0, false, &startGame));
+
+	bool difficultySlider = false;
+	Bar* difficulty = new Bar(&window, RenderWindow::WIDTH, 100, 10, Difficulty::MAX_DIFFICULTY, true);
+	difficulty->x = 0;
+	difficulty->y = 310;
+	difficulty->value = 100;
 
 	while (gameRunning) {
 		auto start = chrono::steady_clock().now();
@@ -199,6 +263,8 @@ void runGame() {
 			}
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				SDL_Point p = {event.motion.x, event.motion.y};
+				SDL_Rect r = difficulty->getRect();
+
 				for (Button* b : buttons) {
 					if (b->show) {
 						if (SDL_PointInRect(&p, &(b->area)) == SDL_TRUE) {
@@ -210,8 +276,13 @@ void runGame() {
 				if (!player->animation && player->items[player->selectedSlot].holding != nullptr) {
 					player->mousedown = true;
 				}
+
+				if (current == DIFFICULTYSELECT && SDL_PointInRect(&p, &r)) {
+					difficultySlider = true;
+				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONUP) {
+				difficultySlider = false;
 				// TODO: YO WONT WORK FULLSCREEN (IT DOES BUT LIKE WHYYYYY??????) ALSO WHY X Y SWAP???
 				player->attackAngle = pointAngleBetween(RenderWindow::HEIGHT / 2, RenderWindow::WIDTH / 2, event.motion.y, event.motion.x);
 				// cout << "emx: " << event.motion.x << " emy: " << event.motion.y << endl;
@@ -249,7 +320,30 @@ void runGame() {
 		}
 		else if (current == DIFFICULTYSELECT) {
 			buttons[1]->show = true;
-			window.render(mainMenu, true);			
+			window.render(mainMenu, true);
+
+			difficulty->draw(&window, world, entities);
+			window.drawText(to_string(int(difficulty->value)), 0, 0, 0, 255, 600, 200, 100, 100);
+
+			if (difficultySlider) {
+				// /*
+				int mouseX;
+				int mouseY;
+
+				SDL_GetMouseState(&mouseX, &mouseY);
+
+				int value = round(Difficulty::MAX_DIFFICULTY * (mouseX - difficulty->x) / difficulty->show_width);
+				if (value < 0) {
+					difficulty->value = 0;
+				}
+				else if (value > Difficulty::MAX_DIFFICULTY) {
+					difficulty->value = Difficulty::MAX_DIFFICULTY;
+				}
+				else {
+					difficulty->value = value;
+				}
+				// */
+			}
 		}
 		else if (current == GAME) {
 			arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
@@ -321,17 +415,11 @@ void runGame() {
 			player->healthBar->draw(&window, world, entities);
 		}
 
-		/*
-		int mouseX;
-		int mouseY;
-
-		SDL_GetMouseState(&mouseX, &mouseY);
-
-		SDL_Point p = {mouseX, mouseY};
-		*/
-
+		// cout << player << endl;
+		// cout << "EXTprev: " << player->actualMaxHp << endl;
 		for (Button* b : buttons) {
-			b->draw(&window, {&current, b, world, &entities, &window, player, &enemyDatas});
+			// cout << b << " " << player->actualMaxHp << endl;
+			b->draw(&window, {&current, b, world, &entities, &window, player, &enemyDatas, &difficulty->value, &itemDatas});
 		}
 		// */
 
@@ -341,17 +429,19 @@ void runGame() {
 		window.display();
 		double delay = 1000 * ((1.0 / FPS) - frameDone.count());
 		// cout << delay << " " << world->renderSize << endl;
-		if (delay > 2) {
-			world->renderSize += 100;
-		}
-		else {
-			world->renderSize -= 100;
-		}
-		if (world->renderSize > World::WORLDLENGTH * World::WORLDLENGTH) {
-			world->renderSize = World::WORLDLENGTH * World::WORLDLENGTH;
-		}
-		if (world->renderSize < RenderWindow::SCREENRADIUS / window.zoom) {
-			world->renderSize = RenderWindow::SCREENRADIUS / window.zoom;
+		if (current == GAME) {
+			if (delay > 2) {
+				world->renderSize += 100;
+			}
+			else {
+				world->renderSize -= 100;
+			}
+			if (world->renderSize > World::WORLDLENGTH * World::WORLDLENGTH) {
+				world->renderSize = World::WORLDLENGTH * World::WORLDLENGTH;
+			}
+			if (world->renderSize < RenderWindow::SCREENRADIUS / window.zoom) {
+				world->renderSize = RenderWindow::SCREENRADIUS / window.zoom;
+			}
 		}
 
 		if (delay > 0) {

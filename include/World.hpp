@@ -7,6 +7,7 @@
 #include "Structure.hpp"
 #include "utils.hpp"
 #include "EnemyData.hpp"
+#include "Difficulty.hpp"
 
 #include <chrono>
 #include <algorithm>
@@ -30,8 +31,9 @@ public:
 	vector<Structure> structures;
 	vector<pair<TRIGGER, bool>> activeTriggers; 
 	Player* player;
-	EnemyData* boss;
+	EnemyData* boss = nullptr;
 	Enemy* shrub = nullptr;
+	Difficulty d;
 	int renderSize = 5000;
 
 	World(RenderWindow* window, Player* player);

@@ -1,9 +1,21 @@
 #include "Difficulty.hpp"
 
+#include <iostream>
+
+using namespace std;
+
+Difficulty::Difficulty() {
+
+}
+
 Difficulty::Difficulty(int x) {
-	x -= 1;
 	for (int y = 0; y < OPTIONSLENGTH; y++) {
 		options[y] = x % 2;
 		x /= 2;
 	}
+}
+
+bool Difficulty::getOption(Options o) {
+	// cout << (int) o << " " << (int) OPTIONSLENGTH << endl;
+	return options[(int) o];
 }
