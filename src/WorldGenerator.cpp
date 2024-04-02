@@ -50,6 +50,11 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		delete world->boss;
 	}
 
+	// cout << "Blocks: " << world->blocks.size() << endl;
+
+	// LOAD BLOCKS
+	world->loadBlocks(window);
+
 	// CREATE BOSS (NOW WITH DIFFICULTY)
 	world->boss = new EnemyData("Shrub", 10, 2, -1, -1, 1000, 1, 0.8, 0.2, SHRUB, {
 		{"ShrubBattleStart", SpriteSheet(window->loadTexture("res/gfx/ShrubBattleStart.png"), 10, 1, 5)}, 
@@ -445,6 +450,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			}
 		}
 	}
+
+	// cout << "WorldGen should be player: " << entities[0] << endl;
 }
 
 // Maybe if i dont wanna kill myself ill implement this but i actually care for my mental health fuck this fuck this fuck this fuck this fuck this

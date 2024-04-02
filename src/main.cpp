@@ -43,6 +43,13 @@ bool height(GameObject* go1, GameObject* go2) {
 	return go1->y < go2->y;
 }
 
+void backToMainMenu(vector<void*> passingArgument) {
+	SCREEN* s = (SCREEN*) passingArgument[0];
+	Button* b = (Button*) passingArgument[1];
+	*s = MAIN;
+	b->show = false;
+}
+
 void diffSelect(vector<void*> passingArgument) {
 	SCREEN* s = (SCREEN*) passingArgument[0];
 	Button* b = (Button*) passingArgument[1];
@@ -71,13 +78,20 @@ void startGame(vector<void*> passingArgument) {
 	world->d = Difficulty(*difficulty);
 
 	while (!enemyDatas->empty()) {
+		// cout << "enemyDatas\n";
 		delete enemyDatas->at(0);
 		enemyDatas->erase(enemyDatas->begin());
 	}
-	while (entities->size() != 1) {
-		delete entities->at(1);
-		entities->erase(entities->begin() + 1);
+
+	// cout << entities->at(0) << endl;
+	while (!entities->empty()) {
+		// cout << "entities: " << entities->at(1) << endl;
+		if (entities->at(0) != player) {
+			delete entities->at(0);
+		}
+		entities->erase(entities->begin());
 	}
+	entities->push_back(player);
 
 	// cout << "createEnemyDatea\n";
 	*enemyDatas = {
@@ -166,11 +180,11 @@ void runGame() {
 	map<string, Mix_Chunk*> soundBoard = {
 	};
 	map<string, Mix_Music*> OST = {
-		{"Oppression", Mix_LoadMUS("res/aud/gamers_are_oppressed.wav")}, 
-		{"Chill_1", Mix_LoadMUS("res/aud/very_lazy_non_battle_version.wav")}, 
+		{"Boss", Mix_LoadMUS("res/aud/naturogueboss.wav")}, 
+		{"Level", Mix_LoadMUS("res/aud/naturoguelevel.wav")}, 
 	};
 
-	Mix_Music* backgroundMusic = OST["Chill_1"];
+	Mix_Music* backgroundMusic = OST["Level"];
 
 	bool gameRunning = true;
 	bool playingMusic = true;
@@ -227,14 +241,18 @@ void runGame() {
 	World* world = new World(&window, player);
 	window.world = world;
 	player->readyToPlay(world);
+	// cout << "EDNDDNDNDNDN!\n";
 	// player->readyToPlay(world);
 
 	window.zoom = 0.75;
 
 	SCREEN current = MAIN;
 	Entity* mainMenu = new Entity(0, 0, window.loadTexture("res/gfx/Naturogue.png"), RenderWindow::WIDTH, RenderWindow::HEIGHT);
+	Entity* endCred = new Entity(0, 0, window.loadTexture("res/gfx/endcred.png"), RenderWindow::WIDTH, RenderWindow::HEIGHT);
 	buttons.push_back(new Button(&window, "Start", 490, 310, 300, 100, 0, 255, 0, 0, 0, 0, true, &diffSelect));
 	buttons.push_back(new Button(&window, "Play", 500, 500, 300, 100, 0, 255, 0, 0, 0, 0, false, &startGame));
+	buttons.push_back(new Button(&window, "Retry?", 500, 500, 300, 100, 100, 100, 100, 255, 255, 255, false, &startGame));
+	buttons.push_back(new Button(&window, "Main Menu", 500, 300, 300, 100, 100, 100, 100, 255, 255, 255, false, &backToMainMenu));
 
 	bool difficultySlider = false;
 	Bar* difficulty = new Bar(&window, RenderWindow::WIDTH, 100, 10, Difficulty::MAX_DIFFICULTY, true);
@@ -250,7 +268,7 @@ void runGame() {
 		if (playingMusic) {
 			if (Mix_PlayingMusic() == 0) {
 				// REMOVE TO ENABLE MUSIC
-				// Mix_PlayMusic(backgroundMusic, -1);
+				Mix_PlayMusic(backgroundMusic, -1);
 			}
 		}
 		else {
@@ -314,6 +332,10 @@ void runGame() {
 			}
 		}
 
+		for (Button* b : buttons) {
+			b->show = false;
+		}
+
 		if (current == MAIN) {
 			buttons[0]->show = true;
 			window.render(mainMenu, true);
@@ -345,6 +367,20 @@ void runGame() {
 				// */
 			}
 		}
+		else if (current == GAMEOVER) {
+			window.drawText("GAME OVER", 255, 0, 0, 255, 300, 0, 600, 200);
+
+			buttons[2]->show = true;
+			buttons[3]->show = true;
+		}
+		else if (current == WINCREDITS) {
+			buttons[3]->show = true;
+
+			window.render(endCred, true);
+
+			window.drawText("CONGRATULATIONS!", 255, 255, 255, 255, 0, 0, RenderWindow::WIDTH, 100);
+			window.drawText("Difficulty: " + to_string(int(difficulty->value)), 255, 255, 255, 255, 440, 100, 400, 50);
+		}		
 		else if (current == GAME) {
 			arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
 			arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
@@ -361,6 +397,7 @@ void runGame() {
 
 			world->draw(&window, entities, false);
 
+			// cout << "Entities may be broken\n";
 			fixPreLoop(&window, extendXP, extendXN, extendYP, extendYN);
 			for (GameObject* go : entities) {
 				loopPreFix(go, extendXP, extendXN, extendYP, extendYN);
@@ -369,8 +406,10 @@ void runGame() {
 				loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
 			}
 
+			// cout << "preSort\n";
 			sort(entities.begin(), entities.end(), height);
 
+			// cout << "Main loop portion\n";
 			for (int g = 0; g < entities.size(); g++) {
 				GameObject* go = entities.at(g);
 				if (go->draw(&window, world, entities)) {
@@ -410,9 +449,25 @@ void runGame() {
 					world->shrub->healthBar->value = world->shrub->health;				
 				}
 				world->shrub->healthBar->draw(&window, world, entities);
+
+				if (backgroundMusic == OST["Level"]) {
+					Mix_HaltMusic();
+					backgroundMusic = OST["Boss"];
+				}
+			}
+			else if (backgroundMusic == OST["Boss"]) {
+				Mix_HaltMusic();
+				backgroundMusic = OST["Level"];
+				current = WINCREDITS;
 			}
 
 			player->healthBar->draw(&window, world, entities);
+			if (player->HP < 0) {
+				current = GAMEOVER;
+			}
+			// cout << "MainGame loop should be player: " << entities.at(0) << endl;
+			// cout << "wincreds\n";
+			// current = WINCREDITS;
 		}
 
 		// cout << player << endl;

@@ -5,9 +5,6 @@ Player::Player(RenderWindow* window, SDL_Texture* slotTexture, SDL_Texture* sele
 	this->slotTexture = slotTexture;
 	this->selectedSlotTexture = selectedSlotTexture;
 
-	// cout << "pst: " << slotTexture << endl;
-	// cout << "psst: " << selectedSlotTexture << endl;
-
 	sheets["down"] = SpriteSheet(window->loadTexture("res/gfx/James_Downward.png"), 2, 2, 20);
 	sheets["up"] = SpriteSheet(window->loadTexture("res/gfx/James_Upward.png"), 2, 2, 20);
 
@@ -66,8 +63,8 @@ void Player::readyToPlay(World* world) {
 		slots = 5;
 	}
 
-	// cout << slotTexture.get() << endl;
-	// cout << selectedSlotTexture.get() << endl;
+	// cout << "pst: " << slotTexture << endl;
+	// cout << "psst: " << selectedSlotTexture << endl;
 
 	for (int x = 0; x < slots; x++) {
 		Slot s(x * Slot::SIZE + (RenderWindow::WIDTH - slots * Slot::SIZE) / 2, RenderWindow::HEIGHT - Slot::SIZE, nullptr, slotTexture, selectedSlotTexture);

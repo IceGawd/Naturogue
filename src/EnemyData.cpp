@@ -32,7 +32,7 @@ EnemyData::EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, f
 		knockbackResistance = 2 * knockbackResistance + 0.1;
 	}
 	if (world->d.getOption(ENEMYHP)) {
-		maxHP *= 2;
+		maxHP *= 1.5;
 		defence *= 1.5;
 		defence += 1;
 	}

@@ -5,8 +5,7 @@ Slot::Slot(int x, int y, Item* h, SDL_Texture* slotTexture, SDL_Texture* selecte
 	this->y = y;
 	holding = h;
 
-	// cout << slotTexture.get() << endl;
-	// cout << selectedSlotTexture.get() << endl;
+	// cout << "this: " << this << " " << slotTexture << " " << selectedSlotTexture << endl;
 
 	sheets = {
 		{"Slot", SpriteSheet(slotTexture, 1, 1, 1)}, 

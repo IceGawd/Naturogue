@@ -16,7 +16,6 @@ int index(int x, int y) {
 
 World::World(RenderWindow* window, Player* player) {
 	this->player = player;
-	activeTriggers.push_back({BOSS, false});
 
 	// LOAD STRUCTURES
 	STRUCTYPES = {
@@ -25,12 +24,22 @@ World::World(RenderWindow* window, Player* player) {
 		new StructureType("Chest", 1, 0.3), 
 		new StructureType("Enemy", 1, 0.7), 
 	};
+}
 
-	// LOAD BLOCKS
-	BLOCKTYPES.push_back(new BlockData("Void", window->loadTexture("res/gfx/void.png")));
+void World::loadBlocks(RenderWindow* window) {
+	while (!BLOCKTYPES.empty()) {
+		delete BLOCKTYPES[0];
+		BLOCKTYPES.erase(BLOCKTYPES.begin());
+	}
 
-	SDL_Texture* grasstiles = window->loadTexture("res/gfx/grasstiles.png");
-	SDL_Texture* props = window->loadTexture("res/gfx/Props_1.2.png");
+	activeTriggers.clear();
+
+	activeTriggers.push_back({BOSS, false});
+
+	// BLOCKTYPES.push_back(new BlockData("Void", window->loadTexture("res/gfx/void.png")));
+
+	shared_ptr<SDL_Texture> grasstiles(window->loadTexture("res/gfx/grasstiles.png"), sdl_deleter());
+	shared_ptr<SDL_Texture> props(window->loadTexture("res/gfx/Props_1.2.png"), sdl_deleter());
 
 	BLOCKTYPES.push_back(new BlockData("DirtPath", grasstiles, 0, 5 * PIXELSIZE, PIXELSIZE, PIXELSIZE, 0.7, true));
 	BLOCKTYPES.push_back(new BlockData("ShortPillar", props, PIXELSIZE * 4, PIXELSIZE * 2, PIXELSIZE, PIXELSIZE));
@@ -268,6 +277,8 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 
 	fixPreLoop(window, extendXP, extendXN, extendYP, extendYN);
 
+	// cout << "World's player: " << player << endl;
+
 	if (!front) {
 		int xMin = ((player->x - RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) - 1;
 		int xMax = ((player->x + RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) + 1;
@@ -276,8 +287,10 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 
 		// cout << "xMin: " << xMin << " xMax: " << xMax << " yMin: " << yMin << " yMax: " << yMax << endl;
 		for (int x = xMin; x < xMax; x++) {
+			// cout << "x: " << x << " ";
 			// int actualX = x - int(floor(x / World::WORLDLENGTH)) * World::WORLDLENGTH;
 			for (int y = yMin; y < yMax; y++) {
+				// cout << "y: " << y << " ";
 				// int actualY = y - int(floor(y / World::WORLDLENGTH)) * World::WORLDLENGTH;
 				Block* b = blocks[index(y, x)];
 				loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
@@ -285,10 +298,13 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 				loopPostFix(b);
 				// cout << index(y, x) << " ";
 			}
+			// cout << endl;
 		}
-		// cout << endl;
+		// cout << "cock" << endl;
 	}
+	// cout << "dick\n";
 
+	// cout << "OtherRender\n";
 	for (int x = WORLDSIZE * WORLDSIZE; x < blocks.size(); x++) {
 		Block* b = blocks[x];
 		if (b->type->front == front && b->active) {
@@ -298,6 +314,7 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 		}
 	}
 
+	// cout << "TriggerDetect\n";
 	int xDiff = player->x - structures[1].x + player->show_width / 2;
 	int yDiff = player->y - structures[1].y + player->show_height / 2;
 	// cout << xDiff * xDiff + yDiff * yDiff << endl;

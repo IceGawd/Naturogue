@@ -413,65 +413,67 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 		}
 		else if (ed->ai == SPIN) {
-			bool curActive = ed->aggroRange > distanceFromPlayer;
-			if (curActive && !active) {
-				rageMeter = ed->attackFrames * distanceFromPlayer;
-			}
+			if (ed->aggroRange > distanceFromPlayer) {
+				bool curActive = ed->aggroRange > distanceFromPlayer;
+				if (curActive && !active) {
+					rageMeter = ed->attackFrames * distanceFromPlayer;
+				}
 
-			active = curActive;
-			x += xvel;
-			y += yvel;
-			bool collided = world->collides(this);
+				active = curActive;
+				x += xvel;
+				y += yvel;
+				bool collided = world->collides(this);
 
-			if (!collided) {
-				SDL_Rect me = getRect();
-				for (Enemy* dude : group) {
-					SDL_Rect you = dude->getRect();
-					if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
-						me.x += (you.x > me.x) ? -1 : 1;
-						me.y += (you.y > me.y) ? -1 : 1;
-						you.x += (you.x > me.x) ? 1 : -1;
-						you.y += (you.y > me.y) ? 1 : -1;
+				if (!collided) {
+					SDL_Rect me = getRect();
+					for (Enemy* dude : group) {
+						SDL_Rect you = dude->getRect();
+						if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
+							me.x += (you.x > me.x) ? -1 : 1;
+							me.y += (you.y > me.y) ? -1 : 1;
+							you.x += (you.x > me.x) ? 1 : -1;
+							you.y += (you.y > me.y) ? 1 : -1;
 
-						xvel += (you.x > me.x) ? -1 : 1;
-						yvel += (you.y > me.y) ? -1 : 1;
-						dude->xvel += (you.x > me.x) ? 1 : -1;
-						dude->yvel += (you.y > me.y) ? 1 : -1;
-						collided = true;
-						break;
+							xvel += (you.x > me.x) ? -1 : 1;
+							yvel += (you.y > me.y) ? -1 : 1;
+							dude->xvel += (you.x > me.x) ? 1 : -1;
+							dude->yvel += (you.y > me.y) ? 1 : -1;
+							collided = true;
+							break;
+						}
 					}
 				}
+
+				if (collided) {
+					xvel = -xvel;
+					yvel = -yvel;
+
+					rage = !rage;
+				}
+
+				float angle = (M_PI * rageMeter) / (2 * ed->attackFrames * distanceFromPlayer);
+				if (rage) {
+					angle *= -1;
+				}
+				angle += angleBetween(p);
+
+				xvel -= ed->movementspeed * cos(angle);
+				yvel += ed->movementspeed * sin(angle);
+
+				rageMeter -= distanceFromPlayer;
+				if (rageMeter < 0) {
+					rageMeter = ed->attackFrames * distanceFromPlayer;
+				}
+
+				frames += sqrt(xvel * xvel + yvel * yvel) / (5 * ed->movementspeed);
+				while (frames > 4) {
+					frames -= 4;
+				}
+				int actualFrame = int(frames);
+
+				animationFrame = actualFrame / 2;
+				animationType = actualFrame % 2;
 			}
-
-			if (collided) {
-				xvel = -xvel;
-				yvel = -yvel;
-
-				rage = !rage;
-			}
-
-			float angle = (M_PI * rageMeter) / (2 * ed->attackFrames * distanceFromPlayer);
-			if (rage) {
-				angle *= -1;
-			}
-			angle += angleBetween(p);
-
-			xvel -= ed->movementspeed * cos(angle);
-			yvel += ed->movementspeed * sin(angle);
-
-			rageMeter -= distanceFromPlayer;
-			if (rageMeter < 0) {
-				rageMeter = ed->attackFrames * distanceFromPlayer;
-			}
-
-			frames += sqrt(xvel * xvel + yvel * yvel) / (5 * ed->movementspeed);
-			while (frames > 4) {
-				frames -= 4;
-			}
-			int actualFrame = int(frames);
-
-			animationFrame = actualFrame / 2;
-			animationType = actualFrame % 2;
 		}
 		// */
 

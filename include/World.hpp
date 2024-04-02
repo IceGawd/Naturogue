@@ -37,6 +37,7 @@ public:
 	int renderSize = 5000;
 
 	World(RenderWindow* window, Player* player);
+	void loadBlocks(RenderWindow* window);
 	bool isSafePosition(int midX, int midY);
 	void edgeCleanup(string toEdge);
 	void tempEdgeCleanup(string toEdge, string toReplace);

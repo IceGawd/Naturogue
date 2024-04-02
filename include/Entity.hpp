@@ -24,6 +24,7 @@ class Entity {
 public:
 	Entity();
 	// ~Entity();
+	Entity(float px, float py, shared_ptr<SDL_Texture> ptexture, int pw, int ph);
 	Entity(float px, float py, SDL_Texture* ptexture);
 	Entity(float px, float py, SDL_Texture* ptexture, int pw, int ph);
 	// Entity(const Entity& e);

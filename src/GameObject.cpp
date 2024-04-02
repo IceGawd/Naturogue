@@ -6,7 +6,7 @@
 using namespace std;
 
 GameObject::~GameObject() {
-	
+	// cout << "GAMEOBJECT DESTROY: " << this << endl;
 }
 
 GameObject::GameObject() {
