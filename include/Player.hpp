@@ -14,11 +14,11 @@ void interact(vector<void*> objects);
 class Player : public GameObject {
 public:
 	const static int MAXIMUM_HP = 100;
+	constexpr static float chargeTraction = 0.8; // IS ADDITIONAL
+	const static int speed = 6;
 	int actualMaxHp;
-	int speed = 6;
 	int slots = 3;
 	int selectedSlot = 0;
-	float chargeTraction = 0.8; // IS ADDITIONAL
 	float charge = 0;
 	float attackAngle = 0;
 
@@ -34,8 +34,8 @@ public:
 
 	bool animation = false;
 
-	SDL_Texture* slotTexture;
-	SDL_Texture* selectedSlotTexture;
+	shared_ptr<SDL_Texture> slotTexture;
+	shared_ptr<SDL_Texture> selectedSlotTexture;
 	vector<Slot> items;
 
 	Bar* healthBar;
@@ -44,7 +44,7 @@ public:
 	Input input;
 	vector<Weapon*> beingUsed;
 
-	Player(RenderWindow* window, SDL_Texture* slotTexture, SDL_Texture* selectedSlotTexture);
+	Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared_ptr<SDL_Texture> selectedSlotTexture);
 	void readyToPlay(World* world);
 	void select(int num);
 	float valueFromCharge();

@@ -1,7 +1,7 @@
 #include "Player.hpp"
 #include "ItemDrop.hpp"
 
-Player::Player(RenderWindow* window, SDL_Texture* slotTexture, SDL_Texture* selectedSlotTexture) {
+Player::Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared_ptr<SDL_Texture> selectedSlotTexture) {
 	this->slotTexture = slotTexture;
 	this->selectedSlotTexture = selectedSlotTexture;
 
@@ -30,6 +30,18 @@ Player::Player(RenderWindow* window, SDL_Texture* slotTexture, SDL_Texture* sele
 }
 
 void Player::readyToPlay(World* world) {
+	charge = 0;
+	invincibilityFrames = 0;
+	timeWithoutDamage = 0;
+	swing = false;
+	yeet = false;
+	mousedown = false;
+	animation = false;
+	while (!beingUsed.empty()) {
+		delete beingUsed.at(0);
+		beingUsed.erase(beingUsed.begin());
+	}
+
 	// cout << "maxHP?\n";
 	// cout << "world: " << world << endl;
 	// cout << "prev: " << actualMaxHp << endl;
@@ -132,6 +144,7 @@ void interact(vector<void*> object) {
 }
 
 bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
+	// /*
 	GameObject::draw(window, world, entities);
 
 	double diagDirect = (input.diagonal()) ? 1 / sqrt(2) : 1;
@@ -200,7 +213,8 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	animationFrame = int(next->xFrames * next->yFrames * frames / next->frames) % next->xFrames;
 
 	setRect();
-
+	// */
+	
 	timeWithoutDamage++;
 	if (invincibilityFrames > 0) {
 		if (timeWithoutDamage > 0) {
@@ -262,7 +276,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	window->cross(x + show_width, y);
 	window->cross(x + show_width, y + show_height);
 	window->cross(x, y + show_height);
-	*/
+	// */
 
 	return false;
 }

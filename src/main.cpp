@@ -75,6 +75,7 @@ void startGame(vector<void*> passingArgument) {
 	// cout << "FUNCprev: " << player->actualMaxHp << endl;
 
 	// cout << "preDiff\n";
+	// /*
 	world->d = Difficulty(*difficulty);
 
 	while (!enemyDatas->empty()) {
@@ -85,12 +86,12 @@ void startGame(vector<void*> passingArgument) {
 
 	// cout << entities->at(0) << endl;
 	while (!entities->empty()) {
-		// cout << "entities: " << entities->at(1) << endl;
+		// cout << "entities: " << entities->at(0) << endl;
 		if (entities->at(0) != player) {
 			delete entities->at(0);
 		}
 		entities->erase(entities->begin());
-	}
+	}	
 	entities->push_back(player);
 
 	// cout << "createEnemyDatea\n";
@@ -114,7 +115,7 @@ void startGame(vector<void*> passingArgument) {
 	};
 
 	// cout << "modEnemyData\n";
-	/*
+	// /*
 	for (EnemyData* ed : *enemyDatas) {
 		if (!world->d.getOption(ENEMYDAMAGE)) {
 			ed->damage /= 2;
@@ -135,22 +136,23 @@ void startGame(vector<void*> passingArgument) {
 			ed->defence += 1;
 		}
 	}
-	*/
+	// */
 
 	// cout << "player: " << player << endl;
 	// cout << "world: " << world << endl;
 	// cout << "readyToPlay\n";
 	// cout << "FUNCprev: " << player->actualMaxHp << endl;
-	player->slotTexture = window->loadTexture("res/gfx/slot.png");
-	player->selectedSlotTexture = window->loadTexture("res/gfx/selectedSlot.png");
+	// player->slotTexture = window->loadTexture("res/gfx/slot.png");
+	// player->selectedSlotTexture = window->loadTexture("res/gfx/selectedSlot.png");
 	player->readyToPlay(world);
+	// /*
 	// cout << "item!\n";
 	player->giveItem(new Item(itemDatas->at(4)));
 	if (!world->d.getOption(BONUSITEMSLOTS)) {
 		// cout << "item?\n";
 		player->giveItem(new Item(itemDatas->at(int(random() * itemDatas->size()))));
 	}
-
+	// */
 	// cout << "generateWorld\n";
 	generateWorld(world, window, player, *entities, *enemyDatas);
 	b->show = false;
@@ -163,10 +165,10 @@ void runGame() {
 
 	srand((unsigned) time(NULL));
 	if (SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0) {
-		cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
+		// cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
 	}
 	if (!IMG_Init(IMG_INIT_PNG)) {
-		cout << "IMG PNG Failure: " << SDL_GetError() << "\n";
+		// cout << "IMG PNG Failure: " << SDL_GetError() << "\n";
 	}
 	if(TTF_Init() == -1) {
 	    cout << "TTF_Init: " << TTF_GetError() << endl;
@@ -174,7 +176,7 @@ void runGame() {
 
 	//Initialize SDL_mixer
 	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 2048) < 0) {
-		cout << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << "\n";
+		// cout << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << "\n";
 	}
 
 	map<string, Mix_Chunk*> soundBoard = {
@@ -192,8 +194,8 @@ void runGame() {
 
 	RenderWindow window("Naturogue");
 
-	SDL_Texture* slotTexture = window.loadTexture("res/gfx/slot.png");
-	SDL_Texture* selectedSlotTexture = window.loadTexture("res/gfx/selectedSlot.png");
+	shared_ptr<SDL_Texture> slotTexture(window.loadTexture("res/gfx/slot.png"), sdl_deleter());
+	shared_ptr<SDL_Texture> selectedSlotTexture(window.loadTexture("res/gfx/selectedSlot.png"), sdl_deleter());
 	shared_ptr<SDL_Texture> weapons1(window.loadTexture("res/gfx/Tools_weapons.png"), sdl_deleter());
 	shared_ptr<SDL_Texture> knife(window.loadTexture("res/gfx/knife.png"), sdl_deleter());
 
@@ -240,7 +242,7 @@ void runGame() {
 
 	World* world = new World(&window, player);
 	window.world = world;
-	player->readyToPlay(world);
+	// player->readyToPlay(world);
 	// cout << "EDNDDNDNDNDN!\n";
 	// player->readyToPlay(world);
 
@@ -291,7 +293,7 @@ void runGame() {
 					}
 				}
 
-				if (!player->animation && player->items[player->selectedSlot].holding != nullptr) {
+				if (current == GAME && !player->animation && player->items[player->selectedSlot].holding != nullptr) {
 					player->mousedown = true;
 				}
 
@@ -326,7 +328,7 @@ void runGame() {
 			}
 			else if (event.type == SDL_KEYDOWN) {
 				int num = int(event.key.keysym.sym) - 49; // 48 is 0 key
-				if (num > -1 && num < player->slots && !player->animation) {
+				if (current == GAME && num > -1 && num < player->slots && !player->animation) {
 					player->select(num);
 				}
 			}
@@ -382,6 +384,7 @@ void runGame() {
 			window.drawText("Difficulty: " + to_string(int(difficulty->value)), 255, 255, 255, 255, 440, 100, 400, 50);
 		}		
 		else if (current == GAME) {
+			// /*
 			arrowChange(&window, window.cc.up, &player->input.up, nullptr, {});
 			arrowChange(&window, window.cc.left, &player->input.left, nullptr, {});
 			arrowChange(&window, window.cc.right, &player->input.right, nullptr, {});
@@ -408,17 +411,22 @@ void runGame() {
 
 			// cout << "preSort\n";
 			sort(entities.begin(), entities.end(), height);
+			// */
 
 			// cout << "Main loop portion\n";
 			for (int g = 0; g < entities.size(); g++) {
 				GameObject* go = entities.at(g);
-				if (go->draw(&window, world, entities)) {
+				// cout << "g: " << g << " go: " << go << endl;
+				bool alive = go->draw(&window, world, entities);
+				if (alive) {
+					// cout << "deleting and erasing\n";
 					delete go;
 					entities.erase(entities.begin() + g);
 					g--;
 				}
 			}
 
+			// /*
 			for (GameObject* go : entities) {
 				loopPostFix(go);
 				// cout << "x: " << go->x << " y: " << go->y << endl;
@@ -434,6 +442,7 @@ void runGame() {
 			for (Slot& s : player->items) {
 				s.draw(&window);
 			}
+			// */
 
 			// CAMERA
 			window.x = player->x - ((RenderWindow::WIDTH - player->show_width) / 2) / window.zoom;
@@ -512,7 +521,7 @@ int main(int argc, char *args[]) {
 	for (float x = 0; x < 1; x += 0.25) {
 		for (float y = 0; y < 1; y += 0.25) {
 			for (float z = 0; z < 1; z += 0.25) {	
-				cout << "1x: " << pn.noise(x, y, z) << endl;
+				// cout << "1x: " << pn.noise(x, y, z) << endl;
 				// cout << "-1x: " << pn.noise(-x, -y, -z) << endl;
 			}
 		}		

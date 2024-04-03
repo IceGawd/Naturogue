@@ -413,6 +413,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 		}
 		else if (ed->ai == SPIN) {
+			// cout << distanceFromPlayer << endl;
 			if (ed->aggroRange > distanceFromPlayer) {
 				bool curActive = ed->aggroRange > distanceFromPlayer;
 				if (curActive && !active) {

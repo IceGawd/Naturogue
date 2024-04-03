@@ -5,6 +5,12 @@
 #include "utils.hpp"
 #include "ItemDrop.hpp"
 
+Weapon::~Weapon() {
+	if (!melee) {
+		delete item;
+	}
+}
+
 Weapon::Weapon(Item* i, bool m, float a, float c) {
 	item = i;
 	melee = m;

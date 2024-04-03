@@ -2,6 +2,7 @@
 #include "RenderWindow.hpp"
 
 Bar::~Bar() {
+	cout << "Freeing Bar surface: " << surf << endl;
 	SDL_FreeSurface(surf);
 }
 
@@ -48,6 +49,8 @@ Bar::Bar(RenderWindow* window, int w, int h, int t, float mv, bool s, bool so) {
 	*/
 	
 	setTexture(SDL_CreateTextureFromSurface(window->renderer, surf));
+	cout << "Bar texture: " << texture.get() << endl;
+	cout << "Bar surface: " << surf << endl;
 
 	setRect();
 }
@@ -75,7 +78,7 @@ bool Bar::draw(RenderWindow* window, World* world, vector<GameObject*>& entities
 				b = 0;
 				a = 255;
 			}
-			else if ((x - thickness) / (width - 2.0 * thickness) <= (value / maxValue)) {
+			else if ((x - thickness) / (width - 2.0 * thickness) < (value / maxValue)) {
 				if (solidColor) {
 					r = (value > maxValue / 2) ? 510 * (1 - value / maxValue) : 255;
 					g = (value > maxValue / 2) ? 255 : 510 * (value / maxValue);

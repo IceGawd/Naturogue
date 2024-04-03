@@ -276,35 +276,36 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 	bool extendYN;
 
 	fixPreLoop(window, extendXP, extendXN, extendYP, extendYN);
+	cout << "World's player: " << player << endl;
 
-	// cout << "World's player: " << player << endl;
-
+	// /*
 	if (!front) {
 		int xMin = ((player->x - RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) - 1;
 		int xMax = ((player->x + RenderWindow::WIDTH / window->zoom) / Block::BLOCKSIZE) + 1;
 		int yMin = ((player->y - RenderWindow::HEIGHT / window->zoom) / Block::BLOCKSIZE) - 1;
 		int yMax = ((player->y + RenderWindow::HEIGHT / window->zoom) / Block::BLOCKSIZE) + 1;
 
-		// cout << "xMin: " << xMin << " xMax: " << xMax << " yMin: " << yMin << " yMax: " << yMax << endl;
+		cout << "xMin: " << xMin << " xMax: " << xMax << " yMin: " << yMin << " yMax: " << yMax << endl;
 		for (int x = xMin; x < xMax; x++) {
-			// cout << "x: " << x << " ";
+			cout << "x: " << x << " ";
 			// int actualX = x - int(floor(x / World::WORLDLENGTH)) * World::WORLDLENGTH;
 			for (int y = yMin; y < yMax; y++) {
-				// cout << "y: " << y << " ";
+				cout << "y: " << y << " ";
 				// int actualY = y - int(floor(y / World::WORLDLENGTH)) * World::WORLDLENGTH;
 				Block* b = blocks[index(y, x)];
 				loopPreFix(b, extendXP, extendXN, extendYP, extendYN);
 				window->render(b);
 				loopPostFix(b);
-				// cout << index(y, x) << " ";
+				cout << index(y, x) << " ";
 			}
-			// cout << endl;
+			cout << endl;
 		}
-		// cout << "cock" << endl;
+		cout << "cock" << endl;
 	}
-	// cout << "dick\n";
+	cout << "dick\n";
+	// */
 
-	// cout << "OtherRender\n";
+	cout << "OtherRender\n";
 	for (int x = WORLDSIZE * WORLDSIZE; x < blocks.size(); x++) {
 		Block* b = blocks[x];
 		if (b->type->front == front && b->active) {
@@ -314,16 +315,21 @@ void World::draw(RenderWindow* window, vector<GameObject*>& entities, bool front
 		}
 	}
 
-	// cout << "TriggerDetect\n";
+	// /*
+	cout << "TriggerDetect\n";
 	int xDiff = player->x - structures[1].x + player->show_width / 2;
 	int yDiff = player->y - structures[1].y + player->show_height / 2;
-	// cout << xDiff * xDiff + yDiff * yDiff << endl;
-	if (xDiff * xDiff + yDiff * yDiff < 160000 && !activeTriggers[0].second) { // Distance is less than 400
+	cout << xDiff * xDiff + yDiff * yDiff << endl;
+	cout << activeTriggers.size() << endl;
+	cout << activeTriggers.at(0).first << " " << activeTriggers.at(0).second << endl;
+	if (xDiff * xDiff + yDiff * yDiff < 160000 && !activeTriggers.at(0).second) { // Distance is less than 400
 		activeTriggers[0].second = true;
 		activateTrigger(activeTriggers[0].first);
 		shrub = new Enemy(WORLDLENGTH / 2 - Block::BLOCKSIZE / 2, WORLDLENGTH / 2 - 3 * Block::BLOCKSIZE, boss, window);
 		entities.push_back(shrub);
 	}
+	cout << "World end!\n";
+	// */
 }
 
 bool World::collides(GameObject* object) {

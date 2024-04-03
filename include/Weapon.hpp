@@ -15,6 +15,7 @@ struct Weapon : public GameObject {
 
 	vector<Vector2f> points;
 
+	~Weapon();
 	Weapon(Item* i, bool m, float a, float c);
 	void calculatePoints();
 	virtual bool draw(RenderWindow* window, World* world, vector<GameObject*>& entities);

@@ -78,15 +78,16 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// double z = random();
 	// cout << z << endl;
 
-	// GENERATE STRUCTURE LOCATIONS
 	// /*
+
+	// GENERATE STRUCTURE LOCATIONS
 	if (random() > 0.5) {
 		world->structures.push_back(Structure(world->STRUCTYPES[0], (int) ((random() * World::WORLDLENGTH) / Block::BLOCKSIZE) * Block::BLOCKSIZE, 0));
 	}
 	else {
 		world->structures.push_back(Structure(world->STRUCTYPES[0], 0, (int) ((random() * World::WORLDLENGTH) / Block::BLOCKSIZE) * Block::BLOCKSIZE));		
 	}
-	// */
+	
 
 	// world->structures.push_back(Structure(world->STRUCTYPES[0], World::WORLDLENGTH / 2, World::WORLDLENGTH / 2 + 2000));
 
@@ -152,14 +153,13 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 				xdelta += power * cos(angle);
 				ydelta -= power * sin(angle);
 
-				/*
-				cout << "power: " << power << endl;
-				cout << "angle: " << angle * 180 / M_PI << endl;
-				cout << "x1: " << x1 << " y1: " << y1 << endl;
-				cout << "x2: " << x2 << " y2: " << y2 << endl;
-				cout << "s.x: " << s.x << " s.y: " << s.y << endl;
-				cout << "power * cos(angle): " << power * cos(angle) << " -power * sin(angle): " << -power * sin(angle) << endl;
-				// */
+				// cout << "power: " << power << endl;
+				// cout << "angle: " << angle * 180 / M_PI << endl;
+				// cout << "x1: " << x1 << " y1: " << y1 << endl;
+				// cout << "x2: " << x2 << " y2: " << y2 << endl;
+				// cout << "s.x: " << s.x << " s.y: " << s.y << endl;
+				// cout << "power * cos(angle): " << power * cos(angle) << " -power * sin(angle): " << -power * sin(angle) << endl;
+				
 			}
 			xdelta /= n;
 			ydelta /= n;
@@ -178,7 +178,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 
 		world->structures.push_back(Structure(type, x1, y1));
 	}
-	// */
+	
 
 	// float zHeight = random();
 	// vector<float> testingTheWaters;
@@ -212,27 +212,9 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			else {
 				world->blocks.push_back(new Block(x, y, world->getBlockData("Grass11")));
 			}
-			// */
-			/*
-			if (x > World::WORLDSIZE / 2 && y > World::WORLDSIZE / 2) {
-				world->blocks.push_back(new Block(x, y, world->getBlockData("DirtPath")));
-			}
-			else {
-				world->blocks.push_back(new Block(x, y, world->getBlockData("Grass11")));
-			}
-			*/
 		}
 	}
-
-	// /*
-	// */
-
-	/*
-	world->blocks.push_back(new Block(2, 2, world->getBlockData("Void")));
-	world->blocks.push_back(new Block(2, 3, world->getBlockData("Void")));
-	world->blocks.push_back(new Block(3, 3, world->getBlockData("Void")));
-	world->blocks.push_back(new Block(3, 2, world->getBlockData("Void")));
-	*/
+	
 	// SORT BY LOW TO HIGH (Unecessary?)
 	// sort(world->blocks.begin(), world->blocks.end(), blockCompare);
 
@@ -278,6 +260,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 				enemy->group = group;
 			}
 			// */
+			
 		}
 		else if (s.type->name == "Exit") {
 			int r = round(7 + 2 * (random() + random() + random()));
@@ -320,7 +303,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 				world->blocks.push_back(new Block(battleCenter + flippedIndex(z + 6 * degree45.size(), degree45), fullBrick, BOSS));
 				world->blocks.push_back(new Block(battleCenter + flippedIndex(8 * degree45.size() - z - 1, degree45), fullBrick, BOSS));				
 			}
-			// */
+			
 			for (int x = 0; x < 3; x++) {
 				for (int y = 0; y < 3; y++) {
 					pair<int, int> pii = {x - 1, r + y - 2};
@@ -450,6 +433,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			}
 		}
 	}
+	// */
 
 	// cout << "WorldGen should be player: " << entities[0] << endl;
 }
