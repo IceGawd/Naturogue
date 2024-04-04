@@ -1,6 +1,6 @@
 #include "Slot.hpp"
 
-Slot::Slot(int x, int y, Item* h, shared_ptr<SDL_Texture> slotTexture, shared_ptr<SDL_Texture> selectedSlotTexture) {
+Slot::Slot(int x, int y, Item* h, shared_ptr<SDL_Texture>& slotTexture, shared_ptr<SDL_Texture>& selectedSlotTexture) {
 	this->x = x;
 	this->y = y;
 	holding = h;

@@ -2,6 +2,8 @@
 
 ItemDrop::~ItemDrop() {
 	// /*
+	// cout << "item: " << item << endl;
+
 	if (item != nullptr) {
 		delete item;
 	}
@@ -21,7 +23,7 @@ ItemDrop::ItemDrop(int x, int y, Item* i, float a) {
 bool ItemDrop::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
 	float dist = distance((Entity*) world->player);
 
-	if (dist < 300) {
+	if (dist < 200) {
 		float ab = angleBetween((Entity*) world->player);
 
 		xvel -= dist * cos(ab) / 30;
@@ -40,8 +42,12 @@ bool ItemDrop::draw(RenderWindow* window, World* world, vector<GameObject*>& ent
 
 	SDL_bool intersected = SDL_HasIntersection(&me, &you);
 	bool die = (intersected == SDL_TRUE);
-	if (intersected == SDL_TRUE) {
-		die = world->player->giveItem(new Item(*item));
+	if (die) {
+		die = world->player->giveItem(item);
+		if (die) {
+			// cout << "aight peace\n";
+			item = nullptr;
+		}
 	}
 
 	return die;

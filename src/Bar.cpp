@@ -2,7 +2,7 @@
 #include "RenderWindow.hpp"
 
 Bar::~Bar() {
-	cout << "Freeing Bar surface: " << surf << endl;
+	// cout << "Freeing Bar surface: " << surf << endl;
 	SDL_FreeSurface(surf);
 }
 
@@ -27,30 +27,30 @@ Bar::Bar(RenderWindow* window, int w, int h, int t, float mv, bool s, bool so) {
 	surf = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXELFORMAT_ARGB8888);
 
 	/*
-	cout << "surf->format->format: " << surf->format->format << endl;
-	cout << "surf->format->BitsPerPixel: " << int(surf->format->BitsPerPixel) << endl;
-	cout << "surf->format->BytesPerPixel: " << int(surf->format->BytesPerPixel) << endl;
-	cout << "surf->format->Rmask: " << surf->format->Rmask << endl;
-	cout << "surf->format->Gmask: " << surf->format->Gmask << endl;
-	cout << "surf->format->Bmask: " << surf->format->Bmask << endl;
-	cout << "surf->format->Amask: " << surf->format->Amask << endl;
+	// cout << "surf->format->format: " << surf->format->format << endl;
+	// cout << "surf->format->BitsPerPixel: " << int(surf->format->BitsPerPixel) << endl;
+	// cout << "surf->format->BytesPerPixel: " << int(surf->format->BytesPerPixel) << endl;
+	// cout << "surf->format->Rmask: " << surf->format->Rmask << endl;
+	// cout << "surf->format->Gmask: " << surf->format->Gmask << endl;
+	// cout << "surf->format->Bmask: " << surf->format->Bmask << endl;
+	// cout << "surf->format->Amask: " << surf->format->Amask << endl;
 	*/
 
 	// surf = TTF_RenderText_Blended(window->sans, "1", {255, 255, 255, 255});
 
 	/*
-	cout << "surf->format->format: " << surf->format->format << endl;
-	cout << "surf->format->BitsPerPixel: " << int(surf->format->BitsPerPixel) << endl;
-	cout << "surf->format->BytesPerPixel: " << int(surf->format->BytesPerPixel) << endl;
-	cout << "surf->format->Rmask: " << surf->format->Rmask << endl;
-	cout << "surf->format->Gmask: " << surf->format->Gmask << endl;
-	cout << "surf->format->Bmask: " << surf->format->Bmask << endl;
-	cout << "surf->format->Amask: " << surf->format->Amask << endl;
+	// cout << "surf->format->format: " << surf->format->format << endl;
+	// cout << "surf->format->BitsPerPixel: " << int(surf->format->BitsPerPixel) << endl;
+	// cout << "surf->format->BytesPerPixel: " << int(surf->format->BytesPerPixel) << endl;
+	// cout << "surf->format->Rmask: " << surf->format->Rmask << endl;
+	// cout << "surf->format->Gmask: " << surf->format->Gmask << endl;
+	// cout << "surf->format->Bmask: " << surf->format->Bmask << endl;
+	// cout << "surf->format->Amask: " << surf->format->Amask << endl;
 	*/
 	
 	setTexture(SDL_CreateTextureFromSurface(window->renderer, surf));
-	cout << "Bar texture: " << texture.get() << endl;
-	cout << "Bar surface: " << surf << endl;
+	// cout << "Bar texture: " << texture.get() << endl;
+	// cout << "Bar surface: " << surf << endl;
 
 	setRect();
 }

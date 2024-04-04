@@ -217,3 +217,36 @@ void RenderWindow::drawText(string text, unsigned char r, unsigned char g, unsig
 	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyTexture(Message);
 }
+
+void RenderWindow::drawNicelyScaledText(string text, unsigned char r, unsigned char g, unsigned char b, unsigned char a, int x, int y, int w, int h) {
+	SDL_Color color = {r, g, b, a};
+	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(sans, text.c_str(), color); 
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+	SDL_Rect Message_rect; //create a rect
+	Message_rect.x = x;  //controls the rect's x coordinate 
+	Message_rect.y = y; // controls the rect's y coordinte
+	Message_rect.w = w; // controls the width of the rect
+	Message_rect.h = h; // controls the height of the rect
+
+	float wScale = 1.0 * w / surfaceMessage->w;
+	float hScale = 1.0 * h / surfaceMessage->h;
+
+	if (wScale < hScale) {
+		Message_rect.w = surfaceMessage->w * wScale;
+		Message_rect.h = surfaceMessage->h * wScale;
+		Message_rect.x = x;
+		Message_rect.y = y + (h - Message_rect.h) / 2;
+	}
+	else {
+		Message_rect.w = surfaceMessage->w * hScale;
+		Message_rect.h = surfaceMessage->h * hScale;
+		Message_rect.x = x + (w - Message_rect.w) / 2;
+		Message_rect.y = y;
+	}
+
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(Message);
+}

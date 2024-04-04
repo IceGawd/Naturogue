@@ -46,9 +46,10 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		delete world->blocks[0];
 		world->blocks.erase(world->blocks.begin());
 	}
-	if (world->boss != nullptr) {
-		delete world->boss;
+	if (world->shrub != nullptr) {
+		world->shrub = nullptr; // Deleted in entities
 	}
+	delete world->boss;
 
 	// cout << "Blocks: " << world->blocks.size() << endl;
 
@@ -69,7 +70,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 
 	// GENERATE WORLD
 	auto seed = (unsigned) time(NULL);
-	// auto seed = 1711864216;
+	// auto seed = 1712205274;
 	cout << "SEED: " << seed << endl;
 
 	PerlinNoise pn = PerlinNoise(seed);
@@ -194,6 +195,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 		// cout << endl;
 	}
 	// cout << endl;
+	biggestValue = (int(10 * biggestValue) + (int(10 * biggestValue) % 2) - 1) / 10.0;
+	// cout << biggestValue << endl;
 
 	// PLACE DIRT AND GRASS
 	for (int x = 0; x < World::WORLDSIZE; x++) {
@@ -218,6 +221,7 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 	// SORT BY LOW TO HIGH (Unecessary?)
 	// sort(world->blocks.begin(), world->blocks.end(), blockCompare);
 
+	// cout << "SPIN: " << SPIN << endl;
 	// PLACE STRUCTURES
 	for (Structure& s : world->structures) {
 		// cout << s.x << " " << s.y << endl;
@@ -249,7 +253,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			// /*
 			vector<Enemy*> group;
 			EnemyData* ed = enemyDatas[(int) (random() * enemyDatas.size())];
-			// EnemyData* ed = enemyDatas[0];
+			// EnemyData* ed = enemyDatas[3];
+			// cout << "Enemy: " << ed->name << " " << ed->ai << " " << s.x << " " << s.y << endl;
 			for (int x = 0; x < 1 + 2 * (random() + random() + random()); x++) {
 				Enemy* enemy = new Enemy(s.x + 5 * Block::BLOCKSIZE * (0.5 - random()), s.y + 5 * Block::BLOCKSIZE * (0.5 - random()), ed, window);
 				entities.push_back(enemy);

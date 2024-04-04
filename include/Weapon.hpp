@@ -13,6 +13,8 @@ struct Weapon : public GameObject {
 
 	bool comeBack = false;
 
+	int numberOfDudesHit = 0;
+
 	vector<Vector2f> points;
 
 	~Weapon();

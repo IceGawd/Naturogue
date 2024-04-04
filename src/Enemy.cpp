@@ -105,6 +105,11 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 
 	float distanceFromPlayer = distance(p);
 
+	if (random() < 0.01) {
+		randoSampledX = x;
+		randoSampledY = y;
+	}
+
 	// TODO: FOR AI PROGRAMMING KEEP IN MIND LOOPING WORLD (patched with utils.cpp's 3 loopFix functions)
 	// /*
 
@@ -119,12 +124,16 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		if (ed->ai == BOUNCING) {
 			active = true;
 			recoveryFrames--;
-			animationFrame = 0;
+			animationType = 0;
 			if (recoveryFrames < 0) {
 				if (current == "Idle") {
 					float angle;
 					if (ed->aggroRange > distanceFromPlayer) {
 						angle = angleBetween(p);
+						for (Enemy* dude : group) {
+							float angleChange = M_PI / (abs(dude->x - x) + abs(dude->y - y) + 1);
+							angle += (random() + random() + random() - 1.5) * angleChange / 3;
+						}
 					}
 					else {
 						angle = 2 * M_PI * random();
@@ -133,18 +142,18 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					recoveryFrames = ed->attackFrames;
 					xvel -= cos(angle) * ed->movementspeed;
 					yvel += sin(angle) * ed->movementspeed;
-					changeSpriteSheet("Bounce");
+					// changeSpriteSheet("Bounce");
 				}
 				else {
 					xvel = 0;
 					yvel = 0;
 					recoveryFrames = ed->attackdelay;
-					changeSpriteSheet("Idle");
+					// changeSpriteSheet("Idle");
 				}
 			}
 
 			if (current == "Idle" && next->xFrames == 2) {
-				animationType = 0;
+				animationFrame = 0;
 				if (x + show_width / 2 < p->x + p->show_width / 2) {
 					animationFrame = 1;
 				}
@@ -154,13 +163,11 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 		}
 		else if (ed->ai == SHRUB) {
+			// cout << "shrubbin: " << x << " " << y << " " << this << endl;
+
 			float speedMod = 1.5 - health / 2000;
 
 			string facingString = (facing == LEFT) ? "L" : "R";
-			if (random() < 0.01) {
-				randoSampledX = x;
-				randoSampledY = y;
-			}
 
 			if (p->x + show_width / 2 < x + show_width / 2) {
 				facing = LEFT;
@@ -321,60 +328,69 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					changeSpriteSheet("Walking");
 				}
 
-				bool collided = false;
-				if (!findHidingSpot) {
-					SDL_Rect me = getRect();
-					for (Enemy* dude : group) {
-						SDL_Rect you = dude->getRect();
-						if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE && facing == dude->facing) {
-							// cout << "hlelp\n";
-							DIRECTION next = UP;
-							while (next == facing) {
-								next = (DIRECTION) (4 * random());
+				if (animationType == 0) {
+					bool collided = false;
+					if (!findHidingSpot) {
+						SDL_Rect me = getRect();
+						for (Enemy* dude : group) {
+							SDL_Rect you = dude->getRect();
+							if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE && facing == dude->facing) {
+								// cout << "hlelp\n";
+								DIRECTION next = UP;
+								while (next == facing) {
+									next = (DIRECTION) (4 * random());
+								}
+								facing = next;
+								collided = true;
 							}
-							facing = next;
-							collided = true;
 						}
 					}
-				}
 
-				if (!collided && (abs(flatX - x) / Block::BLOCKSIZE < 0.1 || abs(flatY - y) / Block::BLOCKSIZE < 0.1)) {
-					float angle;
-					if (findHidingSpot) {
-						int r = 1;
-						while (hidingSpot == nullptr) {
-							// cout << "lag cause\n";
-							for (int x = -r; x <= r; x++) {
-								for (int y = -r; y <= r; y++) {
-									if (abs(x) == r || abs(y) == r) {
-										Block* b = world->blocks[index(midY + y, midX + x)];
-										// cout << b->type->name.substr(0, 7) << " " << b->type->name.substr(0, 11) << endl;
-										if (b->isSolidGrass()) {
-											// cout << "FOUND<<<<<<<<<<\n";
-											hidingSpot = b;
-											break;
-										}
-									}
-								}		
-							}
-							r++;
+					if (1 / (abs(randoSampledX - x) + abs(randoSampledY - y) + 1) > random()) {
+						DIRECTION next = DOWN;
+						while (next == facing) {
+							next = (DIRECTION) (4 * random());
 						}
-						angle = angleBetween(hidingSpot);
 					}
-					else {
-						angle = angleBetween(p);
-					}
-					if (abs(angle) < M_PI / 4) {
-						facing = RIGHT;
-					}
-					else if (angle < 3 * M_PI / 4 && angle > M_PI / 4) {
-						facing = DOWN;
-					}
-					else if (angle < 5 * M_PI / 4 && angle > 3 * M_PI / 4) {
-						facing = LEFT;
-					}
-					else {
-						facing = UP;
+					else if (!collided && (abs(flatX - x) / Block::BLOCKSIZE < 0.1 || abs(flatY - y) / Block::BLOCKSIZE < 0.1)) {
+						float angle;
+						if (findHidingSpot) {
+							int r = 1;
+							while (hidingSpot == nullptr) {
+								// cout << "lag cause\n";
+								for (int x = -r; x <= r; x++) {
+									for (int y = -r; y <= r; y++) {
+										if (abs(x) == r || abs(y) == r) {
+											Block* b = world->blocks[index(midY + y, midX + x)];
+											// cout << b->type->name.substr(0, 7) << " " << b->type->name.substr(0, 11) << endl;
+											if (b->isSolidGrass()) {
+												// cout << "FOUND<<<<<<<<<<\n";
+												hidingSpot = b;
+												break;
+											}
+										}
+									}		
+								}
+								r++;
+							}
+							angle = angleBetween(hidingSpot);
+						}
+						else {
+							angle = angleBetween(p);
+						}
+
+						if (abs(angle) < M_PI / 4) {
+							facing = RIGHT;
+						}
+						else if (angle < 3 * M_PI / 4 && angle > M_PI / 4) {
+							facing = DOWN;
+						}
+						else if (angle < 5 * M_PI / 4 && angle > 3 * M_PI / 4) {
+							facing = LEFT;
+						}
+						else {
+							facing = UP;
+						}
 					}
 				}
 				if (facing == UP) {
@@ -420,31 +436,38 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					rageMeter = ed->attackFrames * distanceFromPlayer;
 				}
 
+				// cout << "Spin GameObject shit\n";
 				active = curActive;
 				x += xvel;
 				y += yvel;
 				bool collided = world->collides(this);
 
+				// cout << "!collision check\n";
 				if (!collided) {
 					SDL_Rect me = getRect();
 					for (Enemy* dude : group) {
 						SDL_Rect you = dude->getRect();
 						if (this != dude && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
-							me.x += (you.x > me.x) ? -1 : 1;
-							me.y += (you.y > me.y) ? -1 : 1;
-							you.x += (you.x > me.x) ? 1 : -1;
-							you.y += (you.y > me.y) ? 1 : -1;
+							// cout << x << " " << y << " " << xvel << " " << yvel << endl;
 
-							xvel += (you.x > me.x) ? -1 : 1;
-							yvel += (you.y > me.y) ? -1 : 1;
-							dude->xvel += (you.x > me.x) ? 1 : -1;
-							dude->yvel += (you.y > me.y) ? 1 : -1;
+							x += (dude->x > x) ? -1 : 1;
+							y += (dude->y > y) ? -1 : 1;
+							dude->x += (dude->x > x) ? 1 : -1;
+							dude->y += (dude->y > y) ? 1 : -1;
+
+							xvel += (dude->x > x) ? -1 : 1;
+							yvel += (dude->y > y) ? -1 : 1;
+							dude->xvel += (dude->x > x) ? 1 : -1;
+							dude->yvel += (dude->y > y) ? 1 : -1;
 							collided = true;
+
+							// cout << x << " " << y << " " << xvel << " " << yvel << endl;
 							break;
 						}
 					}
 				}
 
+				// cout << "collision check\n";
 				if (collided) {
 					xvel = -xvel;
 					yvel = -yvel;
@@ -452,6 +475,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					rage = !rage;
 				}
 
+				// cout << "angleStuff\n";
 				float angle = (M_PI * rageMeter) / (2 * ed->attackFrames * distanceFromPlayer);
 				if (rage) {
 					angle *= -1;
@@ -461,17 +485,26 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 				xvel -= ed->movementspeed * cos(angle);
 				yvel += ed->movementspeed * sin(angle);
 
+				// cout << "rageMeter\n";
 				rageMeter -= distanceFromPlayer;
 				if (rageMeter < 0) {
 					rageMeter = ed->attackFrames * distanceFromPlayer;
 				}
 
-				frames += sqrt(xvel * xvel + yvel * yvel) / (5 * ed->movementspeed);
+				// cout << "frame check\n";
+				frames += sqrt(xvel * xvel + yvel * yvel) / (5 * (1 / (1 - ed->traction)) * ed->movementspeed);
+				// cout << "frames: " << frames << endl;
+				// cout << "ed->movementspeed: " << ed->movementspeed << endl;
+				// cout << "30 * (1 / (1 - ed->traction)) * ed->movementspeed: " << 30 * (1 / (1 - ed->traction)) * ed->movementspeed << endl;
 				while (frames > 4) {
 					frames -= 4;
 				}
 				int actualFrame = int(frames);
+				if (rage) {
+					actualFrame = 3 - actualFrame;
+				}
 
+				// cout << "animation\n";
 				animationFrame = actualFrame / 2;
 				animationType = actualFrame % 2;
 			}
@@ -483,18 +516,20 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		// cout << "end\n";
 
 		vector<Vector2f> hitbox = square(x, y, show_width, show_height);
-
 		/*
 		window->setColor(0, 0, 255, 255);
 		for (Vector2f& v2f : hitbox) {
-			cout << "v2f.x: " << v2f.x << " v2f.y: " << v2f.y << endl;
+			// cout << "v2f.x: " << v2f.x << " v2f.y: " << v2f.y << endl;
 			window->cross(v2f.x, v2f.y);
 		}
 		*/
 
+		// cout << "you hit me check\n";
 		if (invincibilityFrames == 0 && world->player->beingUsed.size() != 0) {
 			for (Weapon* bu : world->player->beingUsed) {
 				if (collides(window, hitbox, bu->points)) {
+					bu->numberOfDudesHit++;
+
 					invincibilityFrames = 10;
 					float mod = 1;
 					if (bu->item->itemData->hasProperty(TIPPER)) {
@@ -508,6 +543,13 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					float pab = pointAngleBetween(bu->xvel, bu->yvel, 0, 0);
 					float kbx = bu->item->itemData->knockback * cos(pab) + bu->xvel;
 					float kby = bu->item->itemData->knockback * -sin(pab) + bu->yvel;
+
+					/*
+					if (bu->melee) {
+						kbx *= 2;
+						kby *= 2;
+					}
+					*/
 
 					kbx *= 1 - ed->knockbackResistance;
 					kby *= 1 - ed->knockbackResistance;
@@ -532,9 +574,12 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			}
 		}
 
+		// cout << "me hit you check\n";
 		SDL_Rect me = getRect();
 		SDL_Rect you = p->getRect();
 		if (p->invincibilityFrames == 0 && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
+			// cout << "ed->damage: " << ed->damage << endl;
+			// cout << "p->HP: " << player->HP << endl;
 			p->invincibilityFrames = ed->damage;
 			p->HP -= ed->damage;
 
@@ -544,6 +589,7 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 			p->yvel += sin(angle) * ed->damage;
 		}
 
+		// cout << "invincibilitySHine\n";
 		if (invincibilityFrames > 0) {
 			// cout << "invincibilityFrames: " << invincibilityFrames << endl;
 
@@ -565,16 +611,17 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		setRect();
 		
 		if (!lighter) {
+			// cout << "renderin: " << this << endl;
 			window->render(this);
+		}
+		if ((!active || ed->ai != SHRUB) && ed->ai != SPIN) {
+			GameObject::draw(window, world, entities);
+		}
+
+		if (rageMeter == 30 && current == "ShrubDeath") {
+			world->shrub = nullptr;
 		}
 	}
 
-	if ((!active || ed->ai != SHRUB) && ed->ai != SPIN) {
-		GameObject::draw(window, world, entities);
-	}
-
-	if (rageMeter == 30 && current == "ShrubDeath") {
-		world->shrub = nullptr;
-	}
 	return ((health <= 0 && ed->ai != SHRUB) || (rageMeter == 30 && current == "ShrubDeath"));
 }

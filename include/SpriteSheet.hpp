@@ -13,5 +13,5 @@ struct SpriteSheet {
 
 	SpriteSheet();
 	SpriteSheet(SDL_Texture* ptexture, int x, int y, int frames);
-	SpriteSheet(shared_ptr<SDL_Texture> ptexture, int x, int y, int frames);
+	SpriteSheet(shared_ptr<SDL_Texture>& ptexture, int x, int y, int frames);
 };

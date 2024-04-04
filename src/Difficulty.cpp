@@ -11,6 +11,7 @@ Difficulty::Difficulty() {
 Difficulty::Difficulty(int x) {
 	for (int y = 0; y < OPTIONSLENGTH; y++) {
 		options[y] = x % 2;
+		// cout << options[y] << endl;
 		x /= 2;
 	}
 }

@@ -19,17 +19,19 @@ EnemyData::EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, f
 	show_height = h;
 
 	if (!world->d.getOption(ENEMYDAMAGE)) {
-		damage /= 2;
+		damage /= 1.5;
+		damage++;
 	}
 	if (!world->d.getOption(ENEMYSPEED)) {
-		movementspeed /= 2;
+		movementspeed /= 1.5;
+		movementspeed++;
 	}
 	else {
-		attackFrames *= 0.75;
-		attackdelay *= 0.75;
+		attackFrames *= 0.5;
+		attackdelay *= 0.5;
 	}
 	if (world->d.getOption(ENEMYKNOCKBACK)) {
-		knockbackResistance = 2 * knockbackResistance + 0.1;
+		knockbackResistance = 1.5 * knockbackResistance + 0.1;
 	}
 	if (world->d.getOption(ENEMYHP)) {
 		maxHP *= 1.5;

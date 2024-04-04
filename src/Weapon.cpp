@@ -180,8 +180,13 @@ bool Weapon::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 			return true;
 		}
 		else {
+			if (item->itemData->hasProperty(DANGER)) {
+				world->player->HP -= 50 / pow(2, numberOfDudesHit);
+			}
+
 			ItemDrop* id = new ItemDrop(x, y, item, angle);
 			
+			item = nullptr;
 			id->rotationX = rotationX;
 			id->rotationY = rotationY;
 

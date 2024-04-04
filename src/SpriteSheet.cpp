@@ -8,6 +8,6 @@ SpriteSheet::SpriteSheet(SDL_Texture* ptexture, int x, int y, int f) : xFrames(x
 	texture = shared_ptr<SDL_Texture>(ptexture, sdl_deleter());
 }
 
-SpriteSheet::SpriteSheet(shared_ptr<SDL_Texture> ptexture, int x, int y, int f) : xFrames(x), yFrames(y), frames(f) {
+SpriteSheet::SpriteSheet(shared_ptr<SDL_Texture>& ptexture, int x, int y, int f) : xFrames(x), yFrames(y), frames(f) {
 	texture = ptexture;
 }

@@ -15,7 +15,7 @@ using namespace std;
 struct sdl_deleter
 {
 	void operator()(SDL_Texture *p) const {
-		cout << "DESTROYING TEXTURE: " << p << endl;
+		// cout << "DESTROYING TEXTURE: " << p << endl;
 		SDL_DestroyTexture(p);
 	}
 };

@@ -31,7 +31,7 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared
 
 void Player::readyToPlay(World* world) {
 	charge = 0;
-	invincibilityFrames = 0;
+	invincibilityFrames = 60;
 	timeWithoutDamage = 0;
 	swing = false;
 	yeet = false;
@@ -95,9 +95,13 @@ void Player::select(int num) {
 }
 
 bool Player::giveItem(Item* item) {
+	// cout << "items.size(): " << items.size() << endl;
 	for (Slot& s : items) {
+		// cout << "&s: " << &s << endl;
+		// cout << "s.holding: " << s.holding << endl;
 		if (s.holding == nullptr) {
 			s.holding = item;
+			// cout << "all good???: " << item << endl;
 			return true;
 		}
 	}
@@ -224,7 +228,7 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		invincibilityFrames--;
 	}
 	lighter = invincibilityFrames % 2 == 0;
-	if (!world->d.getOption(NOREGEN)) {
+	if (!world->d.getOption(NOREGEN) && timeWithoutDamage > 0) {
 		HP += random() * pow(timeWithoutDamage / 100, 0.2);
 		if (HP > actualMaxHp) {
 			HP = actualMaxHp;
