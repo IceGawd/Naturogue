@@ -44,7 +44,10 @@ public:
 	Input input;
 	vector<Weapon*> beingUsed;
 
+	vector<Vector2f> points;
+
 	Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared_ptr<SDL_Texture> selectedSlotTexture);
+	vector<Vector2f> getHitbox();
 	void readyToPlay(World* world);
 	void select(int num);
 	float valueFromCharge();

@@ -18,12 +18,23 @@ struct Vector2 final {
 	Vector2() : x(0), y(0) {}
 	Vector2(T x, T y) :x(x), y(y) {}
 	T x, y;
+
+	Vector2<T> operator+ (const Vector2<T>& r) {
+		return { x + r.x, y + r.y };
+	}
+
+	Vector2<T> operator- (const Vector2<T>& r) {
+		return { x - r.x, y - r.y };
+	}
+
+	Vector2<T> operator* (const T& r) {
+		return {T(round(x * r)), T(round(y * r))};
+	}
 };
+
 
 using Vector2f = Vector2<float>;
 
-template <typename T>
-Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r);
 pair<int, int> operator- (const pair<int, int>& l, const pair<int, int>& r);
 pair<int, int> operator+ (const pair<int, int>& l, const pair<int, int>& r);
 

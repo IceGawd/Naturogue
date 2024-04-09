@@ -11,8 +11,18 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared
 	changeSpriteSheet("down");
 
 	// /*
-	show_width = width * 5 / 32;
-	show_height = height * 5 / 32;
+	float scale = 5.0 / 32.0;
+	show_width = width * scale;
+	show_height = height * scale;
+
+	points = {
+		Vector2f({32, 96}) * scale, 
+		Vector2f({0, 512}) * scale, 
+		Vector2f({160, 672}) * scale, 
+		Vector2f({352, 672}) * scale, 
+		Vector2f({512, 512}) * scale, 
+		Vector2f({480, 96}) * scale
+	};
 	// */
 	/*
 	show_width = width / 7;
@@ -27,6 +37,17 @@ Player::Player(RenderWindow* window, shared_ptr<SDL_Texture> slotTexture, shared
 	// chargeBar->y = RenderWindow::HEIGHT / 2 - chargeBar->height - show_height;
 	// chargeBar->x = (RenderWindow::WIDTH - chargeBar->width) / 2;
 	// chargeBar->y = (RenderWindow::HEIGHT - chargeBar->height) / 2 - show_height;
+}
+
+vector<Vector2f> Player::getHitbox() {
+	vector<Vector2f> vv2f;
+
+	Vector2f me = {x, y};
+	for (Vector2f& v2f : points) {
+		vv2f.push_back(v2f + me);
+	}
+
+	return vv2f;
 }
 
 void Player::readyToPlay(World* world) {
@@ -141,7 +162,12 @@ void interact(vector<void*> object) {
 			string name = block->type->name;
 			if (name.substr(0, 5) == "Chest" && name.substr(name.size() - 6, 6) == "Closed" && block->x == pii.first * Block::BLOCKSIZE && block->y == pii.second * Block::BLOCKSIZE) {
 				block->switchBlockType(world->getBlockData(name.substr(0, name.size() - 6) + "Open"));
-				entities->push_back(new ItemDrop(block->x + Block::BLOCKSIZE / 2, block->y + Block::BLOCKSIZE / 2, new Item((*itemDatas)[(int) (random() * itemDatas->size())]), 0));
+				int itemID = (int) (random() * itemDatas->size());
+				while (itemID == 4) {
+					itemID = (int) (random() * itemDatas->size());
+				}
+
+				entities->push_back(new ItemDrop(block->x + Block::BLOCKSIZE / 2, block->y + Block::BLOCKSIZE / 2, new Item((*itemDatas)[itemID]), 0));
 			}
 		}
 	}
@@ -224,9 +250,11 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 		if (timeWithoutDamage > 0) {
 			timeWithoutDamage = 0;
 		}
-		timeWithoutDamage -= invincibilityFrames;
+		timeWithoutDamage -= invincibilityFrames / world->d.iFrameBonus;
 		invincibilityFrames--;
 	}
+	// cout << timeWithoutDamage << endl;
+
 	lighter = invincibilityFrames % 2 == 0;
 	if (!world->d.getOption(NOREGEN) && timeWithoutDamage > 0) {
 		HP += random() * pow(timeWithoutDamage / 100, 0.2);
@@ -280,6 +308,12 @@ bool Player::draw(RenderWindow* window, World* world, vector<GameObject*>& entit
 	window->cross(x + show_width, y);
 	window->cross(x + show_width, y + show_height);
 	window->cross(x, y + show_height);
+
+	vector<Vector2f> vv2f = getHitbox();
+	window->setColor(255, 0, 0, 255);
+	for (Vector2f& v2f : vv2f) {
+		window->cross(v2f.x, v2f.y);
+	}
 	// */
 
 	return false;

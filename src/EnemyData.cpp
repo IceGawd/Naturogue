@@ -27,8 +27,8 @@ EnemyData::EnemyData(string n, int da, int mo, int af, int ad, int ma, int de, f
 		movementspeed++;
 	}
 	else {
-		attackFrames *= 0.5;
-		attackdelay *= 0.5;
+		attackFrames *= 1 - (world->d.difficulty / (2 * Difficulty::MAX_DIFFICULTY));
+		attackdelay *= 1 - (world->d.difficulty / (2 * Difficulty::MAX_DIFFICULTY));
 	}
 	if (world->d.getOption(ENEMYKNOCKBACK)) {
 		knockbackResistance = 1.5 * knockbackResistance + 0.1;

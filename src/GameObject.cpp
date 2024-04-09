@@ -18,6 +18,13 @@ GameObject::GameObject(float px, float py, SDL_Texture* ptexture, int pw, int ph
 }
 
 bool GameObject::draw(RenderWindow* window, World* world, vector<GameObject*>& entities) {
+	if (abs(xvel) >= Block::BLOCKSIZE / 2) {
+		xvel = (Block::BLOCKSIZE * xvel) / (abs(xvel) * 2);
+	}
+	if (abs(yvel) >= Block::BLOCKSIZE / 2) {
+		yvel = (Block::BLOCKSIZE * yvel) / (abs(yvel) * 2);
+	}
+
 	x += xvel;
 	y += yvel;
 	

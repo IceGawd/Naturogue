@@ -3,11 +3,6 @@
 #include "Entity.hpp"
 #include "World.hpp"
 
-template <typename T>
-Vector2<T> operator- (const Vector2<T>& l, const Vector2<T>& r) {
-	return { l.x - r.x, l.y - r.y };
-}
-
 pair<int, int> operator- (const pair<int, int>& l, const pair<int, int>& r) {
 	return {l.first - r.first, l.second - r.second};
 }
@@ -15,7 +10,6 @@ pair<int, int> operator- (const pair<int, int>& l, const pair<int, int>& r) {
 pair<int, int> operator+ (const pair<int, int>& l, const pair<int, int>& r) {
 	return {l.first + r.first, l.second + r.second};
 }
-
 
 vector<Vector2f> square(float x, float y, float w, float h) {
 	return {

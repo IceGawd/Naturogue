@@ -554,6 +554,9 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 					kbx *= 1 - ed->knockbackResistance;
 					kby *= 1 - ed->knockbackResistance;
 
+					kbx /= ed->traction;
+					kby /= ed->traction;
+
 					xvel += kbx * mod;
 					yvel += kby * mod;
 
@@ -575,12 +578,16 @@ bool Enemy::draw(RenderWindow* window, World* world, vector<GameObject*>& entiti
 		}
 
 		// cout << "me hit you check\n";
-		SDL_Rect me = getRect();
-		SDL_Rect you = p->getRect();
-		if (p->invincibilityFrames == 0 && SDL_HasIntersection(&me, &you) == SDL_TRUE) {
+		vector<Vector2f> me = square(x, y, show_width, show_height);
+		vector<Vector2f> you = p->getHitbox();
+		if (p->invincibilityFrames == 0 && collides(window, me, you)) {
 			// cout << "ed->damage: " << ed->damage << endl;
 			// cout << "p->HP: " << player->HP << endl;
-			p->invincibilityFrames = ed->damage;
+			p->invincibilityFrames = ed->damage * world->d.iFrameBonus;
+			if (!world->d.getOption(ENEMYDAMAGE)) {
+				p->invincibilityFrames *= 2;
+			}
+
 			p->HP -= ed->damage;
 
 			float angle = angleBetween(p);

@@ -255,7 +255,8 @@ void generateWorld(World* world, RenderWindow* window, Player* player, vector<Ga
 			EnemyData* ed = enemyDatas[(int) (random() * enemyDatas.size())];
 			// EnemyData* ed = enemyDatas[3];
 			// cout << "Enemy: " << ed->name << " " << ed->ai << " " << s.x << " " << s.y << endl;
-			for (int x = 0; x < 1 + 2 * (random() + random() + random()); x++) {
+			float enemyMod = world->d.getOption(MOREENEMIES) ? 2 : 1;
+			for (int x = 0; x < 1 + enemyMod * (random() + random() + random()); x++) {
 				Enemy* enemy = new Enemy(s.x + 5 * Block::BLOCKSIZE * (0.5 - random()), s.y + 5 * Block::BLOCKSIZE * (0.5 - random()), ed, window);
 				entities.push_back(enemy);
 				group.push_back(enemy);

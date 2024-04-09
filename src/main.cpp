@@ -241,7 +241,7 @@ void runGame() {
 		new ItemData(weapons1, 16, 16, 3, 0, 70, 70, "Stick", 5 * M_PI / 4,                 M_PI / 5, 30, 30, 2, true, false, 2.5, 0.8, 5, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 4, 0, 80, 80, "Bat", 5 * M_PI / 4,                   M_PI / 2, 60, 20, 10, true, false, 1.5, 0.95, 20, {}, swordHitbox),
 		new ItemData(weapons1, 16, 16, 5, 0, 80, 80, "Rock", 5 * M_PI / 4,                  M_PI / 2, 15, 15, 20, true, false, 2, 0.95, 4, {}), 
-		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 20, 20, 20, true, false, 2.5, 0.97, 30, {SPEAR}, spearHitbox),
+		new ItemData(weapons1, 16, 16, 7, 0, 80, 80, "KB", 5 * M_PI / 4,                    M_PI / 2, 20, 20, 20, true, false, 2.5, 0.97, 60, {SPEAR}, spearHitbox),
 		new ItemData(weapons1, 16, 16, 8, 0, 80, 80, "Spear", 5 * M_PI / 4,                 M_PI / 2, 30, 20, 20, false, true, 5, 0.85, 3, {SPEAR}, spearHitbox),
 		new ItemData(weapons1, 16, 16, 10, 0, 80, 80, "Handyman's Hammer", 3 * M_PI / 2,    M_PI, 15, 25, 20, true, false, 2, 0.85, 4, {HAMMER}),
 		new ItemData(weapons1, 16, 16, 11, 0, 80, 80, "Heavy Hammer", 3 * M_PI / 2,         M_PI, 20, 30, 20, false, false, 3, 0.95, 6, {HAMMER}),
