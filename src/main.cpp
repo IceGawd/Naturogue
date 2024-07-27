@@ -400,6 +400,16 @@ void runGame() {
 				}
 				// */
 			}
+
+			int g = -2 * difficulty->value + 1000;
+			g = (g > 255) ? 255 : g;
+			g = (g < 0) ? 0 : g;
+
+			int a = 80 * atan(difficulty->value - 400) + 130;
+			a = (a > 255) ? 255 : a;
+			a = (a < 0) ? 0 : a;
+
+			window.drawNicelyScaledText("WARNING: Higher Difficulties may be VERY unfair", 255, g, 0, a, 0, 400, RenderWindow::WIDTH, 100);
 		}
 		else if (current == GAMEOVER) {
 			window.drawNicelyScaledText("GAME OVER", 255, 0, 0, 255, 300, 0, 600, 200);

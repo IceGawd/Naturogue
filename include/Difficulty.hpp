@@ -12,7 +12,7 @@ enum Options {
 	ENEMYHP, //			64
 	MOREENEMIES, //		128
 	NOREGEN, //			256
-	OPTIONSLENGTH //  TOTAL: 511
+	OPTIONSLENGTH //    TOTAL: 511
 };
 
 struct Difficulty {
